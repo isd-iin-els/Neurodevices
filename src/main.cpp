@@ -61,8 +61,8 @@ static void wifiCallback(void){
         ref2 = code(0,2);
     } else if(code(0,0) == 2)
     {
-        pid[0].setParams(code(0,3),code(0,4),code(0,5));  pid[0].setLimits(code(0,2),code(0,1));
-        pid[1].setParams(code(0,8),code(0,9),code(0,10)); pid[1].setLimits(code(0,7),code(0,6));
+        pid[0].setParams(code(0,3),code(0,4),code(0,5));  pid[0].setLimits(code(0,2),code(0,1)); pid[0].setInputOperationalPoint(code(0,11));
+        pid[1].setParams(code(0,8),code(0,9),code(0,10)); pid[1].setLimits(code(0,7),code(0,6)); pid[1].setInputOperationalPoint(code(0,12));
         modoFuncionamento = 1;
     }
    
@@ -72,8 +72,8 @@ static void wifiCallback(void){
 void mpuRead(void *para){
    
     if(modoFuncionamento == 0){
-        // gyData += 0.1*(sensors.update()-gyData);
-        
+        gyData += 0.05*(sensors.update()-gyData);
+        std::cout << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << std::endl;
 
         if (flag2){
         //     dispositivo.fes[0].setPowerLevel(0); 
@@ -89,19 +89,33 @@ void mpuRead(void *para){
     if(modoFuncionamento == 1){
         flag2 = true;
         double u1, u2;
-        gyData += 0.1*(sensors.update()-gyData);
+        gyData += 0.05*(sensors.update()-gyData);
 
         u1 = pid[0].OutputControl(ref1, gyData(0,0));
-        if (u1 > 0)
+        if (u1 > 0){
+            u1 += pid[0].getInputOperationalPoint();
             dispositivo.fes[0].setPowerLevel(u1); 
-        else
-            dispositivo.fes[1].setPowerLevel(-u1); 
+            dispositivo.fes[1].setPowerLevel(0); 
+        }
+        else{
+            u1 = -u1 + pid[0].getInputOperationalPoint();
+            dispositivo.fes[1].setPowerLevel(u1); 
+            dispositivo.fes[0].setPowerLevel(0); 
+            u1 = -u1;
+        }
 
-        u2 = pid[1].OutputControl(ref2,gyData(1,0));
-        if (u2 > 0)
-            dispositivo.fes[1].setPowerLevel(u2); 
-        else
-            dispositivo.fes[3].setPowerLevel(-u2);
+        u2 = pid[1].OutputControl(ref2, gyData(1,0));
+        if (u2 > 0){
+            u2 += pid[1].getInputOperationalPoint();
+            dispositivo.fes[2].setPowerLevel(u2); 
+            dispositivo.fes[3].setPowerLevel(0); 
+        }
+        else{
+            u2 = -u2 + pid[1].getInputOperationalPoint();
+            dispositivo.fes[3].setPowerLevel(u2);
+            dispositivo.fes[2].setPowerLevel(0); 
+            u2 = -u2;
+        }
 
         wifidata << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << " , " << u1 << " , " << u2;
         std::cout << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << " , " << u1 << " , " << u2 << std::endl;
@@ -133,7 +147,7 @@ void setup(){
     
     pid[0].setParams(1,0.1,0); pid[0].setSampleTime(1); pid[0].setLimits(1.1,1.5);
     pid[1].setParams(1,0.1,0); pid[1].setSampleTime(1); pid[1].setLimits(1.1,1.8);
-    // sensors.init();
+    sensors.init();
     std::cout << "Entrou1" << std::endl;
     wifi->connect(wifiCallback);
     std::cout << "Entrou6" << std::endl;
