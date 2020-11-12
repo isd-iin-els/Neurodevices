@@ -22,6 +22,8 @@ esp_timer_create_args_t periodic_timer_args;
 
 bool flag = false, flag2 = true;
 uint8_t modoFuncionamento;
+double fesCycling = 2, fesCyclingMax = 0; bool fesCyclingBool = false;
+
 Communication::WifiSTA* wifi = Communication::WifiSTA::GetInstance(); uint64_t wificounter = 0; 
 std::stringstream wifidata;
 
@@ -64,6 +66,9 @@ static void wifiCallback(void){
         pid[0].setParams(code(0,3),code(0,4),code(0,5));  pid[0].setLimits(code(0,2),code(0,1)); pid[0].setInputOperationalPoint(code(0,11));
         pid[1].setParams(code(0,8),code(0,9),code(0,10)); pid[1].setLimits(code(0,7),code(0,6)); pid[1].setInputOperationalPoint(code(0,12));
         modoFuncionamento = 1;
+    }else if(code(0,0) == 3){
+        modoFuncionamento = 3;
+        fesCyclingMax = code(0,1);
     }
    
     //wifi1 << str.str().c_str();
@@ -123,10 +128,29 @@ void mpuRead(void *para){
             wifi->write(wifidata.str().c_str());
         //     // std::cout << wifidata.str().c_str();
             wifidata.str("");
-        }else{  wifidata << ";"; std::cout <<  std::endl;}
+        } else {  wifidata << ";"; std::cout <<  std::endl;}
         
-    }else  {
-        // std::cout <<  std::endl;
+    }else if(modoFuncionamento == 3){
+        if(fesCyclingBool){
+            dispositivo.fes[0].setPowerLevel(fesCycling); 
+            if(fesCycling >= fesCyclingMax){
+                fesCyclingBool = false;
+                fesCycling = 5;
+                dispositivo.fes[0].setPowerLevel(0); 
+                std::cout << "Mudou 2" << std::endl;
+            }
+            fesCycling += 0.25;  
+        }else{
+            dispositivo.fes[2].setPowerLevel(fesCycling); 
+            if(fesCycling >= fesCyclingMax){
+                fesCyclingBool = true;
+                fesCycling = 5;
+                dispositivo.fes[2].setPowerLevel(0); 
+                std::cout << "Mudou 0" << std::endl;
+            }
+            fesCycling += 0.25; 
+        }   
+        // std::cout << (int)fesCycling << std::endl;
     }
 }
 
