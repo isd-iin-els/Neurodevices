@@ -12,6 +12,7 @@
 #include "I2Cdev.h"
 #include "SistemasdeControle/embeddedTools/sensors/sensorfusion.h"
 #include "SistemasdeControle/embeddedTools/sensors/kalmanfilter.h"
+#include "mpuDMP6.h"
 
 uint8_t modPin[4] = {27,4,12,5},
         levelPin[4]   = {13,19,2,18};
@@ -163,8 +164,8 @@ void mpuRead(void *para){
         // std::cout << (int)fesCycling << std::endl;
     }else if(modoFuncionamento == 4){
         gyData += 0.05*(sensors.update()-gyData);
-        std::cout << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << "," << 0< < "," << 0;
-        wifidata << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << "," << 0< < "," << 0;
+        std::cout << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << "," << 0 << "," << 0;
+        wifidata << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << "," << 0 << "," << 0;
         if((wificounter++)%5 == 0){
             wifi->write(wifidata.str().c_str());
             wifidata.str("");
@@ -184,24 +185,27 @@ void setup(){
     Serial.begin(115200);
     dispositivo.startLoop();  
 
-    #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-    Wire.begin();
-    #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
-    Fastwire::setup(400, true);
-    #endif
+    // #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+    // Wire.begin();
+    // #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
+    // Fastwire::setup(400, true);
+    // #endif
 
     Serial.begin(115200);
 
     
-    dispositivo.getPID(0).setParams(1,0.1,0); dispositivo.getPID(0).setSampleTime(1); dispositivo.getPID(0).setLimits(1.1,1.5);
-    dispositivo.getPID(1).setParams(1,0.1,0); dispositivo.getPID(1).setSampleTime(1); dispositivo.getPID(1).setLimits(1.1,1.8);
-    sensors.init();
-    std::cout << "Entrou1" << std::endl;
-    wifi->connect(wifiCallback);
-    std::cout << "Entrou6" << std::endl;
-    wifi->initializeComunication(); 
-  }
+    // dispositivo.getPID(0).setParams(1,0.1,0); dispositivo.getPID(0).setSampleTime(1); dispositivo.getPID(0).setLimits(1.1,1.5);
+    // dispositivo.getPID(1).setParams(1,0.1,0); dispositivo.getPID(1).setSampleTime(1); dispositivo.getPID(1).setLimits(1.1,1.8);
+    // sensors.init();
+    // std::cout << "Entrou1" << std::endl;
+    // wifi->connect(wifiCallback);
+    // std::cout << "Entrou6" << std::endl;
+    // wifi->initializeComunication(); 
 
+    initDMP6(gpio_num_t(35));
+  }
+int i = 0;
 void loop(){
-    
+    if(readDMP6())
+        std::cout << OUTPUT_YAWPITCHROLL() * 180/M_PI << std::endl;
 }
