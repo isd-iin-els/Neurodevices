@@ -8,19 +8,45 @@
 #include "SistemasdeControle/embeddedTools/sensors/sensorfusion.h"
 
 LinAlg::Matrix<double> gyData;
+double freq = 75; 
+double period = 1/freq;
 
 esp_timer_create_args_t IMUDataLoop_periodic_timer_args;
 esp_timer_handle_t IMUDataLoop_periodic_timer = nullptr;
 volatile uint64_t IMUDataLoop_counter = 0;
 volatile bool IMUDataLoop_flag = false;
+double pitch, roll, rad2degree = 180/M_PI;
+
+double get_pitch( double ax, double ay, double az){
+    return atan2(-1*ax, sqrt(ay*ay + az*az ));
+}
+		
+double get_roll(double ax, double ay, double az){
+    return atan2(ay, az + 0.05*ax);
+}
+
+double get_yaw(double magx, double magy, double magz, double pitch, double roll){
+		return atan2(sin(roll)*magz - cos(roll)*magy,	cos(pitch)*magx + sin(roll)*sin(pitch)*magy + cos(roll)*sin(pitch)*magz);
+    //return atan2(magy,magx); 
+}
 
 void IRAM_ATTR IMUDataLoop(void *param){
-  gyData = sensors.update();
+  gyData = sensors.updateRaw();
   IMUDataLoop_counter++;
   //  if(readDMP6()){
   //     gyData = OUTPUT_YAWPITCHROLL() * 180/M_PI;
-      std::stringstream ss; ss << IMUDataLoop_counter; ss <<= gyData;
-      client->write(ss.str().c_str());
+  std::stringstream ss; ss << std::setw(2*coutPrecision+1) << std::setprecision(coutPrecision) << std::fixed;
+  // ss << IMUDataLoop_counter << ","; ss <<= gyData;
+  
+  pitch = get_pitch( gyData(0,0), gyData(0,1), gyData(0,2));
+  roll = get_roll( gyData(0,0), gyData(0,1), gyData(0,2));
+  ss <<  pitch << ",  ";
+  ss <<  roll << ",  ";
+  ss << get_yaw( gyData(0,6), gyData(0,7), gyData(0,8),pitch,roll) << "\r\n";
+  //ss << gx << ",    " << gy << ",    " << gz << "\r\n";//gyData(0,0) << ',    ' << gyData(0,1) << ',    ' << gyData(0,2) << ',    ' << gx*rad2degree << ',    ' << gy*rad2degree << ',    ' << gz*rad2degree << ',    ' << gyData(0,6) << ',    ' << gyData(0,7) << ',    ' << gyData(0,8) << '\r\n';
+
+  client->write(ss.str().c_str());
+  std::cout << ss.str().c_str() << std::endl;
     // }
 
   if(IMUDataLoop_counter==(int)param)
@@ -47,10 +73,10 @@ String imuSendInit(void* data, size_t len) {
     IMUDataLoop_periodic_timer_args.name = "imuSendInit";
     IMUDataLoop_periodic_timer_args.arg = (void*)msg.toInt();
     ESP_ERROR_CHECK(esp_timer_create(&IMUDataLoop_periodic_timer_args, &IMUDataLoop_periodic_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(IMUDataLoop_periodic_timer, 1000));
+    ESP_ERROR_CHECK(esp_timer_start_periodic(IMUDataLoop_periodic_timer, 13333));
     IMUDataLoop_flag = true;
     IMUDataLoop_counter =0;
-    answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
+    //answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
   }
   else
     answer += "";

@@ -43,7 +43,7 @@ void onDisconnect(void* arg, AsyncClient* c) {
 void onConnectServer(void* arg, AsyncClient* c){
   Serial.print("We're connected!\n");
   client = c;
-  c->write("hello from server");
+  //c->write("hello from server");
   client->onConnect(onConnect);
   client->onDisconnect(onDisconnect);
   client->onData(onData);
