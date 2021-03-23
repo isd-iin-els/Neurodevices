@@ -5,15 +5,18 @@
 #include "sendIMUData.h"
 #include "openLoopFes.h"
 #include "closedLoopFes.h"
+#include "fesBike.h"
 
 void setup() {
   Serial.begin(115200);
-  serverIP = IPAddress(192,168,137,100);
+  serverIP = IPAddress(192,168,137,101);
   wifiSTATCPInit();
   addFunctions("imuSendInit",imuSendInit);
   addFunctions("openLoopFesUpdate",openLoopFesUpdate);
   addFunctions("closedLoopFesUpdate",closedLoopFesUpdate);
   addFunctions("closedLoopFesReferenceUpdate",closedLoopFesReferenceUpdate);
+  addFunctions("PIDsParametersUpdate",PIDsParametersUpdate);
+  addFunctions("fesBikeStart",fesBikeStart);
 }
 
 void loop() {

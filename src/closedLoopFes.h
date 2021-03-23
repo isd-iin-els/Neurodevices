@@ -30,16 +30,22 @@ void IRAM_ATTR closedLoopControlUpdate(void *param){
 
     std::stringstream ss;
     ss << closedLoop_Counter << " , " << closedLoop_gyData(0,0)  << " , " << closedLoop_gyData(1,0) << " , " << closedLoop_gyData(2,0) 
-                             << " , " << U(0,0) << " , " << U(0,1) << "\r\n";
+                             << " , " << U(0,0) << " , " << U(0,1) <<  " , " << 0 << "\r\n";
     client->write(ss.str().c_str());
 
   if(closedLoop_Counter==(int)param)
   {
+    dispositivo.fes[0].setPowerLevel(0); 
+    dispositivo.fes[1].setPowerLevel(0); 
+    dispositivo.fes[2].setPowerLevel(0); 
+    dispositivo.fes[3].setPowerLevel(0); 
+    ref1 = 0; ref2 = 0;
     printf("stop\r\n"); //Print information
     ESP_ERROR_CHECK(esp_timer_stop(closedLoop_periodic_timer)); //Timer pause
     ESP_ERROR_CHECK(esp_timer_delete(closedLoop_periodic_timer)); //Timer delete
     closedLoop_periodic_timer = nullptr;
     closedLoop_flag = false;
+    openLoopFesStop();
   }
 }
 
@@ -49,35 +55,39 @@ String closedLoopFesUpdate(void* data, size_t len) {
   uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
   msg = msg.substring(index+1,msg.length());
   LinAlg::Matrix<double> code = msg.c_str();
+  std::cout << code << std::endl; 
 
-  if (op.toInt() == 3){
-    Serial.print("Oeration 3, received data: "); Serial.println(msg);
+  if (op.toInt() == 3 && !closedLoop_flag){
+    Serial.print("Operation 3, received data: "); Serial.println(msg);
     closedLoop_flag = true;
 
+    sensors.init();
     openLoopFesInit();
+    
     dispositivo.getPID(0).setParams(1,0.1,0); dispositivo.getPID(0).setSampleTime(1); dispositivo.getPID(0).setLimits(1.1,1.5);
     dispositivo.getPID(1).setParams(1,0.1,0); dispositivo.getPID(1).setSampleTime(1); dispositivo.getPID(1).setLimits(1.1,1.8);
     dispositivo.fes[0].setPowerLevel(0); 
     dispositivo.fes[1].setPowerLevel(0); 
     dispositivo.fes[2].setPowerLevel(0); 
     dispositivo.fes[3].setPowerLevel(0); 
+    ref1 = 0; ref2 = 0;
 
     closedLoop_periodic_timer_args.callback = &closedLoopControlUpdate;
     closedLoop_periodic_timer_args.name = "closedLoopControlUpdate";
-    closedLoop_periodic_timer_args.arg = (void*)msg.toInt();
+    closedLoop_periodic_timer_args.arg = (void*)(int (code(0,0)/code(0,1)));
     ESP_ERROR_CHECK(esp_timer_create(&closedLoop_periodic_timer_args, &closedLoop_periodic_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(closedLoop_periodic_timer, 10000));
+    ESP_ERROR_CHECK(esp_timer_start_periodic(closedLoop_periodic_timer, code(0,1)*1000000.0));
     closedLoop_Counter = 0;
 
-    sensors.init();
+    
     IMUClosedLoop_periodic_timer_args.callback = &ClosedLoop_IMUDataLoop;
     IMUClosedLoop_periodic_timer_args.name = "imuSendInit";
-    IMUClosedLoop_periodic_timer_args.arg = (void*)msg.toInt();
+    IMUClosedLoop_periodic_timer_args.arg = (void*)(int (code(0,0)/code(0,2)));
     ESP_ERROR_CHECK(esp_timer_create(&IMUClosedLoop_periodic_timer_args, &IMUClosedLoop_periodic_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(IMUClosedLoop_periodic_timer, 1000));
+    ESP_ERROR_CHECK(esp_timer_start_periodic(IMUClosedLoop_periodic_timer, code(0,2)*1000000.0));
     closedLoopIMU_Counter = 0;
-
-    answer += "Loop para estimulacao em malha fechada\r\n";
+    if(!noAnswer)
+      answer += "Loop para estimulacao em malha fechada\r\n";
   }
   else
     answer += "";
@@ -93,9 +103,31 @@ String closedLoopFesReferenceUpdate(void* data, size_t len) {
 
   if (op.toInt() == 4){
     Serial.print("Oeration 4, received data: "); Serial.println(msg);
-    closedLoop_flag = true;
+    // if(closedLoop_flag)
     ref1 = code(0,0); ref2 = code(0,1);
-    answer += "Referencias dos controladores PID atualizadas\r\n";
+    if(!noAnswer)
+      answer += "Referencias dos controladores PID atualizadas\r\n";
+  }
+  else
+    answer += "";
+  return answer;
+}
+
+String PIDsParametersUpdate(void* data, size_t len) {
+  char* d = reinterpret_cast<char*>(data); String msg,answer;
+  for (size_t i = 0; i < len; ++i) msg += d[i];
+  uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
+  msg = msg.substring(index+1,msg.length());
+  LinAlg::Matrix<double> code = msg.c_str();
+
+  if (op.toInt() == 5){
+    Serial.print("Oeration 5, received data: "); Serial.println(msg);
+    // if(closedLoop_flag){
+    dispositivo.getPID(0).setParams(code(0,2),code(0,3),code(0,4));  dispositivo.getPID(0).setLimits(code(0,1),code(0,0)); dispositivo.getPID(0).setInputOperationalPoint(code(0,10));
+    dispositivo.getPID(1).setParams(code(0,7),code(0,8),code(0,9));  dispositivo.getPID(1).setLimits(code(0,6),code(0,5)); dispositivo.getPID(1).setInputOperationalPoint(code(0,11));       
+    // }
+    if(!noAnswer)
+      answer += "Parametros dos PIDs atualizados\r\n";
   }
   else
     answer += "";

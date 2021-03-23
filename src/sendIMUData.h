@@ -36,17 +36,18 @@ void IRAM_ATTR IMUDataLoop(void *param){
   //  if(readDMP6()){
   //     gyData = OUTPUT_YAWPITCHROLL() * 180/M_PI;
   std::stringstream ss; ss << std::setw(2*coutPrecision+1) << std::setprecision(coutPrecision) << std::fixed;
-  // ss << IMUDataLoop_counter << ","; ss <<= gyData;
+  ss << IMUDataLoop_counter << ","; ss <<= gyData;
   
-  pitch = get_pitch( gyData(0,0), gyData(0,1), gyData(0,2));
-  roll = get_roll( gyData(0,0), gyData(0,1), gyData(0,2));
-  ss <<  pitch << ",  ";
-  ss <<  roll << ",  ";
-  ss << get_yaw( gyData(0,6), gyData(0,7), gyData(0,8),pitch,roll) << "\r\n";
+  // pitch = get_pitch( gyData(0,0), gyData(0,1), gyData(0,2));
+  // roll = get_roll( gyData(0,0), gyData(0,1), gyData(0,2));
+  // ss << IMUDataLoop_counter << "," << pitch << ",  ";
+  // // ss << ',' << IMUDataLoop_counter << "," << pitch << ",  ";//matlab
+  // ss <<  roll << ",  ";
+  // ss << get_yaw( gyData(0,6), gyData(0,7), gyData(0,8),pitch,roll) << "\r\n";
   //ss << gx << ",    " << gy << ",    " << gz << "\r\n";//gyData(0,0) << ',    ' << gyData(0,1) << ',    ' << gyData(0,2) << ',    ' << gx*rad2degree << ',    ' << gy*rad2degree << ',    ' << gz*rad2degree << ',    ' << gyData(0,6) << ',    ' << gyData(0,7) << ',    ' << gyData(0,8) << '\r\n';
 
   client->write(ss.str().c_str());
-  std::cout << ss.str().c_str() << std::endl;
+  // std::cout << ss.str().c_str() << std::endl;
     // }
 
   if(IMUDataLoop_counter==(int)param)
@@ -64,19 +65,20 @@ String imuSendInit(void* data, size_t len) {
   for (size_t i = 0; i < len; ++i) msg += d[i];
   uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
   msg = msg.substring(index+1,msg.length());
-
-  if (op.toInt() == 1){
+  LinAlg::Matrix<double> code = msg.c_str();
+  if (op.toInt() == 1 && !IMUDataLoop_flag){
     Serial.print("Oeration 1, received data: "); Serial.println(msg);
     // initDMP6(gpio_num_t(23));
     sensors.init();
     IMUDataLoop_periodic_timer_args.callback = &IMUDataLoop;
     IMUDataLoop_periodic_timer_args.name = "imuSendInit";
-    IMUDataLoop_periodic_timer_args.arg = (void*)msg.toInt();
+    IMUDataLoop_periodic_timer_args.arg = (void*)((int)(code(0,0)*code(0,1)));
     ESP_ERROR_CHECK(esp_timer_create(&IMUDataLoop_periodic_timer_args, &IMUDataLoop_periodic_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(IMUDataLoop_periodic_timer, 13333));
+    ESP_ERROR_CHECK(esp_timer_start_periodic(IMUDataLoop_periodic_timer, 1/code(0,1)));
     IMUDataLoop_flag = true;
     IMUDataLoop_counter =0;
-    //answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
+    if(!noAnswer)
+      answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
   }
   else
     answer += "";

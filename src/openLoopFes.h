@@ -21,12 +21,13 @@ String openLoopFesUpdate(void* data, size_t len) {
 
   if (op.toInt() == 2){
     Serial.print("Oeration 2, received data: "); Serial.println(msg);
-    dispositivo.fes[0].setPowerLevel(code(0,1)); 
-    dispositivo.fes[1].setPowerLevel(code(0,2)); 
-    dispositivo.fes[2].setPowerLevel(code(0,3)); 
-    dispositivo.fes[3].setPowerLevel(code(0,4));  
+    dispositivo.fes[0].setPowerLevel(code(0,0)); 
+    dispositivo.fes[1].setPowerLevel(code(0,1)); 
+    dispositivo.fes[2].setPowerLevel(code(0,2)); 
+    dispositivo.fes[3].setPowerLevel(code(0,3));  
     openLoop_flag = true;
-    answer += "Valores de estimulacao alterados\r\n";
+    if(!noAnswer)
+      answer += "Valores de estimulacao alterados\r\n";
   }
   else
     answer += "";
@@ -34,7 +35,6 @@ String openLoopFesUpdate(void* data, size_t len) {
 }
 
 void openLoopFesInit(){
-    dispositivo.stopLoop();
     dispositivo.startLoop();
 }
 

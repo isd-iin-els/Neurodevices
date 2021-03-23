@@ -6,6 +6,8 @@
 #include "WiFi.h"
 #include <map>
 
+bool noAnswer = true;
+
 const char *ssid = "ESP";
 const char *password = "12345678";
 
@@ -49,6 +51,15 @@ void onConnectServer(void* arg, AsyncClient* c){
   client->onData(onData);
 }
 
+String restart(void* data, size_t len) {
+  char* d = reinterpret_cast<char*>(data); String msg,answer;
+  for (size_t i = 0; i < len; ++i) msg += d[i];
+  uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
+  msg = msg.substring(index+1,msg.length());
+  if (op.toInt() == 7)
+    ESP.restart();
+  return answer;
+}
 
 void wifiSTATCPInit(){
     WiFi.mode(WIFI_STA);
@@ -61,6 +72,7 @@ void wifiSTATCPInit(){
     }
     server.onClient(onConnectServer, NULL);
     server.begin();
+    addFunctions("restart",restart);
 }
 
 #endif
