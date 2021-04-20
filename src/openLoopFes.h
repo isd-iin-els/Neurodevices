@@ -12,6 +12,15 @@ uint8_t modPin[4]    = {27,4,12,5},
 
 Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000);
 
+void openLoopFesInit(){
+    dispositivo.startLoop();
+}
+
+void openLoopFesStop(){
+    dispositivo.stopLoop();
+    openLoop_flag = false;
+}
+
 String openLoopFesUpdate(void* data, size_t len) {
   char* d = reinterpret_cast<char*>(data); String msg,answer;
   for (size_t i = 0; i < len; ++i) msg += d[i];
@@ -20,11 +29,13 @@ String openLoopFesUpdate(void* data, size_t len) {
   LinAlg::Matrix<double> code = msg.c_str();
 
   if (op.toInt() == 2){
-    Serial.print("Oeration 2, received data: "); Serial.println(msg);
-    dispositivo.fes[0].setPowerLevel(code(0,0)); 
-    dispositivo.fes[1].setPowerLevel(code(0,1)); 
-    dispositivo.fes[2].setPowerLevel(code(0,2)); 
-    dispositivo.fes[3].setPowerLevel(code(0,3));  
+    Serial.print("Operation 2, received data: "); Serial.println(msg);
+    for(uint8_t i = 0; i < code.getNumberOfColumns()-2; ++i)
+      dispositivo.fes[i].setPowerLevel(code(0,i));  
+    // dispositivo.resetTimeOnAndPeriod(code(0,code.getNumberOfColumns()-2),code(0,code.getNumberOfColumns()-1));
+    // std::cout << "Entrou2"<< std::endl;
+    // openLoopFesInit();
+    // std::cout << "Entrou3"<< std::endl;
     openLoop_flag = true;
     if(!noAnswer)
       answer += "Valores de estimulacao alterados\r\n";
@@ -34,12 +45,5 @@ String openLoopFesUpdate(void* data, size_t len) {
   return answer;
 }
 
-void openLoopFesInit(){
-    dispositivo.startLoop();
-}
 
-void openLoopFesStop(){
-    dispositivo.stopLoop();
-    openLoop_flag = false;
-}
 #endif

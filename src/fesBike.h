@@ -51,8 +51,6 @@ void IRAM_ATTR fesBikeLoop(void *param){
     }
 }
 
-
-
 String fesBikeStart(void* data, size_t len) {
   char* d = reinterpret_cast<char*>(data); String msg,answer;
   for (size_t i = 0; i < len; ++i) msg += d[i];
@@ -62,6 +60,7 @@ String fesBikeStart(void* data, size_t len) {
 
   if (op.toInt() == 6){
     Serial.print("Operation 6, received data: "); Serial.println(msg);
+    dispositivo.resetTimeOnAndPeriod(code(0,3),code(0,4));
     openLoopFesInit();
     fesBike_counter = 0;
     fesCyclingMax = code(0,2);

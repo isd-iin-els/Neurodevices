@@ -49,24 +49,6 @@ bool initDMP6(gpio_num_t INTERRUPT_PIN){
         Fastwire::setup(400, true);
     #endif
 
-    mpu.initialize();
-    pinMode(INTERRUPT_PIN, INPUT);
-
-    // verify connection
-    Serial.println(F("Testing device connections..."));
-    Serial.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
-
-    // load and configure the DMP
-    Serial.println(F("Initializing DMP..."));
-    devStatus = mpu.dmpInitialize();
-
-    // supply your own gyro offsets here, scaled for min sensitivity
-    mpu.setXGyroOffset(220);
-    mpu.setYGyroOffset(76);
-    mpu.setZGyroOffset(-85);
-    mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
-
-    // initialize device
     Serial.println(F("Initializing I2C devices..."));
     mpu.initialize();
     pinMode(INTERRUPT_PIN, INPUT);
@@ -74,12 +56,6 @@ bool initDMP6(gpio_num_t INTERRUPT_PIN){
     // verify connection
     Serial.println(F("Testing device connections..."));
     Serial.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
-
-    // // wait for ready
-    // Serial.println(F("\nSend any character to begin DMP programming and demo: "));
-    // while (Serial.available() && Serial.read()); // empty buffer
-    // while (!Serial.available());                 // wait for data
-    // while (Serial.available() && Serial.read()); // empty buffer again
 
     // load and configure the DMP
     Serial.println(F("Initializing DMP..."));
@@ -155,6 +131,39 @@ bool readDMP6(){
     // get current FIFO count
     fifoCount = mpu.getFIFOCount();
 	return true;
+}
+
+LinAlg::Matrix<double> OUTPUT_RAWACCEL(){
+    LinAlg::Matrix<double> ret(1,3);
+    if(fifoCount < packetSize){
+	        //Lets go back and wait for another interrupt. We shouldn't be here, we got an interrupt from another event
+			// This is blocking so don't do it   while (fifoCount < packetSize) fifoCount = mpu.getFIFOCount();
+	}
+    // check for overflow (this should never happen unless our code is too inefficient)
+    else if ((mpuIntStatus & (0x01 << MPU6050_INTERRUPT_FIFO_OFLOW_BIT)) || fifoCount >= 1024) {
+        // reset so we can continue cleanly
+        mpu.resetFIFO();
+      //  fifoCount = mpu.getFIFOCount();  // will be zero after reset no need to ask
+        Serial.println(F("FIFO overflow!"));
+
+    // otherwise, check for DMP data ready interrupt (this should happen frequently)
+    } else if (mpuIntStatus & (0x01 << MPU6050_INTERRUPT_DMP_INT_BIT)) {
+
+        // read a packet from FIFO
+	while(fifoCount >= packetSize){ // Lets catch up to NOW, someone is using the dreaded delay()!
+		mpu.getFIFOBytes(fifoBuffer, packetSize);
+		// track FIFO count here in case there is > 1 packet available
+		// (this lets us immediately read more without waiting for an interrupt)
+		fifoCount -= packetSize;
+	}
+        mpu.dmpGetQuaternion(&q, fifoBuffer);
+        mpu.dmpGetAccel(&aa, fifoBuffer);
+        ret(0,0) = aa.x;
+        ret(0,1) = aa.y;
+        ret(0,2) = aa.z;
+    }
+        
+    return ret;
 }
 
 LinAlg::Matrix<double> OUTPUT_EULER(){

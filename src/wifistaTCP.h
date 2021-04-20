@@ -65,11 +65,14 @@ void wifiSTATCPInit(){
     WiFi.mode(WIFI_STA);
     WiFi.config(serverIP,gateway,subnet);
     WiFi.begin(ssid, password);
-    if (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    while (WiFi.waitForConnectResult() != WL_CONNECTED) {
         Serial.println("WiFi Failed");
-        while(1) 
-            delay(1000);
+        delay(1000);
+        Serial.println("Trying to Connect");
+        WiFi.reconnect();
     }
+    Serial.println("Wifi connected!");
+    Serial.println("Openning the server port: 4000");
     server.onClient(onConnectServer, NULL);
     server.begin();
     addFunctions("restart",restart);

@@ -8,15 +8,16 @@
 #include "fesBike.h"
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(115200); //initDMP6(gpio_num_t(23));
   serverIP = IPAddress(192,168,137,101);
   wifiSTATCPInit();
-  addFunctions("imuSendInit",imuSendInit);
+  addFunctions("imuSendInit",imuSendInit);  //sensors.init();
   addFunctions("openLoopFesUpdate",openLoopFesUpdate);
-  addFunctions("closedLoopFesUpdate",closedLoopFesUpdate);
-  addFunctions("closedLoopFesReferenceUpdate",closedLoopFesReferenceUpdate);
-  addFunctions("PIDsParametersUpdate",PIDsParametersUpdate);
-  addFunctions("fesBikeStart",fesBikeStart);
+  addFunctions("TwoDOFLimbFesUpdate",TwoDOFLimbFesUpdate);
+  addFunctions("closedLoopFesReferenceUpdate",closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
+  addFunctions("PIDsParametersUpdate",PIDsParametersUpdate);//Fazer isso para o caso geral
+  // addFunctions("fesBikeStart",fesBikeStart);
+  //// addFunctions("estimuladorBN",estimuladorBN);
 }
 
 void loop() {

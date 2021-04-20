@@ -3,11 +3,13 @@
 #include <AsyncTCP.h>
 #include "WiFi.h"
 #include "wifistaTCP.h"
-#include "mpuDMP6.h"
+// #include "mpuDMP6.h"
+#include "mpu6050Config.h"
+// #define M_PI    3.14159265358979323846
 #include "SistemasdeControle/headers/primitiveLibs/LinAlg/matrix.h"
 #include "SistemasdeControle/embeddedTools/sensors/sensorfusion.h"
 
-LinAlg::Matrix<double> gyData;
+LinAlg::Matrix<double> gyData; 
 double freq = 75; 
 double period = 1/freq;
 
@@ -15,28 +17,36 @@ esp_timer_create_args_t IMUDataLoop_periodic_timer_args;
 esp_timer_handle_t IMUDataLoop_periodic_timer = nullptr;
 volatile uint64_t IMUDataLoop_counter = 0;
 volatile bool IMUDataLoop_flag = false;
-double pitch, roll, rad2degree = 180/M_PI;
+// double pitch, roll, rad2degree = 180/M_PI;
 
-double get_pitch( double ax, double ay, double az){
-    return atan2(-1*ax, sqrt(ay*ay + az*az ));
-}
+// double get_pitch( double ax, double ay, double az){
+//     return atan2(-1*ax, sqrt(ay*ay + az*az ));
+// }
 		
-double get_roll(double ax, double ay, double az){
-    return atan2(ay, az + 0.05*ax);
-}
+// double get_roll(double ax, double ay, double az){
+//     return atan2(ay, az + 0.05*ax);
+// }
 
-double get_yaw(double magx, double magy, double magz, double pitch, double roll){
-		return atan2(sin(roll)*magz - cos(roll)*magy,	cos(pitch)*magx + sin(roll)*sin(pitch)*magy + cos(roll)*sin(pitch)*magz);
-    //return atan2(magy,magx); 
-}
+// double get_yaw(double magx, double magy, double magz, double pitch, double roll){
+// 		return atan2(sin(roll)*magz - cos(roll)*magy,	cos(pitch)*magx + sin(roll)*sin(pitch)*magy + cos(roll)*sin(pitch)*magz);
+//     //return atan2(magy,magx); 
+// }
 
-void IRAM_ATTR IMUDataLoop(void *param){
-  gyData = sensors.updateRaw();
+static void IMUDataLoop(void *param){
+  // gyData = sensors.updateRaw();
+  // gyData = sensors.update();
+  // ss << IMUDataLoop_counter << "," << gyData(0,0) << "," << gyData(1,0) << "," << gyData(2,0) << std::endl;
   IMUDataLoop_counter++;
   //  if(readDMP6()){
-  //     gyData = OUTPUT_YAWPITCHROLL() * 180/M_PI;
-  std::stringstream ss; ss << std::setw(2*coutPrecision+1) << std::setprecision(coutPrecision) << std::fixed;
-  ss << IMUDataLoop_counter << ","; ss <<= gyData;
+  //     // gyData = OUTPUT_YAWPITCHROLL() * 180/M_PI;
+  //     gyData = OUTPUT_RAWACCEL();
+  //     pitch = get_pitch( gyData(0,0), gyData(0,1), gyData(0,2));
+  //     roll = get_roll( gyData(0,0), gyData(0,1), gyData(0,2));
+  getEulerAngles();
+  std::stringstream ss; 
+  ss << IMUDataLoop_counter << "," << mpuData(0,0) << "," << mpuData(0,1)  << "," << mpuData(0,2) << std::endl;
+    // std::stringstream ss; //ss << std::setw(2*coutPrecision+1) << std::setprecision(coutPrecision) << std::fixed;
+    // ss << IMUDataLoop_counter << "," << gyData(0,0) << "," << gyData(0,1) << "," << gyData(0,2) << std::endl;
   
   // pitch = get_pitch( gyData(0,0), gyData(0,1), gyData(0,2));
   // roll = get_roll( gyData(0,0), gyData(0,1), gyData(0,2));
@@ -46,9 +56,9 @@ void IRAM_ATTR IMUDataLoop(void *param){
   // ss << get_yaw( gyData(0,6), gyData(0,7), gyData(0,8),pitch,roll) << "\r\n";
   //ss << gx << ",    " << gy << ",    " << gz << "\r\n";//gyData(0,0) << ',    ' << gyData(0,1) << ',    ' << gyData(0,2) << ',    ' << gx*rad2degree << ',    ' << gy*rad2degree << ',    ' << gz*rad2degree << ',    ' << gyData(0,6) << ',    ' << gyData(0,7) << ',    ' << gyData(0,8) << '\r\n';
 
-  client->write(ss.str().c_str());
-  // std::cout << ss.str().c_str() << std::endl;
-    // }
+    client->write(ss.str().c_str());
+    // std::cout << ss.str().c_str() << std::endl;
+  // }
 
   if(IMUDataLoop_counter==(int)param)
   {
@@ -69,12 +79,14 @@ String imuSendInit(void* data, size_t len) {
   if (op.toInt() == 1 && !IMUDataLoop_flag){
     Serial.print("Oeration 1, received data: "); Serial.println(msg);
     // initDMP6(gpio_num_t(23));
-    sensors.init();
+    // sensors.init();
+    if (!mpuInit())
+      return answer;
     IMUDataLoop_periodic_timer_args.callback = &IMUDataLoop;
     IMUDataLoop_periodic_timer_args.name = "imuSendInit";
     IMUDataLoop_periodic_timer_args.arg = (void*)((int)(code(0,0)*code(0,1)));
     ESP_ERROR_CHECK(esp_timer_create(&IMUDataLoop_periodic_timer_args, &IMUDataLoop_periodic_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(IMUDataLoop_periodic_timer, 1/code(0,1)));
+    ESP_ERROR_CHECK(esp_timer_start_periodic(IMUDataLoop_periodic_timer, 1000000.0/code(0,1)));
     IMUDataLoop_flag = true;
     IMUDataLoop_counter =0;
     if(!noAnswer)
