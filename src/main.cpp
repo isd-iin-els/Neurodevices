@@ -1,3 +1,6 @@
+
+// #define DEVICEID uint64_t chipid = ESP.getEfuseMac();
+
 #include <Arduino.h>
 #include <AsyncTCP.h>
 #include "WiFi.h"
@@ -6,18 +9,22 @@
 #include "openLoopFes.h"
 #include "closedLoopFes.h"
 #include "fesBike.h"
+// #include "estimuladorBN.h"
 
 void setup() {
   Serial.begin(115200); //initDMP6(gpio_num_t(23));
-  serverIP = IPAddress(192,168,137,101);
+  // serverIP = IPAddress(192,168,137,101);
   wifiSTATCPInit();
   addFunctions("imuSendInit",imuSendInit);  //sensors.init();
   addFunctions("openLoopFesUpdate",openLoopFesUpdate);
   addFunctions("TwoDOFLimbFesUpdate",TwoDOFLimbFesUpdate);
   addFunctions("closedLoopFesReferenceUpdate",closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
-  addFunctions("PIDsParametersUpdate",PIDsParametersUpdate);//Fazer isso para o caso geral
+  addFunctions("PIDsParametersUpdate",PIDsParametersUpdate);//Fazer isso para o caso geral]
+  addFunctions("stopOpenLoopFes",stopOpenLoopFes);
   // addFunctions("fesBikeStart",fesBikeStart);
-  //// addFunctions("estimuladorBN",estimuladorBN);
+  addFunctions("whoAmI",whoAmI);
+  // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
+  
 }
 
 void loop() {

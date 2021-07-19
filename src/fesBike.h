@@ -60,8 +60,8 @@ String fesBikeStart(void* data, size_t len) {
 
   if (op.toInt() == 6){
     Serial.print("Operation 6, received data: "); Serial.println(msg);
-    dispositivo.resetTimeOnAndPeriod(code(0,3),code(0,4));
-    openLoopFesInit();
+    // dispositivo.timeOnAndPeriodUpdate(code(0,3),code(0,4));
+    openLoopFesInit(code(0,3),code(0,4));
     fesBike_counter = 0;
     fesCyclingMax = code(0,2);
     fesBike_periodic_timer_args.callback = &fesBikeLoop;

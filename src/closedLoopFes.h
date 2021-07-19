@@ -74,7 +74,7 @@ String TwoDOFLimbFesUpdate(void* data, size_t len) {
     // sensors.init();
     // dispositivo.resetTimeOnAndPeriod(code(0,3),code(0,4));
     mpuInit();
-    openLoopFesInit();
+    openLoopFesInit(code(0,3), code(0,4));
     
     dispositivo.getPID(0).setParams(1,0.1,0); dispositivo.getPID(0).setSampleTime(1); dispositivo.getPID(0).setLimits(1.1,1.5);
     dispositivo.getPID(1).setParams(1,0.1,0); dispositivo.getPID(1).setSampleTime(1); dispositivo.getPID(1).setLimits(1.1,1.8);

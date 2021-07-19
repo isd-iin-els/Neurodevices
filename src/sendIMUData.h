@@ -17,6 +17,7 @@ esp_timer_create_args_t IMUDataLoop_periodic_timer_args;
 esp_timer_handle_t IMUDataLoop_periodic_timer = nullptr;
 volatile uint64_t IMUDataLoop_counter = 0;
 volatile bool IMUDataLoop_flag = false;
+volatile bool mpu6050Flag = false, gy80Flag = false;
 // double pitch, roll, rad2degree = 180/M_PI;
 
 // double get_pitch( double ax, double ay, double az){
@@ -33,18 +34,37 @@ volatile bool IMUDataLoop_flag = false;
 // }
 
 static void IMUDataLoop(void *param){
-  // gyData = sensors.updateRaw();
+  
   // gyData = sensors.update();
   // ss << IMUDataLoop_counter << "," << gyData(0,0) << "," << gyData(1,0) << "," << gyData(2,0) << std::endl;
-  IMUDataLoop_counter++;
+  std::stringstream ss; 
+  if(mpu6050Flag){
+    IMUDataLoop_counter++;
+    getEulerAngles();
+    ss << IMUDataLoop_counter << "," << mpuData(0,0) << "," << mpuData(0,1)  << "," << mpuData(0,2) << std::endl;
+  }
+  else if(gy80Flag){
+    IMUDataLoop_counter++;
+    gyData = sensors.updateRaw();
+    ss << IMUDataLoop_counter << "," ;
+    ss <<= gyData;
+    ss << std::endl;
+  }
+  else{
+    IMUDataLoop_counter++;
+    ss << IMUDataLoop_counter << "," << 1.0 << "," << 2.0 << "," << 3.0 << "," << 4.0 
+                              << "," << 5.0 << "," << 6.0 << "," << 7.0 << "," << 8.0 << "," << 9.0 << std::endl;
+  }
+  client->write(ss.str().c_str());
   //  if(readDMP6()){
   //     // gyData = OUTPUT_YAWPITCHROLL() * 180/M_PI;
   //     gyData = OUTPUT_RAWACCEL();
   //     pitch = get_pitch( gyData(0,0), gyData(0,1), gyData(0,2));
   //     roll = get_roll( gyData(0,0), gyData(0,1), gyData(0,2));
-  getEulerAngles();
-  std::stringstream ss; 
-  ss << IMUDataLoop_counter << "," << mpuData(0,0) << "," << mpuData(0,1)  << "," << mpuData(0,2) << std::endl;
+  //****************************************
+  //  //comentei initmpu
+  //****************************************
+  
     // std::stringstream ss; //ss << std::setw(2*coutPrecision+1) << std::setprecision(coutPrecision) << std::fixed;
     // ss << IMUDataLoop_counter << "," << gyData(0,0) << "," << gyData(0,1) << "," << gyData(0,2) << std::endl;
   
@@ -56,12 +76,13 @@ static void IMUDataLoop(void *param){
   // ss << get_yaw( gyData(0,6), gyData(0,7), gyData(0,8),pitch,roll) << "\r\n";
   //ss << gx << ",    " << gy << ",    " << gz << "\r\n";//gyData(0,0) << ',    ' << gyData(0,1) << ',    ' << gyData(0,2) << ',    ' << gx*rad2degree << ',    ' << gy*rad2degree << ',    ' << gz*rad2degree << ',    ' << gyData(0,6) << ',    ' << gyData(0,7) << ',    ' << gyData(0,8) << '\r\n';
 
-    client->write(ss.str().c_str());
+   
     // std::cout << ss.str().c_str() << std::endl;
   // }
 
   if(IMUDataLoop_counter==(int)param)
   {
+    client->write("stop\r\n");
     printf("stop\r\n"); //Print information
     ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
     ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
@@ -76,19 +97,33 @@ String imuSendInit(void* data, size_t len) {
   uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
   msg = msg.substring(index+1,msg.length());
   LinAlg::Matrix<double> code = msg.c_str();
+  std::cout << code;
   if (op.toInt() == 1 && !IMUDataLoop_flag){
-    Serial.print("Oeration 1, received data: "); Serial.println(msg);
+    Serial.print("Operation 1, received data: "); Serial.println(msg);
+    if(code.getNumberOfColumns() == 3)
+    {
+      if(code(0,2) == 1)
+        mpu6050Flag = mpuInit();
+      else if(code(0,2) == 2)
+        gy80Flag = sensors.init();
+    }
     // initDMP6(gpio_num_t(23));
-    // sensors.init();
-    if (!mpuInit())
-      return answer;
+    // gy80Flag = sensors.init();
+    // mpu6050Flag = mpuInit();
+    // if (!){
+    //   answer += "Erro ao acessar o IMU";
+    //   return answer;
+    // }
+    IMUDataLoop_counter = 0;
+    IMUDataLoop_flag = true;
     IMUDataLoop_periodic_timer_args.callback = &IMUDataLoop;
     IMUDataLoop_periodic_timer_args.name = "imuSendInit";
     IMUDataLoop_periodic_timer_args.arg = (void*)((int)(code(0,0)*code(0,1)));
     ESP_ERROR_CHECK(esp_timer_create(&IMUDataLoop_periodic_timer_args, &IMUDataLoop_periodic_timer));
     ESP_ERROR_CHECK(esp_timer_start_periodic(IMUDataLoop_periodic_timer, 1000000.0/code(0,1)));
-    IMUDataLoop_flag = true;
-    IMUDataLoop_counter =0;
+    
+    
+    std::cout << "Tudo Inicializado\n";
     if(!noAnswer)
       answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
   }

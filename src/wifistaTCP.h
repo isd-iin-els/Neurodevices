@@ -14,9 +14,9 @@ const char *password = "12345678";
 AsyncClient *client;
 AsyncServer server(4000);
 
-IPAddress serverIP(192,168,137,100);
-IPAddress gateway(192,168,137,1);
-IPAddress subnet(255,255,255,0);
+// IPAddress serverIP(192,168,137,100);
+// IPAddress gateway(192,168,137,1);
+// IPAddress subnet(255,255,255,0);
 
 typedef String (*SDLEventFunction)(void*,size_t);
 std::map<String,SDLEventFunction> functions;
@@ -61,9 +61,34 @@ String restart(void* data, size_t len) {
   return answer;
 }
 
+String whoAmI(void* data, size_t len) {
+  char* d = reinterpret_cast<char*>(data); String msg,answer;
+  for (size_t i = 0; i < len; ++i) msg += d[i];
+  uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
+  msg = msg.substring(index+1,msg.length());
+  if (op.toInt() == 9){
+    std::stringstream ss;
+    ss << "{";
+    ss <<  "\"Device\":\"DOIT Esp32 DevKit v1\",";
+    ss << "\"Device Attribute\":\"4-Channel FES\",";
+    ss << "\"Device ID\":" << ESP.getEfuseMac() << ","; 
+    ss << "\"Device IP\":\"" << WiFi.localIP().toString().c_str() << "\","; 
+    ss << "\"Implemented Functionalities\": [" ;
+    for(std::map<String,SDLEventFunction>::iterator iter = functions.begin(); iter != functions.end(); ++iter)
+      ss << "\"" << iter->first.c_str() << "\",";
+    ss.seekp(-1, std::ios_base::end);
+    ss.seekp(-1, std::ios_base::end);
+    ss << "] }\0";
+    answer = ss.str().c_str();
+    return answer;
+  }
+  answer = "";
+  return answer;
+}
+
 void wifiSTATCPInit(){
     WiFi.mode(WIFI_STA);
-    WiFi.config(serverIP,gateway,subnet);
+    // WiFi.config(serverIP,gateway,subnet);
     WiFi.begin(ssid, password);
     while (WiFi.waitForConnectResult() != WL_CONNECTED) {
         Serial.println("WiFi Failed");
