@@ -23,12 +23,17 @@ void setup() {
   addFunctions("stopOpenLoopFes",stopOpenLoopFes);
   // addFunctions("fesBikeStart",fesBikeStart);
   addFunctions("whoAmI",whoAmI);
+  addFunctions("blinkMe",blinkMe);
   // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
-  
+  analogSetAttenuation((adc_attenuation_t) ADC_ATTEN_0db);
 }
-
+float x = 0, h = 0.01; uint8_t contador = 0;
 void loop() {
-  delay(1);
+  delay(10);
+  x = x + h*(analogReadMilliVolts(36)-x);
+  if(contador==0)
+    Serial.println(x);
+  contador++;
 }
 
 
