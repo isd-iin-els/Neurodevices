@@ -9,6 +9,7 @@
 #include "openLoopFes.h"
 #include "closedLoopFes.h"
 #include "fesBike.h"
+#include "NBStimulator.h"
 // #include "estimuladorBN.h"
 
 void setup() {
@@ -24,16 +25,17 @@ void setup() {
   // addFunctions("fesBikeStart",fesBikeStart);
   addFunctions("whoAmI",whoAmI);
   addFunctions("blinkMe",blinkMe);
+  addFunctions("neurogenic_bladder_init",neurogenic_bladder_init);
   // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
-  analogSetAttenuation((adc_attenuation_t) ADC_ATTEN_0db);
+  // analogSetAttenuation((adc_attenuation_t) ADC_ATTEN_0db);
 }
-float x = 0, h = 0.01; uint8_t contador = 0;
+// float x = 0, h = 0.01; uint8_t contador = 0;
 void loop() {
-  delay(10);
-  x = x + h*(analogReadMilliVolts(36)-x);
-  if(contador==0)
-    Serial.println(x);
-  contador++;
+  // delay(10);
+  // x = x + h*(analogReadMilliVolts(36)-x);
+  // if(contador==0)
+  //   Serial.println(x);
+  // contador++;
 }
 
 
