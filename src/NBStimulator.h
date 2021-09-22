@@ -5,7 +5,7 @@
 #include "SistemasdeControle/embeddedTools/signalAnalysis/systemLoop.h"
 #include "wifistaTCP.h"
 
-volatile uint64_t BN_Counter; volatile bool BN_flag = false;
+volatile uint64_t BN_Counter; volatile bool BN_flag = false, stopFlag = false;
 esp_timer_create_args_t BN_periodic_timer_args;
 esp_timer_handle_t BN_periodic_timer = nullptr;
 
@@ -15,7 +15,7 @@ void IRAM_ATTR BNUpdate(void *param){
     ss << BN_Counter << " , " << analogReadMilliVolts(36)  << "\r\n";
     client->write(ss.str().c_str());
 
-  if(BN_Counter==(int)param)
+  if(BN_Counter==(int)param || stopFlag)
   {
     client->write("stop\r\n");
     printf("stop\r\n"); //Print information
@@ -24,6 +24,25 @@ void IRAM_ATTR BNUpdate(void *param){
     BN_periodic_timer = nullptr;
     BN_flag = false;
   }
+}
+
+String neurogenic_bladder_stop(void* data, size_t len) {
+  char* d = reinterpret_cast<char*>(data); String msg,answer;
+  for (size_t i = 0; i < len; ++i) msg += d[i];
+  uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
+  msg = msg.substring(index+1,msg.length());
+  LinAlg::Matrix<double> code = msg.c_str();
+  std::cout << code << std::endl; 
+
+  if (op.toInt() == 12){
+    stopFlag = true;
+
+    if(!noAnswer)
+      answer += "Loop para estimulacao de neurogenic bladder\r\n";
+  }
+  else
+    answer += "";
+  return answer;
 }
 
 String neurogenic_bladder_init(void* data, size_t len) {
@@ -37,6 +56,7 @@ String neurogenic_bladder_init(void* data, size_t len) {
   if (op.toInt() == 11 && !BN_flag){
     Serial.print("Operation 11, received data: "); Serial.println(msg);
     BN_flag = true;
+    stopFlag = false;
 
     BN_periodic_timer_args.callback = &BNUpdate;
     BN_periodic_timer_args.name = "BNUpdate";
