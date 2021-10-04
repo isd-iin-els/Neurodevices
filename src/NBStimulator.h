@@ -13,6 +13,7 @@ void IRAM_ATTR BNUpdate(void *param){
     BN_Counter++;
     std::stringstream ss;
     ss << BN_Counter << " , " << analogReadMilliVolts(36)  << "\r\n";
+    // Serial.println(ss.str().c_str());
     client->write(ss.str().c_str());
 
   if(BN_Counter==(int)param || stopFlag)

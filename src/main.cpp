@@ -10,6 +10,7 @@
 #include "closedLoopFes.h"
 #include "fesBike.h"
 #include "NBStimulator.h"
+#include "mp_closedLoopFes.h"
 // #include "estimuladorBN.h"
 
 void setup() {
@@ -26,6 +27,10 @@ void setup() {
   addFunctions("whoAmI",whoAmI);
   addFunctions("blinkMe",blinkMe);
   addFunctions("neurogenic_bladder_init",neurogenic_bladder_init);
+  addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSclosedLoopFesReferenceUpdate);
+  addFunctions("TwoDOFLimbMP_PIDSFes",TwoDOFLimbMP_PIDSFes);
+  addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSParametersUpdate);
+
   // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
   // analogSetAttenuation((adc_attenuation_t) ADC_ATTEN_0db);
 }
