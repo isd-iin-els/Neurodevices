@@ -56,6 +56,7 @@ static void IMUDataLoop(void *param){
                               << "," << 5.0 << "," << 6.0 << "," << 7.0 << "," << 8.0 << "," << 9.0 << std::endl;
   }
   client->write(ss.str().c_str());
+  Serial.println(ss.str().c_str());
   //  if(readDMP6()){
   //     // gyData = OUTPUT_YAWPITCHROLL() * 180/M_PI;
   //     gyData = OUTPUT_RAWACCEL();
@@ -91,22 +92,27 @@ static void IMUDataLoop(void *param){
   }
 }
 
-String imuSendInit(void* data, size_t len) {
-  char* d = reinterpret_cast<char*>(data); String msg,answer;
-  for (size_t i = 0; i < len; ++i) msg += d[i];
-  uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
-  msg = msg.substring(index+1,msg.length());
-  LinAlg::Matrix<double> code = msg.c_str();
-  std::cout << code;
-  if (op.toInt() == 1 && !IMUDataLoop_flag){
-    Serial.print("Operation 1, received data: "); Serial.println(msg);
-    if(code.getNumberOfColumns() == 3)
-    {
-      if(code(0,2) == 1)
-        mpu6050Flag = mpuInit();
-      else if(code(0,2) == 2)
-        gy80Flag = sensors.init();
-    }
+String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+  // char* d = reinterpret_cast<char*>(data); String msg,answer;
+  // for (size_t i = 0; i < len; ++i) msg += d[i];
+  // uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
+  // msg = msg.substring(index+1,msg.length());
+  // LinAlg::Matrix<double> code = msg.c_str();
+  // std::cout << code;
+  String answer;
+  if (operation == IMUSENDINIT_MSG && !IMUDataLoop_flag){
+    uint8_t sensorType = doc["sensorType"];
+    uint16_t freq = doc["frequence"];
+    uint16_t timeSimulation = doc["simulationTime"];
+
+    // LinAlg::Matrix<double> code = msg.c_str();
+    // Serial.print("Operation 1, received data: "); Serial.println(msg);
+    
+    if(sensorType == 1)
+      mpu6050Flag = mpuInit();
+    else if(sensorType == 2)
+      gy80Flag = sensors.init();
+    
     // initDMP6(gpio_num_t(23));
     // gy80Flag = sensors.init();
     // mpu6050Flag = mpuInit();
@@ -118,9 +124,9 @@ String imuSendInit(void* data, size_t len) {
     IMUDataLoop_flag = true;
     IMUDataLoop_periodic_timer_args.callback = &IMUDataLoop;
     IMUDataLoop_periodic_timer_args.name = "imuSendInit";
-    IMUDataLoop_periodic_timer_args.arg = (void*)((int)(code(0,0)*code(0,1)));
+    IMUDataLoop_periodic_timer_args.arg = (void*)((int)(timeSimulation*freq));
     ESP_ERROR_CHECK(esp_timer_create(&IMUDataLoop_periodic_timer_args, &IMUDataLoop_periodic_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(IMUDataLoop_periodic_timer, 1000000.0/code(0,1)));
+    ESP_ERROR_CHECK(esp_timer_start_periodic(IMUDataLoop_periodic_timer, 1000000.0/freq));
     
     
     std::cout << "Tudo Inicializado\n";

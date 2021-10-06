@@ -5,12 +5,14 @@
 #include <AsyncTCP.h>
 #include "WiFi.h"
 #include <sstream>
+#include "wifistaTCP.h"
 #include "sendIMUData.h"
 #include "openLoopFes.h"
 #include "closedLoopFes.h"
-#include "fesBike.h"
-#include "NBStimulator.h"
-#include "mp_closedLoopFes.h"
+#include "blinkled.h"
+// #include "fesBike.h"
+// #include "NBStimulator.h"
+// #include "mp_closedLoopFes.h"
 // #include "estimuladorBN.h"
 
 void setup() {
@@ -18,21 +20,39 @@ void setup() {
   // serverIP = IPAddress(192,168,137,101);
   wifiSTATCPInit();
   addFunctions("imuSendInit",imuSendInit);  //sensors.init();
+  addFunctions("stopOpenLoopFes",stopOpenLoopFes);
   addFunctions("openLoopFesUpdate",openLoopFesUpdate);
-  addFunctions("TwoDOFLimbFesUpdate",TwoDOFLimbFesUpdate);
+  addFunctions("TwoDOFLimbFesControl",TwoDOFLimbFesControl);
   addFunctions("closedLoopFesReferenceUpdate",closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
   addFunctions("PIDsParametersUpdate",PIDsParametersUpdate);//Fazer isso para o caso geral]
-  addFunctions("stopOpenLoopFes",stopOpenLoopFes);
-  // addFunctions("fesBikeStart",fesBikeStart);
+  
+  // // addFunctions("fesBikeStart",fesBikeStart);
   addFunctions("whoAmI",whoAmI);
   addFunctions("blinkMe",blinkMe);
-  addFunctions("neurogenic_bladder_init",neurogenic_bladder_init);
-  addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSclosedLoopFesReferenceUpdate);
-  addFunctions("TwoDOFLimbMP_PIDSFes",TwoDOFLimbMP_PIDSFes);
-  addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSParametersUpdate);
+  // addFunctions("neurogenic_bladder_init",neurogenic_bladder_init);
+  // addFunctions("MP_PIDSclosedLoopFesmpreferenceUpdate",MP_PIDSclosedLoopFesmpreferenceUpdate);
+  // addFunctions("TwoDOFLimbMP_PIDSFes",TwoDOFLimbMP_PIDSFes);
+  // addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSParametersUpdate);
 
   // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
   // analogSetAttenuation((adc_attenuation_t) ADC_ATTEN_0db);
+  WiFiClient client;
+ 
+  if (!client.connect("192.168.137.1", 5000)) {
+
+    Serial.println("Connection to host failed");
+
+    delay(1000);
+    return;
+  }
+  std::stringstream ss;
+  ss << "{\"command\":\"registerClient\"," << "\"Device IP\":\"" << WiFi.localIP().toString().c_str()<< "\"}"; 
+  Serial.println("Connected to server successful!");
+
+  client.print(ss.str().c_str());
+  delay(1000);
+  Serial.println("Disconnecting...");
+  client.stop();
 }
 // float x = 0, h = 0.01; uint8_t contador = 0;
 void loop() {
@@ -44,211 +64,134 @@ void loop() {
 }
 
 
+// #include <WiFi.h>
+// extern "C" {
+// 	#include "freertos/FreeRTOS.h"
+// 	#include "freertos/timers.h"
+// }
+// #include <AsyncMqttClient.h>
 
+// #define WIFI_SSID "ESP"
+// #define WIFI_PASSWORD "12345678"
 
-// #include <iostream>
-// #include <time.h>
-// #include "esp_system.h"
-// #include "rom/ets_sys.h"
-// #include "driver/ledc.h"
-// #include "freertos/FreeRTOS.h"
-// #include "freertos/task.h"
-// #include "driver/timer.h"
-// #include "SistemasdeControle/headers/primitiveLibs/LinAlg/matrix.h"
-// #include "SistemasdeControle/embeddedTools/signalAnalysis/systemLoop.h"
-// #include "SistemasdeControle/embeddedTools/communicationLibs/wifi/wifista.h"
-// #include "I2Cdev.h"
-// #include "SistemasdeControle/embeddedTools/sensors/sensorfusion.h"
-// #include "SistemasdeControle/embeddedTools/sensors/kalmanfilter.h"
-// #include "mpuDMP6.h"
+// #define MQTT_HOST IPAddress(15, 236, 203, 194) //broker.emqx.io
+// #define MQTT_PORT 1883
 
-// uint8_t modPin[4] = {27,4,12,5},
-//         levelPin[4]   = {13,19,2,18};
-// Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000); double ref1, ref2;
-// // ControlHandler::PID<long double> pid[2]; double ref1, ref2;
-// esp_timer_create_args_t periodic_timer_args;
+// AsyncMqttClient mqttClient;
+// TimerHandle_t mqttReconnectTimer;
+// TimerHandle_t wifiReconnectTimer;
 
-// bool flag = false, flag2 = true;
-// uint8_t modoFuncionamento;
-// double fesCycling = 2, fesCyclingMax = 0; bool fesCyclingBool = false;
-
-// LinAlg::Matrix<double> referenceTracking; bool referenceTrackingFlag = false; uint32_t controStep = 0;
-
-// Communication::WifiSTA* wifi = Communication::WifiSTA::GetInstance(); uint64_t wificounter = 0; 
-// std::stringstream wifidata;
-
-// GY80::sensorfusion sensors;
-// LinAlg::Matrix<double> gyData(3,1);
-
-// esp_timer_handle_t periodic_timer;
-// int sign(double value) {  if (value > 0) return 1;  else return -1; }
-// static void mpuRead(void *para);
-
-// #define GYRO_FULLSCALE			 (250)
-// #if   GYRO_FULLSCALE == 250
-//     #define GyroAxis_Sensitive (float)(131.0)
-// #endif
-
-// static void wifiCallback(void){ 
-//     if (!flag)
-//     {
-//         flag = true;
-//         periodic_timer_args.callback = &mpuRead;
-//         periodic_timer_args.name = "ccdfkgdjf";
-//         ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &periodic_timer));
-//         ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, 100000));
-//     }  
-
-//     LinAlg::Matrix<double> code = wifi->getData();
-// 	std::cout << code;
-//     if(code(0,0) == 0){
-//         //  for(uint8_t i = 1; i < 5; ++i)
-//             dispositivo.fes[0].setPowerLevel(code(0,1)); 
-//             dispositivo.fes[1].setPowerLevel(code(0,2)); 
-//             dispositivo.fes[2].setPowerLevel(code(0,3)); 
-//             dispositivo.fes[3].setPowerLevel(code(0,4));
-//             modoFuncionamento = 0;
-//     } else if(code(0,0) == 1){
-//         ref1 = code(0,1);
-//         ref2 = code(0,2);
-//     } else if(code(0,0) == 2)
-//     {
-//         dispositivo.getPID(0).setParams(code(0,3),code(0,4),code(0,5));  dispositivo.getPID(0).setLimits(code(0,2),code(0,1)); dispositivo.getPID(0).setInputOperationalPoint(code(0,11));
-//         dispositivo.getPID(1).setParams(code(0,8),code(0,9),code(0,10)); dispositivo.getPID(1).setLimits(code(0,7),code(0,6)); dispositivo.getPID(1).setInputOperationalPoint(code(0,12));
-//         modoFuncionamento = 1;
-//     }else if(code(0,0) == 3){
-//         modoFuncionamento = 3;
-//         fesCyclingMax = code(0,1);
-//     }else if(code(0,0) == 4){
-//         if(!referenceTrackingFlag){
-//             referenceTracking = code(from(1)-->3,uint32_t(0));
-//             referenceTrackingFlag = true;
-//         } else{
-//             referenceTracking = referenceTracking||code(from(1)-->3,uint32_t(0));
-//         }
-//         modoFuncionamento = 4;
-//     }else if(code(0,0) == 5){
-//         modoFuncionamento = 5;
-//     }
-
-//     if(modoFuncionamento != 4)
-//         referenceTrackingFlag = false;
-   
-//     //wifi1 << str.str().c_str();
+// void connectToWifi() {
+//   Serial.println("Connecting to Wi-Fi...");
+//   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 // }
 
-// void mpuRead(void *para){
-   
-//     if(modoFuncionamento == 0){
-//         // gyData += 0.05*(sensors.update()-gyData);
-//         // std::cout << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << std::endl;
+// void connectToMqtt() {
+//   Serial.println("Connecting to MQTT...");
+//   mqttClient.connect();
+// }
 
-//         if (flag2){
-//             dispositivo.getPID(0).resetIntegralValue();
-//             dispositivo.getPID(1).resetIntegralValue();
-//             flag2 = false;
-//         }
-//     }
-    
-//     if(modoFuncionamento == 1){
-//         flag2 = true;
-//         // double u1, u2;
-//         gyData += 0.05*(sensors.update()-gyData);
-//         LinAlg::Matrix<double> U = dispositivo.performOneControlStep(ref1, ref2, gyData);
-//         // u1 = pid[0].OutputControl(ref1, gyData(0,0));
-//         // if (u1 > 0){
-//         //     u1 += pid[0].getInputOperationalPoint();
-//         //     dispositivo.fes[0].setPowerLevel(u1); 
-//         //     dispositivo.fes[1].setPowerLevel(0); 
-//         // }
-//         // else{
-//         //     u1 = -u1 + pid[0].getInputOperationalPoint();
-//         //     dispositivo.fes[1].setPowerLevel(u1); 
-//         //     dispositivo.fes[0].setPowerLevel(0); 
-//         //     u1 = -u1;
-//         // }
-
-//         // u2 = pid[1].OutputControl(ref2, gyData(1,0));
-//         // if (u2 > 0){
-//         //     u2 += pid[1].getInputOperationalPoint();
-//         //     dispositivo.fes[2].setPowerLevel(u2); 
-//         //     dispositivo.fes[3].setPowerLevel(0); 
-//         // }
-//         // else{
-//         //     u2 = -u2 + pid[1].getInputOperationalPoint();
-//         //     dispositivo.fes[3].setPowerLevel(u2);
-//         //     dispositivo.fes[2].setPowerLevel(0); 
-//         //     u2 = -u2;
-//         // }
-
-//         wifidata << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << " , " << U(0,0) << " , " << U(0,1);
-//         std::cout << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << " , " << U(0,0) << " , " << U(0,1) << std::endl;
-//         if((wificounter++)%5 == 0){
-//             wifi->write(wifidata.str().c_str());
-//         //     // std::cout << wifidata.str().c_str();
-//             wifidata.str("");
-//         } else {  wifidata << ";"; std::cout <<  std::endl;}
-        
-//     }else if(modoFuncionamento == 3){
-//         if(fesCyclingBool){
-//             dispositivo.fes[0].setPowerLevel(fesCycling); 
-//             if(fesCycling >= fesCyclingMax){
-//                 fesCyclingBool = false;
-//                 fesCycling = 5;
-//                 dispositivo.fes[0].setPowerLevel(0); 
-//                 std::cout << "Mudou 2" << std::endl;
-//             }
-//             fesCycling += 0.25;  
-//         }else{
-//             dispositivo.fes[2].setPowerLevel(fesCycling); 
-//             if(fesCycling >= fesCyclingMax){
-//                 fesCyclingBool = true;
-//                 fesCycling = 5;
-//                 dispositivo.fes[2].setPowerLevel(0); 
-//                 std::cout << "Mudou 0" << std::endl;
-//             }
-//             fesCycling += 0.25; 
-//         }   
-//         // std::cout << (int)fesCycling << std::endl;
-//     }else if(modoFuncionamento == 4){
-//         gyData += 0.05*(sensors.update()-gyData);
-//         std::cout << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << "," << 0 << "," << 0;
-//         wifidata << wificounter << " , " << gyData(0,0)  << " , " << gyData(1,0) << " , " << gyData(2,0) << "," << 0 << "," << 0;
-//         if((wificounter++)%5 == 0){
-//             wifi->write(wifidata.str().c_str());
-//             wifidata.str("");
-//         } else {  wifidata << ";"; std::cout <<  std::endl;}
-//     }else if(modoFuncionamento == 5){
-//         if(controStep < referenceTracking.getNumberOfRows()){
-//             gyData += 0.05*(sensors.update()-gyData);
-//             dispositivo.performOneControlStep(referenceTracking(0,0), referenceTracking(0,1), gyData);
-//             controStep++;
-//         }else{controStep = 0;}
+// void WiFiEvent(WiFiEvent_t event) {
+//     Serial.printf("[WiFi-event] event: %d\n", event);
+//     switch(event) {
+//     case SYSTEM_EVENT_STA_GOT_IP:
+//         Serial.println("WiFi connected");
+//         Serial.println("IP address: ");
+//         Serial.println(WiFi.localIP());
+//         connectToMqtt();
+//         break;
+//     case SYSTEM_EVENT_STA_DISCONNECTED:
+//         Serial.println("WiFi lost connection");
+//         xTimerStop(mqttReconnectTimer, 0); // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
+//         xTimerStart(wifiReconnectTimer, 0);
+//         break;
 //     }
 // }
 
+// void onMqttConnect(bool sessionPresent) {
+//   Serial.println("Connected to MQTT.");
+//   Serial.print("Session present: ");
+//   Serial.println(sessionPresent);
+//   uint16_t packetIdSub = mqttClient.subscribe("andre.dantas@isd.org.br/test/lol", 2);
+//   Serial.print("Subscribing at QoS 2, packetId: ");
+//   Serial.println(packetIdSub);
+//   mqttClient.publish("andre.dantas@isd.org.br/test/lol", 0, true, "test 1");
+//   Serial.println("Publishing at QoS 0");
+//   uint16_t packetIdPub1 = mqttClient.publish("andre.dantas@isd.org.br/test/lol", 1, true, "test 2");
+//   Serial.print("Publishing at QoS 1, packetId: ");
+//   Serial.println(packetIdPub1);
+//   uint16_t packetIdPub2 = mqttClient.publish("andre.dantas@isd.org.br/test/lol", 2, true, "test 3");
+//   Serial.print("Publishing at QoS 2, packetId: ");
+//   Serial.println(packetIdPub2);
+// }
 
+// void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
+//   Serial.println("Disconnected from MQTT.");
 
-// void setup(){ 
-//     Serial.begin(115200);
-//     dispositivo.startLoop();  
-
-
-//     Serial.begin(115200);
-
-    
-//     dispositivo.getPID(0).setParams(1,0.1,0); dispositivo.getPID(0).setSampleTime(1); dispositivo.getPID(0).setLimits(1.1,1.5);
-//     dispositivo.getPID(1).setParams(1,0.1,0); dispositivo.getPID(1).setSampleTime(1); dispositivo.getPID(1).setLimits(1.1,1.8);
-//     //sensors.init();
-//     std::cout << "Entrou1" << std::endl;
-//     wifi->connect(wifiCallback);
-//     std::cout << "Entrou6" << std::endl;
-//     wifi->initializeComunication(); 
-
-//     // initDMP6(gpio_num_t(35));
+//   if (WiFi.isConnected()) {
+//     xTimerStart(mqttReconnectTimer, 0);
 //   }
-// int i = 0;
-// void loop(){
-//     // if(readDMP6())
-//     //     std::cout << OUTPUT_YAWPITCHROLL() * 180/M_PI << std::endl;
+// }
+
+// void onMqttSubscribe(uint16_t packetId, uint8_t qos) {
+//   Serial.println("Subscribe acknowledged.");
+//   Serial.print("  packetId: ");
+//   Serial.println(packetId);
+//   Serial.print("  qos: ");
+//   Serial.println(qos);
+// }
+
+// void onMqttUnsubscribe(uint16_t packetId) {
+//   Serial.println("Unsubscribe acknowledged.");
+//   Serial.print("  packetId: ");
+//   Serial.println(packetId);
+// }
+
+// void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
+//   Serial.println("Publish received.");
+//   Serial.print("  topic: ");
+//   Serial.println(topic);
+//   Serial.print("  qos: ");
+//   Serial.println(properties.qos);
+//   Serial.print("  dup: ");
+//   Serial.println(properties.dup);
+//   Serial.print("  retain: ");
+//   Serial.println(properties.retain);
+//   Serial.print("  len: ");
+//   Serial.println(len);
+//   Serial.print("  index: ");
+//   Serial.println(index);
+//   Serial.print("  total: ");
+//   Serial.println(total);
+// }
+
+// void onMqttPublish(uint16_t packetId) {
+//   Serial.println("Publish acknowledged.");
+//   Serial.print("  packetId: ");
+//   Serial.println(packetId);
+// }
+
+// void setup() {
+//   Serial.begin(115200);
+//   Serial.println();
+//   Serial.println();
+
+//   mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
+//   wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
+
+//   WiFi.onEvent(WiFiEvent);
+
+//   mqttClient.onConnect(onMqttConnect);
+//   mqttClient.onDisconnect(onMqttDisconnect);
+//   mqttClient.onSubscribe(onMqttSubscribe);
+//   mqttClient.onUnsubscribe(onMqttUnsubscribe);
+//   mqttClient.onMessage(onMqttMessage);
+//   mqttClient.onPublish(onMqttPublish);
+//   mqttClient.setServer("maqiatto.com", MQTT_PORT);
+//   mqttClient.setCredentials("andre.dantas@isd.org.br", "12345678");
+
+//   connectToWifi();
+// }
+
+// void loop() {
 // }

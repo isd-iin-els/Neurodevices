@@ -35,24 +35,26 @@ void openLoopFesStop(){
     
 }
 
-String openLoopFesUpdate(void* data, size_t len) {
-  char* d = reinterpret_cast<char*>(data); String msg,answer;
-  for (size_t i = 0; i < len; ++i) msg += d[i];
-  uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
-  msg = msg.substring(index+1,msg.length());
-  LinAlg::Matrix<double> code = msg.c_str();
-
-  if (op.toInt() == 2){
-    Serial.print("Operation 2, received data: "); Serial.println(msg);
+String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+  // char* d = reinterpret_cast<char*>(data); String msg,answer;
+  // for (size_t i = 0; i < len; ++i) msg += d[i];
+  // uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
+  // msg = msg.substring(index+1,msg.length());
+  // LinAlg::Matrix<double> code = msg.c_str();
+  String answer;
+  if (operation == OPENLOOPFESUPDATE_MSG){
+    const char *msg = doc["m"];
+    LinAlg::Matrix<double> code = msg;
+    // Serial.print("Operation 2, received data: "); Serial.println(msg);
     // if(dispositivo.stopLoopFlag){
     //   dispositivo.stopLoopFlag = false;
     //   dispositivo.timeOnAndPeriodUpdate(code(0,code.getNumberOfColumns()-2),code(0,code.getNumberOfColumns()-1));
     //   dispositivo.startLoop();
     // }
     
-    for(uint8_t i = 0; i < code.getNumberOfColumns()-2; ++i)
+    for(uint8_t i = 0; i < code.getNumberOfColumns(); ++i)
       dispositivo.fes[i].setPowerLevel(code(0,i));  
-    openLoopFesInit(code(0,code.getNumberOfColumns()-2),code(0,code.getNumberOfColumns()-1));
+    openLoopFesInit(doc["t"],doc["p"]);
 
     
     if(!noAnswer)
@@ -63,15 +65,16 @@ String openLoopFesUpdate(void* data, size_t len) {
   return answer;
 }
 
-String stopOpenLoopFes(void* data, size_t len) {
-  char* d = reinterpret_cast<char*>(data); String msg,answer;
-  for (size_t i = 0; i < len; ++i) msg += d[i];
-  uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
-  msg = msg.substring(index+1,msg.length());
-  LinAlg::Matrix<double> code = msg.c_str();
+String answer;
+String stopOpenLoopFes(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+  // char* d = reinterpret_cast<char*>(data); String msg,answer;
+  // for (size_t i = 0; i < len; ++i) msg += d[i];
+  // uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
+  // msg = msg.substring(index+1,msg.length());
+  // LinAlg::Matrix<double> code = msg.c_str();
 
-  if (op.toInt() == 8){
-    Serial.print("Operation 8, received data: "); Serial.println(msg);
+  if (operation == STOPOPENLOOPFES_MSG){
+    // Serial.print("Operation 8, received data: "); Serial.println(msg);
     openLoopFesStop();
     if(!noAnswer)
       answer += "Valores de estimulacao alterados\r\n";
