@@ -1,3 +1,6 @@
+#ifndef sendimudata_h
+#define sendimudata_h
+
 #include <sstream>
 #include <Arduino.h>
 #include <AsyncTCP.h>
@@ -32,6 +35,24 @@ volatile bool mpu6050Flag = false, gy80Flag = false;
 // 		return atan2(sin(roll)*magz - cos(roll)*magy,	cos(pitch)*magx + sin(roll)*sin(pitch)*magy + cos(roll)*sin(pitch)*magz);
 //     //return atan2(magy,magx); 
 // }
+
+static String getIMUData(){
+  std::stringstream ss; 
+  if(mpu6050Flag){
+    getEulerAngles();
+    ss << mpuData(0,0) << "," << mpuData(0,1)  << "," << mpuData(0,2) << std::endl;
+  }
+  else if(gy80Flag){
+    gyData = sensors.updateRaw();
+    ss <<= gyData;
+    ss << std::endl;
+  }
+  else{
+    ss << 1.0 << "," << 2.0 << "," << 3.0 << "," << 4.0 
+                              << "," << 5.0 << "," << 6.0 << "," << 7.0 << "," << 8.0 << "," << 9.0 << std::endl;
+  }
+  return ss.str().c_str();
+}
 
 static void IMUDataLoop(void *param){
   
@@ -138,3 +159,4 @@ String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
   return answer;
 }
 
+#endif

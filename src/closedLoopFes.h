@@ -1,8 +1,6 @@
 #ifndef closedLoopFes_h
 #define closedLoopFes_h
 #include "openLoopFes.h"
-#include "SistemasdeControle/embeddedTools/sensors/sensorfusion.h"
-#include "mpu6050Config.h"
 
 LinAlg::Matrix<double> closedLoop_gyData(3,1);
 
@@ -60,21 +58,10 @@ void IRAM_ATTR TwoDOFLimbControlLoop(void *param){
 }
 
 String TwoDOFLimbFesControl(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
-  // char* d = reinterpret_cast<char*>(data); String msg,answer;
-  // for (size_t i = 0; i < len; ++i) msg += d[i];
-  // uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
-  // msg = msg.substring(index+1,msg.length());
-  // LinAlg::Matrix<double> code = msg.c_str();
-  // std::cout << code << std::endl; 
 
   String answer;
   if (operation == CLOSEDLOOPFESCONTROL_MSG && !closedLoop_flag){
-    // Serial.print("Operation 3, received data: "); Serial.println(msg);
     closedLoop_flag = true;
-    // const char *msg = doc["m"];
-    // LinAlg::Matrix<double> code = msg;
-    // sensors.init();
-    // dispositivo.resetTimeOnAndPeriod(code(0,3),code(0,4));
     mpuInit();
     openLoopFesInit(doc["Ton"], doc["period"]);
     

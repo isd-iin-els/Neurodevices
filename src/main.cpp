@@ -12,7 +12,7 @@
 #include "blinkled.h"
 // #include "fesBike.h"
 // #include "NBStimulator.h"
-// #include "mp_closedLoopFes.h"
+#include "mp_closedLoopFes.h"
 // #include "estimuladorBN.h"
 
 void setup() {
@@ -30,9 +30,9 @@ void setup() {
   addFunctions("whoAmI",whoAmI);
   addFunctions("blinkMe",blinkMe);
   // addFunctions("neurogenic_bladder_init",neurogenic_bladder_init);
-  // addFunctions("MP_PIDSclosedLoopFesmpreferenceUpdate",MP_PIDSclosedLoopFesmpreferenceUpdate);
-  // addFunctions("TwoDOFLimbMP_PIDSFes",TwoDOFLimbMP_PIDSFes);
-  // addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSParametersUpdate);
+  addFunctions("MP_PIDSclosedLoopFesmpreferenceUpdate",MP_PIDSFesReferenceUpdate);
+  addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSTwoDOFLimbFes);
+  addFunctions("MP_PIDSParametersUpdate",MP_PIDSParametersUpdate);
 
   // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
   // analogSetAttenuation((adc_attenuation_t) ADC_ATTEN_0db);
@@ -46,7 +46,7 @@ void setup() {
     return;
   }
   std::stringstream ss;
-  ss << "{\"command\":\"registerClient\"," << "\"Device IP\":\"" << WiFi.localIP().toString().c_str()<< "\"}"; 
+  ss << "{\"api_command\":\"registerClient\"," << "\"Device IP\":\"" << WiFi.localIP().toString().c_str()<< "\"}"; 
   Serial.println("Connected to server successful!");
 
   client.print(ss.str().c_str());
