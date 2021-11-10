@@ -3,8 +3,6 @@
 
 #include "SistemasdeControle/headers/primitiveLibs/LinAlg/matrix.h"
 #include "SistemasdeControle/embeddedTools/signalAnalysis/systemLoop.h"
-#include "wifistaTCP.h"
-#include "SistemasdeControle/embeddedTools/sensors/sensorfusion.h"
 #include "sendIMUData.h"
 
 volatile bool openLoop_flag = false, sensor_flag = false;

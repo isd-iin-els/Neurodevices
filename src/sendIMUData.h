@@ -5,7 +5,13 @@
 #include <Arduino.h>
 #include <AsyncTCP.h>
 #include "WiFi.h"
-#include "wifistaTCP.h"
+#ifdef WiFistaTCP_h
+  #include "wifistaTCP.h"
+#endif
+#ifdef WiFistaMQTT_h
+  #include "wifistaMQTT.h"
+#endif
+
 // #include "mpuDMP6.h"
 #include "mpu6050Config.h"
 // #define M_PI    3.14159265358979323846
@@ -73,10 +79,15 @@ static void IMUDataLoop(void *param){
   }
   else{
     IMUDataLoop_counter++;
-    ss << IMUDataLoop_counter << "," << 1.0 << "," << 2.0 << "," << 3.0 << "," << 4.0 
-                              << "," << 5.0 << "," << 6.0 << "," << 7.0 << "," << 8.0 << "," << 9.0 << std::endl;
+    ss << IMUDataLoop_counter << "," << 1.0122 << "," << 2.0122 << "," << 3.0122 << "," << 4.0122 
+                              << "," << 5.0122 << "," << 6.0122 << "," << 7.0122 << "," << 8.0122 << "," << 9.0122 << std::endl;
   }
-  client->write(ss.str().c_str());
+  #ifdef WiFistaTCP_h
+    client->write(ss.str().c_str());
+  #endif
+  #ifdef WiFistaMQTT_h
+    mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());
+  #endif
   Serial.println(ss.str().c_str());
   //  if(readDMP6()){
   //     // gyData = OUTPUT_YAWPITCHROLL() * 180/M_PI;
@@ -104,7 +115,13 @@ static void IMUDataLoop(void *param){
 
   if(IMUDataLoop_counter==(int)param)
   {
-    client->write("stop\r\n");
+    #ifdef WiFistaTCP_h
+      client->write("stop\r\n");
+    #endif
+    #ifdef WiFistaMQTT_h
+      mqttClient.publish(devstream.str().c_str(), 1, true, "stop\r\n");
+    #endif
+
     printf("stop\r\n"); //Print information
     ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
     ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
@@ -114,20 +131,12 @@ static void IMUDataLoop(void *param){
 }
 
 String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
-  // char* d = reinterpret_cast<char*>(data); String msg,answer;
-  // for (size_t i = 0; i < len; ++i) msg += d[i];
-  // uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
-  // msg = msg.substring(index+1,msg.length());
-  // LinAlg::Matrix<double> code = msg.c_str();
-  // std::cout << code;
   String answer;
   if (operation == IMUSENDINIT_MSG && !IMUDataLoop_flag){
     uint8_t sensorType = doc["sensorType"];
     uint16_t freq = doc["frequence"];
     uint16_t timeSimulation = doc["simulationTime"];
 
-    // LinAlg::Matrix<double> code = msg.c_str();
-    // Serial.print("Operation 1, received data: "); Serial.println(msg);
     
     if(sensorType == 1)
       mpu6050Flag = mpuInit();
@@ -151,8 +160,7 @@ String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
     
     
     std::cout << "Tudo Inicializado\n";
-    if(!noAnswer)
-      answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
+    answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
   }
   else
     answer += "";
