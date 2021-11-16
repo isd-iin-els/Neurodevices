@@ -6,7 +6,7 @@ esp_timer_handle_t blink_periodic_timer = nullptr;
 volatile bool level = false;
 void IRAM_ATTR blink(void *param){
   blink_Counter++;
-  gpio_set_level(gpio_num_t (2), level);
+  // gpio_set_level(gpio_num_t (2), level);
   level = !level;
   dispositivo.fes[2].setPowerLevel(0.1*level);
   if(blink_Counter==(int)param)

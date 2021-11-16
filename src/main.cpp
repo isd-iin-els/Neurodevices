@@ -67,7 +67,7 @@
 #include <sendIMUData.h>
 #include "openLoopFes.h"
 #include "closedLoopFes.h"
-// #include "blinkled.h"
+#include "blinkled.h"
 
 
 void setup() {
@@ -79,10 +79,10 @@ void setup() {
   addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);
   addFunctions("closedLoopFesReferenceUpdate",CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS,closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
   addFunctions("PIDsParametersUpdate",PIDSPARAMETERSUPDATE_PARAMETERS,PIDsParametersUpdate);//Fazer isso para o caso geral]
-
+  addFunctions("blinkMe",BLINKME_PARAMETERS,blinkMe);
   // // addFunctions("fesBikeStart",fesBikeStart);
   
-  // addFunctions("blinkMe",BLINKME_PARAMETERS,blinkMe);
+  
   // // addFunctions("neurogenic_bladder_init",neurogenic_bladder_init);
   // addFunctions("MP_PIDSclosedLoopFesmpreferenceUpdate",MP_PIDSFesReferenceUpdate);
   // addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSTwoDOFLimbFes);
