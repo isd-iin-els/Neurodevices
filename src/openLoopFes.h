@@ -9,10 +9,12 @@ volatile bool openLoop_flag = false, sensor_flag = false;
 
 // uint8_t modPin[4]    = {27,4,12,5},
 //         levelPin[4]  = {13,19,2,18};
-uint8_t modPin[4]    = {27,19,12,18},
+// uint8_t modPin[4]    = {27,19,12,18},//cc
+//         levelPin[4]  = {13,4,2,5};]
+uint8_t modPin[8]    = {27,19,12,18,23,14,26,25},//ca
         levelPin[4]  = {13,4,2,5};
 
-Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000);
+Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000,200,20000,true);
 
 void openLoopFesInit(uint16_t ton, uint16_t period){
     openLoop_flag = true;
