@@ -15,6 +15,7 @@
 #define MP_PIDSTWODOFLIMBFES_MSG 15
 #define RENAMETOPICS_MSG 16
 #define ALIVE_MSG 17
+#define OPENLOOPTONFREQUPDATE_MSG 18
 
 #define RESTART_PARAMETERS                      "{\"op\":7}"
 #define WHOAMI_PARAMETERS                       "{\"op\":9}"
@@ -30,5 +31,5 @@
 #define MP_PIDSTWODOFLIMBFES_PARAMETERS 15
 #define RENAMETOPICS_PARAMETERS  "{\"op\":16,\"topic\":\"string\"}"
 #define ALIVE_PARAMETERS "{\"op\":17}"
-
+#define OPENLOOPTONFREQUPDATE_PARAMETERS "{\"op\":18,\"t\":\"Ton Uint\",\"p\":\"Period Uint\"}"
 #endif

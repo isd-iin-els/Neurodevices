@@ -76,6 +76,7 @@ void setup() {
   addFunctions("imuSendInit",IMUSENDINIT_PARAMETERS,imuSendInit);  //sensors.init();
   addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes);
   addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate);
+  addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate);
   addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);
   addFunctions("closedLoopFesReferenceUpdate",CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS,closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
   addFunctions("PIDsParametersUpdate",PIDSPARAMETERSUPDATE_PARAMETERS,PIDsParametersUpdate);//Fazer isso para o caso geral]

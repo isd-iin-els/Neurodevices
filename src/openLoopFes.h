@@ -16,7 +16,7 @@ uint8_t modPin[8]    = {27,19,12,18,23,14,26,25},//ca
 
 Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000,200,20000,true);
 
-void openLoopFesInit(uint16_t ton, uint16_t period){
+void openLoopFesInit(uint16_t ton, uint32_t period){
     openLoop_flag = true;
     if(dispositivo.stopLoopFlag){
       dispositivo.stopLoopFlag = false;
@@ -33,10 +33,23 @@ void openLoopFesStop(){
     if(!dispositivo.stopLoopFlag){
       for(uint8_t i = 0; i < 4; ++i)
         dispositivo.fes[i].setPowerLevel(0); 
-  
+
       dispositivo.stopLoopFlag = true;
     }
     
+}
+
+String openLoopTonFreqUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+
+  String answer;
+  if (operation == OPENLOOPTONFREQUPDATE_MSG){
+    openLoopFesStop();
+    openLoopFesInit(doc["t"],doc["p"]);
+    answer += "Ton and Frequency sucessfully updated!";
+  }
+  else
+    answer += "";
+  return answer;
 }
 
 String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {

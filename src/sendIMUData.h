@@ -119,7 +119,7 @@ static void IMUDataLoop(void *param){
       client->write("stop\r\n");
     #endif
     #ifdef WiFistaMQTT_h
-      mqttClient.publish(devstream.str().c_str(), 1, true, "stop\r\n");
+      mqttClient.publish(devstream.str().c_str(), 0, true, "stop\r\n");
     #endif
 
     printf("stop\r\n"); //Print information
@@ -138,11 +138,17 @@ String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
     uint16_t timeSimulation = doc["simulationTime"];
 
     
-    if(sensorType == 1)
+
+    if(sensorType == 1 && !mpu6050Flag){
+      std::cout << "inicializando sensor"<< "\n";
       mpu6050Flag = mpuInit();
-    else if(sensorType == 2)
+    }
+    else if(sensorType == 2 && !gy80Flag){
+      std::cout << "inicializando sensor"<< "\n";
       gy80Flag = sensors.init();
+    }
     
+    std::cout << "sensor: " << gy80Flag << "\n"; 
     // initDMP6(gpio_num_t(23));
     // gy80Flag = sensors.init();
     // mpu6050Flag = mpuInit();
