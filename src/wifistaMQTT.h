@@ -14,13 +14,12 @@ extern "C" {
 }
 #include <AsyncMqttClient.h>
 
-#define WIFI_SSID "CAMPUS"
-#define WIFI_PASSWORD "IINELS_educacional"
-// #define WIFI_SSID "ESP"
-// #define WIFI_PASSWORD "12345678"
-
-#define MQTT_HOST IPAddress(10, 1, 1, 169) //broker.emqx.io // pcIINELS
-// #define MQTT_HOST IPAddress(192, 168, 137, 1) //broker.emqx.io
+// #define WIFI_SSID "CAMPUS"
+// #define WIFI_PASSWORD "IINELS_educacional"
+// #define MQTT_HOST IPAddress(10, 1, 1, 169) //broker.emqx.io // pcIINELS / old (10, 1, 1, 169) 
+#define WIFI_SSID "ISDORTECH"
+#define WIFI_PASSWORD "12345678"
+#define MQTT_HOST IPAddress(192, 168, 137, 1) //broker.emqx.io
 #define MQTT_PORT 1883
 
 AsyncMqttClient mqttClient;
