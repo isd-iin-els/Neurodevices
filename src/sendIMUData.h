@@ -115,12 +115,12 @@ static void IMUDataLoop(void *param){
 
   if(IMUDataLoop_counter==(int)param)
   {
-    #ifdef WiFistaTCP_h
-      client->write("stop\r\n");
-    #endif
-    #ifdef WiFistaMQTT_h
-      mqttClient.publish(devstream.str().c_str(), 0, true, "stop\r\n");
-    #endif
+    // #ifdef WiFistaTCP_h
+    //   client->write("stop\r\n");
+    // #endif
+    // #ifdef WiFistaMQTT_h
+    //   mqttClient.publish(devstream.str().c_str(), 0, true, "stop\r\n");
+    // #endif
 
     printf("stop\r\n"); //Print information
     ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
