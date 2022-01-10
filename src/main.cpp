@@ -68,15 +68,28 @@
 #include "openLoopFes.h"
 #include "closedLoopFes.h"
 #include "blinkled.h"
-
+EEPROMClass  accelM("eeprom0",6);
+EEPROMClass  gyrM("eeprom1",6);
+EEPROMClass  magM("eeprom2",6);
 
 void setup() {
+
+  sleep(2);
   wifiSTAMQTTInit();
+  addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate);
+  addFunctions("restart",RESTART_PARAMETERS,restart);
+  addFunctions("alive",ALIVE_PARAMETERS,alive);
   addFunctions("whoAmI",WHOAMI_PARAMETERS,whoAmI);
   addFunctions("imuSendInit",IMUSENDINIT_PARAMETERS,imuSendInit);  //sensors.init();
+  addFunctions("imuSendStop",IMUSENDSTOP_PARAMETERS,imuSendStop);
+  addFunctions("imuAccelerometerCalibration",IMUACCELEROMETERCALIBRATION_PARAMETERS,imuAccelerometerCalibration);  //sensors.init();
+  addFunctions("imuGiroscopeCalibration",IMUGIROSCOPECALIBRATION_PARAMETERS,imuGiroscopeCalibration);  //sensors.init();
+  addFunctions("imuMagnetometerCalibration",IMUMAGNETOMETERCALIBRATION_PARAMETERS,imuMagnetometerCalibration);  //sensors.init();
   addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes);
-  addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate);
   addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate);
+
+
+
   // addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);
   // addFunctions("closedLoopFesReferenceUpdate",CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS,closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
   // addFunctions("PIDsParametersUpdate",PIDSPARAMETERSUPDATE_PARAMETERS,PIDsParametersUpdate);//Fazer isso para o caso geral]

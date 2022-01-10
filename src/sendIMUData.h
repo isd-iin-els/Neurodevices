@@ -17,6 +17,7 @@
 // #define M_PI    3.14159265358979323846
 #include "SistemasdeControle/headers/primitiveLibs/LinAlg/matrix.h"
 #include "SistemasdeControle/embeddedTools/sensors/sensorfusion.h"
+#include <esp_ipc.h>
 
 LinAlg::Matrix<double> gyData; 
 double freq = 75; 
@@ -54,7 +55,7 @@ static String getIMUData(){
     ss << std::endl;
   }
   else{
-    ss << 1.0 << "," << 2.0 << "," << 3.0 << "," << 4.0 
+    ss << 2.0 << "," << 3.0 << "," << 4.0 
                               << "," << 5.0 << "," << 6.0 << "," << 7.0 << "," << 8.0 << "," << 9.0 << std::endl;
   }
   return ss.str().c_str();
@@ -68,18 +69,20 @@ static void IMUDataLoop(void *param){
   if(mpu6050Flag){
     IMUDataLoop_counter++;
     getEulerAngles();
-    ss << IMUDataLoop_counter << "," << mpuData(0,0) << "," << mpuData(0,1)  << "," << mpuData(0,2) << std::endl;
+    // ss << IMUDataLoop_counter << "," << mpuData(0,0) << "," << mpuData(0,1)  << "," << mpuData(0,2) << std::endl;
+    ss << mpuData(0,0) << "," << mpuData(0,1)  << "," << mpuData(0,2) << std::endl;
   }
   else if(gy80Flag){
     IMUDataLoop_counter++;
     gyData = sensors.updateRaw();
-    ss << IMUDataLoop_counter << "," ;
+    // ss << IMUDataLoop_counter << "," ;
     ss <<= gyData;
     ss << std::endl;
   }
   else{
     IMUDataLoop_counter++;
-    ss << IMUDataLoop_counter << "," << 1.0122 << "," << 2.0122 << "," << 3.0122 << "," << 4.0122 
+    // ss << IMUDataLoop_counter << "," << 1.0122 << "," << 2.0122 << "," << 3.0122 << "," << 4.0122 
+    ss << IMUDataLoop_counter << 2.0122 << "," << 3.0122 << "," << 4.0122 
                               << "," << 5.0122 << "," << 6.0122 << "," << 7.0122 << "," << 8.0122 << "," << 9.0122 << std::endl;
   }
   #ifdef WiFistaTCP_h
@@ -88,7 +91,7 @@ static void IMUDataLoop(void *param){
   #ifdef WiFistaMQTT_h
     mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());
   #endif
-  Serial.println(ss.str().c_str());
+  // Serial.println(ss.str().c_str());
   //  if(readDMP6()){
   //     // gyData = OUTPUT_YAWPITCHROLL() * 180/M_PI;
   //     gyData = OUTPUT_RAWACCEL();
@@ -110,10 +113,10 @@ static void IMUDataLoop(void *param){
   //ss << gx << ",    " << gy << ",    " << gz << "\r\n";//gyData(0,0) << ',    ' << gyData(0,1) << ',    ' << gyData(0,2) << ',    ' << gx*rad2degree << ',    ' << gy*rad2degree << ',    ' << gz*rad2degree << ',    ' << gyData(0,6) << ',    ' << gyData(0,7) << ',    ' << gyData(0,8) << '\r\n';
 
    
-    // std::cout << ss.str().c_str() << std::endl;
+    std::cout << ss.str().c_str() << std::endl;
   // }
 
-  if(IMUDataLoop_counter==(int)param)
+  if(IMUDataLoop_counter>=(int)param)
   {
     // #ifdef WiFistaTCP_h
     //   client->write("stop\r\n");
@@ -122,12 +125,28 @@ static void IMUDataLoop(void *param){
     //   mqttClient.publish(devstream.str().c_str(), 0, true, "stop\r\n");
     // #endif
 
-    printf("stop\r\n"); //Print information
+    // printf("stop\r\n"); //Print information
     ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
     ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
     IMUDataLoop_periodic_timer = nullptr;
     IMUDataLoop_flag = false;
   }
+}
+
+String imuSendStop(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+  String answer;
+  if (operation == IMUSENDSTOP__MSG && !IMUDataLoop_flag){
+
+      // ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
+      // ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
+      // IMUDataLoop_periodic_timer = nullptr;
+      // IMUDataLoop_flag = false;
+      IMUDataLoop_counter = -1;
+      answer = "IMU Stopped";
+      std::cout << IMUDataLoop_counter << " " << answer.c_str() << std::endl;
+  } else
+    answer += "";
+  return answer;
 }
 
 String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
@@ -167,6 +186,221 @@ String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
     
     std::cout << "Tudo Inicializado\n";
     answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
+  }
+  else
+    answer += "";
+  return answer;
+}
+
+// void calibAcc(void *arg){
+//     LinAlg::Matrix<int16_t> raw(1,3);
+//     sensors.setAccOffset(raw);
+//     gyData = sensors.updateRaw();
+//     for (uint8_t i = 0; i< 100; ++i){
+//       gyData += sensors.updateRaw()/100.0;
+//       // LinAlg::Matrix<double> read = sensors.updateRaw();
+//       // for(int8_t j = 0; j< read)
+//       // gyData += 
+//     }
+//     raw(0,0) = (gyData(0,0)-1)/0.00390625;
+//     raw(0,1) = gyData(0,1)/0.00390625;
+//     raw(0,2) = gyData(0,2)/0.00390625;
+    
+//     sensors.setAccOffset(raw);
+//     sensors.saveAccOffset();
+//     gyData = sensors.updateRaw();
+//     std::cout << gyData << std::endl;
+//     vTaskDelete(NULL);
+// }
+
+String imuAccelerometerCalibration(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+  String answer;
+  if (operation == IMUACCELEROMETERCALIBRATION_MSG && !IMUDataLoop_flag){
+    uint8_t sensorType = doc["sensorType"];
+    uint16_t freq = doc["frequence"];
+
+    if(sensorType == 1 && !mpu6050Flag){
+      std::cout << "inicializando sensor"<< "\n";
+      mpu6050Flag = mpuInit();
+    }
+    else if(sensorType == 2){
+      std::cout << "Calibrando Acelerometro"<< "\n";
+      gy80Flag = sensors.init();
+      if(gy80Flag){
+        LinAlg::Matrix<int16_t> raw(1,3);
+        sensors.setAccOffset(raw);
+        gyData = sensors.updateRaw();
+        std::cout << "Antes de Calibrar"<< gyData << "\n";
+        for (uint8_t i = 0; i< 100; ++i){
+          gyData += sensors.updateRaw();
+          delay(14);
+          // LinAlg::Matrix<double> read = sensors.updateRaw();
+          // for(int8_t j = 0; j< read)
+          // gyData += 
+        }
+        gyData /= 0.390625;
+        std::cout << "Valor medio Lido: "<< gyData << "\n";
+        raw(0,0) = (gyData(0,0)-256);
+        raw(0,1) = gyData(0,1);
+        raw(0,2) = gyData(0,2);
+        
+        sensors.setAccOffset(raw);
+        sensors.saveAccOffset();
+        gyData = sensors.updateRaw();
+        std::cout << "Depois de Calibrar"<< gyData << std::endl;
+      }
+        // xTaskCreatePinnedToCore(calibAcc, 
+        //               "CalibAcc", 
+        //               16384, 
+        //               NULL, 
+        //               4, 
+        //               NULL,
+        //               APP_CPU_NUM);
+    }
+    
+    // std::cout << "sensor: " << gy80Flag << "\n"; 
+    answer += "Acelerômetro calibrado com Sucesso\r\n";
+  }
+  else
+    answer += "";
+  return answer;
+}
+
+// void calibGyr(void *arg){
+//     LinAlg::Matrix<int16_t> raw(1,3);
+//     sensors.setGyrOffset(raw);
+//     gyData = sensors.updateRaw();
+//     for (uint8_t i = 0; i< 100; ++i){
+//       gyData += sensors.updateRaw()/100.0;
+//     }
+//     raw(0,0) = gyData(0,3)/0.00875;
+//     raw(0,1) = gyData(0,4)/0.00875;
+//     raw(0,2) = gyData(0,5)/0.00875;
+//     gyData = sensors.updateRaw();
+    
+//     sensors.setGyrOffset(raw);
+//     sensors.saveGyrOffset();
+
+//     std::cout << gyData << std::endl;
+//     vTaskDelete(NULL);
+// }
+
+String imuGiroscopeCalibration(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+  String answer;
+  if (operation == IMUGIROSCOPECALIBRATION_MSG && !IMUDataLoop_flag){
+    uint8_t sensorType = doc["sensorType"];
+    uint16_t freq = doc["frequence"];
+
+    if(sensorType == 1 && !mpu6050Flag){
+      std::cout << "inicializando sensor"<< "\n";
+      mpu6050Flag = mpuInit();
+    }
+    else if(sensorType == 2){
+      std::cout << "Calibrando Giroscopio"<< "\n";
+      gy80Flag = sensors.init();
+      if(gy80Flag){
+        LinAlg::Matrix<int16_t> raw(1,3);
+        sensors.setGyrOffset(raw);
+        gyData = sensors.updateRaw();
+        std::cout << "Antes de Calibrar"<< gyData << "\n";
+        for (uint8_t i = 0; i< 100; ++i){
+          gyData += sensors.updateRaw();
+          delay(14);
+        }
+        gyData /= 0.875;
+        std::cout << "Valor medio Lido: "<< gyData << "\n";
+        
+        raw(0,0) = gyData(0,3);
+        raw(0,1) = gyData(0,4);
+        raw(0,2) = gyData(0,5);
+    
+        sensors.setGyrOffset(raw);
+        sensors.saveGyrOffset();
+        gyData = sensors.updateRaw();
+        std::cout << "Valor de Comparacao"<< gyData/0.00875 << std::endl;
+        std::cout << "Depois de Calibrar"<< gyData << std::endl;
+      }
+      // xTaskCreatePinnedToCore(calibGyr, 
+      //                   "CalibGyr", 
+      //                   16384, 
+      //                   NULL, 
+      //                   4, 
+      //                   NULL,
+      //                   APP_CPU_NUM);
+    }
+  
+    answer += "Giroscópio calibrado com Sucesso\r\n";
+  }
+  else
+    answer += "";
+  return answer;
+}
+
+
+
+void calibMag(void *arg){
+   int32_t min_x = 0, max_x = 0, min_y = 0, max_y = 0, min_z = 0, max_z = 0;
+   LinAlg::Matrix<int16_t> raw(1,3),mag_calib(1,3);
+   sensors.setGyrOffset(raw);
+    for (unsigned i = 0; i < 1200; ++i)
+    {
+        gyData = sensors.updateRaw();
+        raw(0,0) = gyData(0,6)/0.92;
+        raw(0,1) = gyData(0,7)/0.92;
+        raw(0,2) = gyData(0,8)/0.92;
+        if (raw(0,0) < min_x)
+            min_x = raw(0,0);
+        if ( raw(0,1) < min_y)
+            min_y =  raw(0,1);
+        if (raw(0,2) < min_z)
+            min_z = raw(0,2);
+
+        if (raw(0,0) > max_x)
+            max_x = raw(0,0);
+        if ( raw(0,1) > max_y)
+            max_y =  raw(0,1);
+        if (raw(0,2) > max_z)
+            max_z = raw(0,2);
+
+        vTaskDelay(14 / portTICK_PERIOD_MS);
+        // printf("%d\n",i);
+        std::cout << raw << min_x << max_x << std::endl;
+    }
+
+    // printf("Aqui\n");
+    mag_calib(0,0) = (max_x + min_x) / 2;
+    mag_calib(0,1) = (max_y + min_y) / 2;
+    mag_calib(0,2) = (max_z + min_z) / 2;
+    sensors.setMagOffset(mag_calib);
+    sensors.saveMagOffset();
+    vTaskDelete(NULL);
+}
+
+String imuMagnetometerCalibration(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+  String answer;
+  if (operation == IMUMAGNETOMETERCALIBRATION_MSG && !IMUDataLoop_flag){
+    uint8_t sensorType = doc["sensorType"];
+    uint16_t freq = doc["frequence"];
+
+    if(sensorType == 1 && !mpu6050Flag){
+      std::cout << "inicializando sensor"<< "\n";
+      mpu6050Flag = mpuInit();
+    }
+    else if(sensorType == 2){
+      std::cout << "Calibrando Magnetometro"<< "\n";
+      gy80Flag = sensors.init();
+      if(gy80Flag)
+        xTaskCreatePinnedToCore(calibMag, 
+                        "CalibMag", 
+                        16384, 
+                        NULL, 
+                        4, 
+                        NULL,
+                        APP_CPU_NUM);
+
+    }
+    
+    answer += "Magnetômetro calibrado com Sucesso\r\n";
   }
   else
     answer += "";

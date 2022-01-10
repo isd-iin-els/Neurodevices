@@ -16,6 +16,10 @@
 #define RENAMETOPICS_MSG 16
 #define ALIVE_MSG 17
 #define OPENLOOPTONFREQUPDATE_MSG 18
+#define IMUACCELEROMETERCALIBRATION_MSG 19
+#define IMUGIROSCOPECALIBRATION_MSG 20
+#define IMUMAGNETOMETERCALIBRATION_MSG 21
+#define IMUSENDSTOP__MSG 22
 
 #define RESTART_PARAMETERS                      "{\"op\":7}"
 #define WHOAMI_PARAMETERS                       "{\"op\":9}"
@@ -32,4 +36,8 @@
 #define RENAMETOPICS_PARAMETERS  "{\"op\":16,\"topic\":\"string\"}"
 #define ALIVE_PARAMETERS "{\"op\":17}"
 #define OPENLOOPTONFREQUPDATE_PARAMETERS "{\"op\":18,\"t\":\"Ton Uint\",\"p\":\"Period Uint\"}"
+#define IMUACCELEROMETERCALIBRATION_PARAMETERS "{\"op\":19,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
+#define IMUGIROSCOPECALIBRATION_PARAMETERS "{\"op\":20,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
+#define IMUMAGNETOMETERCALIBRATION_PARAMETERS "{\"op\":21,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
+#define IMUSENDSTOP_PARAMETERS                  "{\"op\":22}"
 #endif

@@ -106,7 +106,7 @@ String whoAmI(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation)
 
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD,(rand()%13)+1);
 }
 
 void connectToMqtt() {
@@ -197,10 +197,13 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
 
   // if(topico == cmd2dev.str().c_str()){
   uint8_t operation = doc["op"]; 
-  for (std::map<String,SDLEventFunction>::iterator it = functions.begin() ; it != functions.end(); ++it)
-    if(((it->second)(doc,operation)) != String())
-      mqttClient.publish(devans.str().c_str(), 1, true, ((it->second)(doc,operation)).c_str());
-  // }
+  for (std::map<String,SDLEventFunction>::iterator it = functions.begin() ; it != functions.end(); ++it){
+    String ans = ((it->second)(doc,operation));
+    if( ans != ""){
+      mqttClient.publish(devans.str().c_str(), 1, true, ans.c_str());
+      break;
+    }
+  }
 }
 
 void onMqttPublish(uint16_t packetId) {
@@ -214,8 +217,8 @@ void wifiSTAMQTTInit(){
   Serial.println();
   Serial.println();
 
-  mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(10000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
-  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(10000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
+  mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(1000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
+  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(20000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
 
   WiFi.onEvent(WiFiEvent);
 
@@ -236,8 +239,7 @@ void wifiSTAMQTTInit(){
   cmd2dev << "cmd2dev" << shortMacAddress.str().c_str();
   devans <<"dev" << shortMacAddress.str().c_str() << "ans";
   devstream <<"dev" << shortMacAddress.str().c_str() << "ss";
-  addFunctions("restart",RESTART_PARAMETERS,restart);
-  addFunctions("alive",ALIVE_PARAMETERS,alive);
+  
   // addFunctions("renameTopics",RENAMETOPICS_PARAMETERS,renameTopics);
 }
 

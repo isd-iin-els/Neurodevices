@@ -69,9 +69,10 @@ String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t 
       // if(sensorType == 1)
         // mpu6050Flag = mpuInit();
       // else if(sensorType == 2)
-        // gy80Flag = sensors.init();
+    gy80Flag = sensors.init();
 
     answer += getIMUData();
+    std::cout << answer.c_str() << std::endl; 
   }
   else
     answer += "";
