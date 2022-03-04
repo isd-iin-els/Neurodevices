@@ -68,6 +68,7 @@
 #include "openLoopFes.h"
 #include "closedLoopFes.h"
 #include "blinkled.h"
+#include "fesBike.h""
 EEPROMClass  accelM("eeprom0",6);
 EEPROMClass  gyrM("eeprom1",6);
 EEPROMClass  magM("eeprom2",6);
@@ -87,7 +88,7 @@ void setup() {
   addFunctions("imuMagnetometerCalibration",IMUMAGNETOMETERCALIBRATION_PARAMETERS,imuMagnetometerCalibration);  //sensors.init();
   addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes);
   addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate);
-
+  addFunctions("fesBikeStart",FESBIKESTART_PARAMETERS,fesBikeStart);
 
 
   // addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);

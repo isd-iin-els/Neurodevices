@@ -1,0 +1,3 @@
+[submodule "include/SistemasdeControle"]
+	path = include/SistemasdeControle
+	url = git@github.com:EngineeringLibrary/SistemasdeControle.git

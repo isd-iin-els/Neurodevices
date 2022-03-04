@@ -20,6 +20,7 @@
 #define IMUGIROSCOPECALIBRATION_MSG 20
 #define IMUMAGNETOMETERCALIBRATION_MSG 21
 #define IMUSENDSTOP__MSG 22
+#define FESBIKESTART_MSG 23
 
 #define RESTART_PARAMETERS                      "{\"op\":7}"
 #define WHOAMI_PARAMETERS                       "{\"op\":9}"
@@ -40,4 +41,5 @@
 #define IMUGIROSCOPECALIBRATION_PARAMETERS "{\"op\":20,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
 #define IMUMAGNETOMETERCALIBRATION_PARAMETERS "{\"op\":21,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
 #define IMUSENDSTOP_PARAMETERS                  "{\"op\":22}"
+#define FESBIKESTART_PARAMETERS                 "{\"op\":23,\"Ton\":\"Ton Uint\",\"period\":\"Period Uint\",\"frequence\":\"float\",\"simulationTime\":\"float\",\"fesCyclingMin\":\"float\",\"fesCyclingMax\":\"float\"}"
 #endif
