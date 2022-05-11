@@ -42,7 +42,7 @@ void getEulerAngles(){
     mpu.getEvent(&a, &g, &temp);
     mpuData(0,0) = get_pitch(a.acceleration.x, a.acceleration.y, a.acceleration.z);
     mpuData(0,1) = get_roll(a.acceleration.x, a.acceleration.y, a.acceleration.z);
-    if(mpuData(0,1) < 0) mpuData(0,1) = mpuData(0,1) +360;
+    // if(mpuData(0,1) < 0) mpuData(0,1) = mpuData(0,1) +360;
 }
 
 #endif

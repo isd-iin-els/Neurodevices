@@ -118,14 +118,6 @@ static void IMUDataLoop(void *param){
 
   if(IMUDataLoop_counter>=(int)param)
   {
-    // #ifdef WiFistaTCP_h
-    //   client->write("stop\r\n");
-    // #endif
-    // #ifdef WiFistaMQTT_h
-    //   mqttClient.publish(devstream.str().c_str(), 0, true, "stop\r\n");
-    // #endif
-
-    // printf("stop\r\n"); //Print information
     ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
     ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
     IMUDataLoop_periodic_timer = nullptr;
@@ -135,15 +127,16 @@ static void IMUDataLoop(void *param){
 
 String imuSendStop(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
   String answer;
-  if (operation == IMUSENDSTOP__MSG && !IMUDataLoop_flag){
-
-      // ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
-      // ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
-      // IMUDataLoop_periodic_timer = nullptr;
-      // IMUDataLoop_flag = false;
-      IMUDataLoop_counter = -1;
+  if (operation == IMUSENDSTOP__MSG && IMUDataLoop_flag){
+    if(IMUDataLoop_periodic_timer != nullptr){
+      ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
+      ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
+    }
+      IMUDataLoop_periodic_timer = nullptr;
+      IMUDataLoop_flag = false;
+      // IMUDataLoop_counter = -1;
       answer = "IMU Stopped";
-      std::cout << IMUDataLoop_counter << " " << answer.c_str() << std::endl;
+      // std::cout << IMUDataLoop_counter << " " << answer.c_str() << std::endl;
   } else
     answer += "";
   return answer;
@@ -154,7 +147,7 @@ String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
   if (operation == IMUSENDINIT_MSG && !IMUDataLoop_flag){
     uint8_t sensorType = doc["sensorType"];
     uint16_t freq = doc["frequence"];
-    uint16_t timeSimulation = doc["simulationTime"];
+    int64_t timeSimulation = doc["simulationTime"];
 
     
 
@@ -179,7 +172,7 @@ String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
     IMUDataLoop_flag = true;
     IMUDataLoop_periodic_timer_args.callback = &IMUDataLoop;
     IMUDataLoop_periodic_timer_args.name = "imuSendInit";
-    IMUDataLoop_periodic_timer_args.arg = (void*)((int)(timeSimulation*freq));
+    IMUDataLoop_periodic_timer_args.arg = (void*)((int64_t)(timeSimulation*freq));
     ESP_ERROR_CHECK(esp_timer_create(&IMUDataLoop_periodic_timer_args, &IMUDataLoop_periodic_timer));
     ESP_ERROR_CHECK(esp_timer_start_periodic(IMUDataLoop_periodic_timer, 1000000.0/freq));
     

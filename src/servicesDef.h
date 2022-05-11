@@ -29,7 +29,7 @@
 #define OPENLOOPFESUPDATE_PARAMETERS            "{\"op\":2,\"m\":\"Channel String Vector\",\"t\":\"Ton Uint\",\"p\":\"Period Uint\"}"
 #define STOPOPENLOOPFES_PARAMETERS              "{\"op\":8}"
 #define CLOSEDLOOPFESCONTROL_PARAMETERS         "{\"op\":3,\"simulationTime\":\"float\",\"controlSampleTime\":\"float\",\"sensorSampleTime\":\"float\",\"Ton\":\"float\",\"period\":\"float\",\"kp\":\"vectorfloat\",\"ki\":\"vectorfloat\",\"kd\":\"vectorfloat\",\"minInputLimit\":\"vectorfloat\",\"maxInputLimit\":\"vectorfloat\",\"ref\":\"vectorfloat\",\"operationalP\":\"vectorfloat\"}"
-#define CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS "{\"op\":4,\"ref\":\"vectorfloat\"}"
+#define CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS "{\"op\":4,\"r\":\"vectorfloat\"}"
 #define PIDSPARAMETERSUPDATE_PARAMETERS         "{\"op\":5,\"simulationTime\":\"float\",\"controlSampleTime\":\"float\",\"sensorSampleTime\":\"float\",\"Ton\":\"float\",\"period\":\"float\",\"kp\":\"vectorfloat\",\"ki\":\"vectorfloat\",\"kd\":\"vectorfloat\",\"minInputLimit\":\"vectorfloat\",\"maxInputLimit\":\"vectorfloat\",\"ref\":\"vectorfloat\",\"operationalP\":\"vectorfloat\"}"
 #define MP_PIDSPARAMETERSUPDATE_PARAMETERS 13
 #define MP_PIDSFESREFERENCEUPDATE_PARAMETERS 14

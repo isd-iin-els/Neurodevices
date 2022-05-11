@@ -190,6 +190,8 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   StaticJsonDocument<sizejson> doc;
   DeserializationError error = deserializeJson(doc, payload);
 
+  Serial.print(F("msg\n"));
+
   if (error) {
     Serial.print(F("deserializeJson() failed: "));
     Serial.println(error.f_str());

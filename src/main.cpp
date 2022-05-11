@@ -68,10 +68,10 @@
 #include "openLoopFes.h"
 #include "closedLoopFes.h"
 #include "blinkled.h"
-#include "fesBike.h""
-EEPROMClass  accelM("eeprom0",6);
-EEPROMClass  gyrM("eeprom1",6);
-EEPROMClass  magM("eeprom2",6);
+#include "fesBike.h"
+EEPROMClass  accelM("eeprom0");
+EEPROMClass  gyrM("eeprom1");
+EEPROMClass  magM("eeprom2");
 
 void setup() {
 
@@ -91,11 +91,11 @@ void setup() {
   addFunctions("fesBikeStart",FESBIKESTART_PARAMETERS,fesBikeStart);
 
 
-  // addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);
-  // addFunctions("closedLoopFesReferenceUpdate",CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS,closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
-  // addFunctions("PIDsParametersUpdate",PIDSPARAMETERSUPDATE_PARAMETERS,PIDsParametersUpdate);//Fazer isso para o caso geral]
+  addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);
+  addFunctions("closedLoopFesReferenceUpdate",CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS,closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
+  addFunctions("PIDsParametersUpdate",PIDSPARAMETERSUPDATE_PARAMETERS,PIDsParametersUpdate);//Fazer isso para o caso geral]
   // addFunctions("blinkMe",BLINKME_PARAMETERS,blinkMe);
-  // // addFunctions("fesBikeStart",fesBikeStart);
+
   
   
   // // addFunctions("neurogenic_bladder_init",neurogenic_bladder_init);

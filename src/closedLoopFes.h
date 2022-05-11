@@ -26,19 +26,36 @@ esp_timer_handle_t closedLoop_periodic_timer = nullptr, IMUClosedLoop_periodic_t
 //     IMUClosedLoop_periodic_timer = nullptr;
 //   }
 // }
+void getEulerAnglesGY80(){
+    // mpu.getEvent(&a, &g, &temp);
+    LinAlg::Matrix<double> sensorsRaw = sensors.updateRaw();
+    // Serial.println("1.1");
+    // std::cout << closedLoop_gyData << std::endl;
+    closedLoop_gyData(0,0) = get_pitch(sensorsRaw(0,0), sensorsRaw(0,1), sensorsRaw(0,2));
+    // Serial.println("1.2");
+    closedLoop_gyData(1,0) = get_roll(sensorsRaw(0,0), sensorsRaw(0,1), sensorsRaw(0,2));
+    // if(mpuData(0,1) < 0) mpuData(0,1) = mpuData(0,1) +360;
+}
 
 void IRAM_ATTR TwoDOFLimbControlLoop(void *param){
     closedLoop_Counter++;
-    getEulerAngles(); 
+    // getEulerAngles(); 
     // if(mpu6050Flag)
-    LinAlg::Matrix<double> U = dispositivo.TwoDOFLimbControl(ref(0,0), ref(0,1), ~mpuData);
+    // LinAlg::Matrix<double> U = dispositivo.TwoDOFLimbControl(ref(0,0), ref(0,1), ~mpuData);
     // else if(gy80Flag){
-      // LinAlg::Matrix<double> U = dispositivo.TwoDOFLimbControl(ref[0], ref[1], closedLoop_gyData);
-
+      // Serial.println("1");
+    getEulerAnglesGY80();
+    // Serial.println("2");
+    LinAlg::Matrix<double> U = dispositivo.TwoDOFLimbControl(ref(0,0), ref(0,1), closedLoop_gyData);
+    // Serial.println("3");
     std::stringstream ss;
-    // ss << closedLoop_Counter << " , " << closedLoop_gyData(0,0)  << " , " << closedLoop_gyData(1,0) << " , " << closedLoop_gyData(2,0) 
-    ss << closedLoop_Counter << " , " << mpuData(0,0)  << " , " << mpuData(0,1) << " , " << mpuData(0,2) 
-                             << " , " << U(0,0) << " , " << U(0,1) <<  " , " << 0 << "\r\n";
+    // ss << closedLoop_Counter << ",a1:" << mpuData(0,0)  << ",a2:" << mpuData(0,1) << ",a3:" << mpuData(0,2) // <<  "\r\n";
+    ss << closedLoop_Counter << ",a1:" << closedLoop_gyData(0,0)  << ",a2:" << closedLoop_gyData(1,0) << ",a3:" << closedLoop_gyData(2,0) 
+                             << ",U1:" << U(0,0) << ",U2:" << U(0,1) <<  ",R1:" 
+                             << ref(0,0) <<  ",R2:" << ref(0,1) <<  ",E1:" << U(0,2) <<  ",E2:" << U(0,3) 
+                             <<  ",IE1:" << U(0,4) <<  ",IE2:" << U(0,5) <<  "\r\n";
+                          
+    std::cout << ss.str().c_str();
     #ifdef WiFistaTCP_h
       client->write(ss.str().c_str());
     #endif
@@ -76,19 +93,25 @@ String TwoDOFLimbFesControl(const StaticJsonDocument<sizejson> &doc, const uint8
   String answer;
   if (operation == CLOSEDLOOPFESCONTROL_MSG && !closedLoop_flag){
     closedLoop_flag = true;
-    mpuInit();
+    // mpuInit();
+    sensors.init();
     openLoopFesInit(doc["Ton"], doc["period"]);
     String kpt = doc["kp"], kit  = doc["ki"], kdt = doc["kd"], minInputLimitt  = doc["minInputLimit"], 
-           maxInputLimitt  = doc["maxInputLimit"], opPt  = doc["operationalP"], referencet  = doc["r"];
+           maxInputLimitt  = doc["maxInputLimit"], opPt  = doc["operationalP"], referencet  = doc["ref"];
     LinAlg::Matrix<double> kp = kpt.c_str(), ki = kit.c_str(), kd = kdt.c_str(), minInputLimit = minInputLimitt.c_str(), 
                            maxInputLimit = maxInputLimitt.c_str(), opP = opPt.c_str(), ref = referencet.c_str();
 
-    std::cout << "passou" << -1 << "\n";
+    
     for (unsigned i = 0; i < kp.getNumberOfColumns(); ++i){
+      std::cout << "Kp:" << kp(0,i) << "Ki:" << ki(0,i) << "Kd:" << kd(0,i) 
+                << "controlSampleTime:" << doc["controlSampleTime"] 
+                << "minInputLimit:" << minInputLimit(0,i) << "maxInputLimit:" << maxInputLimit(0,i) 
+                << "opP:" << opP(0,i) << "\n";
       dispositivo.getPID(i).setParams(kp(0,i),ki(0,i),kd(0,i)); 
-      dispositivo.getPID(i).setSampleTime(doc["controlSampleTime"]); 
+      dispositivo.getPID(i).setSampleTime(float(doc["controlSampleTime"])); 
       dispositivo.getPID(i).setLimits(minInputLimit(0,i),maxInputLimit(0,i));
       dispositivo.getPID(i).setInputOperationalPoint(opP(0,i));
+      dispositivo.getPID(i).resetIntegralValue();
       std::cout << "passou" << i << "\n";
     }
     dispositivo.fes[0].setPowerLevel(0); 
@@ -122,6 +145,7 @@ String closedLoopFesReferenceUpdate(const StaticJsonDocument<sizejson> &doc, con
   if (operation == CLOSEDLOOPFESREFERENCEUPDATE_MSG){
     String referencet  = doc["r"];
     ref = referencet.c_str();
+    std::cout << referencet.c_str() << std::endl;
     answer += "Referencias dos controladores PID atualizadas\r\n";
   }
   else
@@ -138,8 +162,12 @@ String PIDsParametersUpdate(const StaticJsonDocument<sizejson> &doc, const uint8
                            maxInputLimit = maxInputLimitt.c_str(), opP = opPt.c_str();
 
     for (unsigned i = 0; i < kp.getNumberOfColumns(); ++i){
+      std::cout << "Kp:" << kp(0,i) << "Ki:" << ki(0,i) << "Kd:" << kd(0,i) 
+                << "controlSampleTime:" << doc["controlSampleTime"] 
+                << "minInputLimit:" << minInputLimit(0,i) << "maxInputLimit:" << maxInputLimit(0,i) 
+                << "opP:" << opP(0,i) << "\n";
       dispositivo.getPID(i).setParams(kp(0,i),ki(0,i),kd(0,i)); 
-      dispositivo.getPID(i).setSampleTime(doc["controlSampleTime"]); 
+      dispositivo.getPID(i).setSampleTime(float(doc["controlSampleTime"])); 
       dispositivo.getPID(i).setLimits(minInputLimit(0,i),maxInputLimit(0,i));
       dispositivo.getPID(i).setInputOperationalPoint(opP(0,i));
     }
