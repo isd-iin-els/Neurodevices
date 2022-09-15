@@ -69,6 +69,7 @@
 #include "closedLoopFes.h"
 #include "blinkled.h"
 #include "fesBike.h"
+#include "NBStimulator.h"
 EEPROMClass  accelM("eeprom0");
 EEPROMClass  gyrM("eeprom1");
 EEPROMClass  magM("eeprom2");
@@ -77,6 +78,8 @@ void setup() {
 
   sleep(2);
   wifiSTAMQTTInit();
+  
+
   addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate);
   addFunctions("restart",RESTART_PARAMETERS,restart);
   addFunctions("alive",ALIVE_PARAMETERS,alive);
@@ -89,6 +92,7 @@ void setup() {
   addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes);
   addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate);
   addFunctions("fesBikeStart",FESBIKESTART_PARAMETERS,fesBikeStart);
+  addFunctions("adcStream",ADCSTREAM_PARAMETERS,adcStream); 
 
 
   addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);
@@ -107,4 +111,7 @@ void setup() {
 }
 
 void loop() {
+  // int potValue = analogRead(36);
+  // Serial.println(potValue);
+  // delay(500);
 }

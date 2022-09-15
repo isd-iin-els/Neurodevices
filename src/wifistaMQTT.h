@@ -6,22 +6,32 @@
 #include <ArduinoJson.h>
 #include "servicesDef.h"
 #include <WiFi.h>
+#include <WiFiAP.h>
 #include <sstream>
 #include <iostream>
+#include <webConfiguration.h>
 extern "C" {
 	#include "freertos/FreeRTOS.h"
 	#include "freertos/timers.h"
 }
 #include <AsyncMqttClient.h>
 
-#define WIFI_SSID "CAMPUS"
-#define WIFI_PASSWORD "IINELS_educacional"
-#define MQTT_HOST IPAddress(10, 1, 1, 169) //broker.emqx.io // pcIINELS / old (10, 1, 1, 169) 
+
+// #define MQTT_HOST "neurogenicbladder.cloud.shiftr.io"
+// #define MQTT_HOST "neubladder.cloud.shiftr.io"
+// #define MQTT_PORT 1883
+
+// #define MQTT_HOST IPAddress(10, 1, 1, 169) //broker.emqx.io // pcIINELS / old (10, 1, 1, 169) 
+// #define MQTT_PORT 1883
+// #define MQTT_HOST "0.tcp.sa.ngrok.io"
+// #define MQTT_PORT 13280
 // #define WIFI_SSID "ISDORTECH"
 // #define WIFI_PASSWORD "12345678"
 // #define MQTT_HOST IPAddress(192, 168, 137, 1) //windows
 // #define MQTT_HOST IPAddress(10, 0, 0, 101) //broker.emqx.io
-#define MQTT_PORT 1883
+
+
+
 
 AsyncMqttClient mqttClient;
 TimerHandle_t mqttReconnectTimer;
@@ -107,7 +117,15 @@ String whoAmI(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation)
 
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD,(rand()%13)+1);
+  WiFi.begin(WIFI_SSID.c_str(), WIFI_PASSWORD.c_str());
+}
+
+void createWIFIAP(){
+  WiFi.softAPConfig(IPAddress(10,1,1,1), IPAddress(10,1,1,1), IPAddress(255,255,255,0));
+  Serial.println(WiFi.softAP("BNConfig", "12345678") ? "Ready" : "Failed!");
+
+  delay(2000);
+  initWebServer();
 }
 
 void connectToMqtt() {
@@ -122,7 +140,7 @@ void WiFiEvent(WiFiEvent_t event) {
         Serial.println("WiFi connected");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP());
-        connectToMqtt();
+        //connectToMqtt();
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
         Serial.println("WiFi lost connection");
@@ -137,8 +155,8 @@ void onMqttConnect(bool sessionPresent) {
   std::cout << cmd2dev.str().c_str() <<"\n";
   std::cout << devans.str().c_str() << "\n";
   std::cout << devstream.str().c_str() << "\n";
-  mqttClient.publish("newdev", 1, true, whoAmI(StaticJsonDocument<sizejson>(), WHOAMI_MSG).c_str());
-  mqttClient.subscribe(cmd2dev.str().c_str(), 2);
+  mqttClient.publish("newdev", 0, true, whoAmI(StaticJsonDocument<sizejson>(), WHOAMI_MSG).c_str());
+  mqttClient.subscribe(cmd2dev.str().c_str(), 0);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
@@ -203,7 +221,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   for (std::map<String,SDLEventFunction>::iterator it = functions.begin() ; it != functions.end(); ++it){
     String ans = ((it->second)(doc,operation));
     if( ans != ""){
-      mqttClient.publish(devans.str().c_str(), 1, true, ans.c_str());
+      mqttClient.publish(devans.str().c_str(), 0, true, ans.c_str());
       break;
     }
   }
@@ -219,29 +237,35 @@ void wifiSTAMQTTInit(){
   Serial.begin(115200);
   Serial.println();
   Serial.println();
+  if(loadEEPROM()){
 
-  mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(1000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
-  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(20000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
+      mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(10000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
+      xTimerStart(mqttReconnectTimer, 0);
+      wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
 
-  WiFi.onEvent(WiFiEvent);
-
-  mqttClient.onConnect(onMqttConnect);
-  mqttClient.onDisconnect(onMqttDisconnect);
-  // mqttClient.onSubscribe(onMqttSubscribe);
-  // mqttClient.onUnsubscribe(onMqttUnsubscribe);
-  mqttClient.onMessage(onMqttMessage);
-  // mqttClient.onPublish(onMqttPublish);
-  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
-  // mqttClient.setCredentials("andre.dantas@isd.org.br", "12345678");
-
-  connectToWifi();
-  std::stringstream shortMacAddress; shortMacAddress << ESP.getEfuseMac();
-  String macAddress = shortMacAddress.str().c_str();
-  shortMacAddress.str(""); shortMacAddress  << macAddress[macAddress.length()-4] << macAddress[macAddress.length()-3]  
-                                            << macAddress[macAddress.length()-2] << macAddress[macAddress.length()-1];
-  cmd2dev << "cmd2dev" << shortMacAddress.str().c_str();
-  devans <<"dev" << shortMacAddress.str().c_str() << "ans";
-  devstream <<"dev" << shortMacAddress.str().c_str() << "ss";
+      WiFi.onEvent(WiFiEvent);
+      connectToWifi();
+      mqttClient.onConnect(onMqttConnect);
+      mqttClient.onDisconnect(onMqttDisconnect);
+      // mqttClient.onSubscribe(onMqttSubscribe);
+      // mqttClient.onUnsubscribe(onMqttUnsubscribe);
+      mqttClient.onMessage(onMqttMessage);
+      // mqttClient.onPublish(onMqttPublish);
+      mqttClient.setServer(MQTT_HOST.c_str(), MQTT_PORT);
+      mqttClient.setKeepAlive(30);
+      // mqttClient.setCredentials("neurogenicbladder","PajmuJM0imwyIxve");
+      // mqttClient.setCredentials(login.c_str(),pass.c_str());
+      
+      resetEEPROMValuesRoutine();
+      std::stringstream shortMacAddress; shortMacAddress << ESP.getEfuseMac();
+      String macAddress = shortMacAddress.str().c_str();
+      shortMacAddress.str(""); shortMacAddress  << macAddress[macAddress.length()-4] << macAddress[macAddress.length()-3]  
+                                                << macAddress[macAddress.length()-2] << macAddress[macAddress.length()-1];
+      cmd2dev << "cmd2dev" << shortMacAddress.str().c_str();
+      devans <<"dev" << shortMacAddress.str().c_str() << "ans";
+      devstream <<"dev" << shortMacAddress.str().c_str() << "ss";
+  
+  } else createWIFIAP();
   
   // addFunctions("renameTopics",RENAMETOPICS_PARAMETERS,renameTopics);
 }
