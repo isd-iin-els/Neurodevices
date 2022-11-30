@@ -75,11 +75,11 @@ EEPROMClass  gyrM("eeprom1");
 EEPROMClass  magM("eeprom2");
 
 void setup() {
-
+  
   sleep(2);
   wifiSTAMQTTInit();
   
-
+  addFunctions("OTAMQTT::updateFirmware",UPDATE_FIRMWARE_PARAMETERS,OTAMQTT::updateFirmware);
   addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate);
   addFunctions("restart",RESTART_PARAMETERS,restart);
   addFunctions("alive",ALIVE_PARAMETERS,alive);
@@ -98,6 +98,7 @@ void setup() {
   addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);
   addFunctions("closedLoopFesReferenceUpdate",CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS,closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
   addFunctions("PIDsParametersUpdate",PIDSPARAMETERSUPDATE_PARAMETERS,PIDsParametersUpdate);//Fazer isso para o caso geral]
+
   // addFunctions("blinkMe",BLINKME_PARAMETERS,blinkMe);
 
   
@@ -113,5 +114,6 @@ void setup() {
 void loop() {
   // int potValue = analogRead(36);
   // Serial.println(potValue);
-  // delay(500);
+  //delay(2000);
+  //Serial.println("EU usei OTA");
 }

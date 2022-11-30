@@ -15,23 +15,7 @@ extern "C" {
 	#include "freertos/timers.h"
 }
 #include <AsyncMqttClient.h>
-
-
-// #define MQTT_HOST "neurogenicbladder.cloud.shiftr.io"
-// #define MQTT_HOST "neubladder.cloud.shiftr.io"
-// #define MQTT_PORT 1883
-
-// #define MQTT_HOST IPAddress(10, 1, 1, 169) //broker.emqx.io // pcIINELS / old (10, 1, 1, 169) 
-// #define MQTT_PORT 1883
-// #define MQTT_HOST "0.tcp.sa.ngrok.io"
-// #define MQTT_PORT 13280
-// #define WIFI_SSID "ISDORTECH"
-// #define WIFI_PASSWORD "12345678"
-// #define MQTT_HOST IPAddress(192, 168, 137, 1) //windows
-// #define MQTT_HOST IPAddress(10, 0, 0, 101) //broker.emqx.io
-
-
-
+#include "otaMqtt.h"
 
 AsyncMqttClient mqttClient;
 TimerHandle_t mqttReconnectTimer;
@@ -40,9 +24,6 @@ const uint16_t sizejson = 512;
 std::stringstream cmd2dev,devans,devstream;
 
 
-// IPAddress serverIP(192,168,137,100);
-// IPAddress gateway(192,168,137,1);
-// IPAddress subnet(255,255,255,0);
 
 typedef String (*SDLEventFunction)(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation);
 std::map<String,SDLEventFunction> functions;
@@ -58,25 +39,6 @@ void removeFunctions(String functioname) {
     functions.erase(functioname);
     functionalitiesParameters.erase(functioname);
 }
-
-// String renameTopics(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
-//   String answer;
-//   if (operation == RENAMETOPICS_MSG){
-//     mqttClient.unsubscribe(cmd2dev.str().c_str());
-//     cmd2dev.str("");
-//     devans.str("");
-//     devstream.str("");
-
-//     cmd2dev << "cmd2dev"<< doc["topic"];
-//     devans <<"dev" << doc["topic"] << "ans";
-//     devstream <<"dev" << doc["topic"] << "ss";
-//     mqttClient.subscribe(cmd2dev.str().c_str(), 2);
-
-//     std::cout << cmd2dev.str() << '\n' << devans.str() << '\n' << devstream.str() << '\n';
-//     answer = "Topicos renomeados";
-//   }
-//   return answer;
-// }
 
 String restart(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
   String answer;
@@ -157,6 +119,7 @@ void onMqttConnect(bool sessionPresent) {
   std::cout << devstream.str().c_str() << "\n";
   mqttClient.publish("newdev", 0, true, whoAmI(StaticJsonDocument<sizejson>(), WHOAMI_MSG).c_str());
   mqttClient.subscribe(cmd2dev.str().c_str(), 0);
+  mqttClient.subscribe("OTAMQTT", 0);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {

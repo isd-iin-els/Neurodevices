@@ -22,6 +22,7 @@
 #define IMUSENDSTOP__MSG 22
 #define FESBIKESTART_MSG 23
 #define ADCSTREAM_MSG 24
+#define UPDATE_FIRMWARE_MSG 25
 
 #define RESTART_PARAMETERS                      "{\"op\":7}"
 #define WHOAMI_PARAMETERS                       "{\"op\":9}"
@@ -44,4 +45,5 @@
 #define IMUSENDSTOP_PARAMETERS                  "{\"op\":22}"
 #define FESBIKESTART_PARAMETERS                 "{\"op\":23,\"Ton\":\"Ton Uint\",\"period\":\"Period Uint\",\"frequence\":\"float\",\"simulationTime\":\"float\",\"fesCyclingMin\":\"float\",\"fesCyclingMax\":\"float\"}"
 #define ADCSTREAM_PARAMETERS  "{\"op\":24,\"frequence\":\"float\",\"timeout\":\"float\",\"devicePin\":\"uint8\"}"
+#define UPDATE_FIRMWARE_PARAMETERS  "{\"op\":25,\"url\":\"hostName\",\"binLocation\":\"urlToFile\",\"md5\":\"hash\"}"
 #endif
