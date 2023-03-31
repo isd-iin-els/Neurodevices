@@ -116,13 +116,14 @@ static void IMUDataLoop(void *param){
     std::cout << ss.str().c_str() << std::endl;
   // }
 
-  if(IMUDataLoop_counter>=(int)param)
-  {
-    ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
-    ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
-    IMUDataLoop_periodic_timer = nullptr;
-    IMUDataLoop_flag = false;
-  }
+  // if(IMUDataLoop_counter>=(int)param)
+  // {
+  //   ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
+  //   ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
+  //   IMUDataLoop_periodic_timer = nullptr;
+  //   IMUDataLoop_flag = false;
+  //   std::cout << "Finalizou\n";
+  // }
 }
 
 String imuSendStop(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
@@ -151,14 +152,14 @@ String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
 
     
 
-    if(sensorType == 1 && !mpu6050Flag){
-      std::cout << "inicializando sensor"<< "\n";
-      mpu6050Flag = mpuInit();
-    }
-    else if(sensorType == 2 && !gy80Flag){
+    // if(sensorType == 1 && !mpu6050Flag){
+    //   std::cout << "inicializando sensor"<< "\n";
+    //   mpu6050Flag = mpuInit();
+    // }
+    // else if(sensorType == 2 && !gy80Flag){
       std::cout << "inicializando sensor"<< "\n";
       gy80Flag = sensors.init();
-    }
+    // }
     
     std::cout << "sensor: " << gy80Flag << "\n"; 
     // initDMP6(gpio_num_t(23));

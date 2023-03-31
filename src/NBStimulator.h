@@ -17,12 +17,12 @@
 
 volatile uint64_t BN_Counter; volatile bool BN_flag = false, ADCSTREAM_flag = false;
 esp_timer_create_args_t BN_periodic_timer_args;
-esp_timer_handle_t BN_periodic_timer = nullptr;
+esp_timer_handle_t BN_periodic_timer = nullptr; uint8_t devicePin;
 
 void IRAM_ATTR BNUpdate(void *param){
     BN_Counter++;
     std::stringstream ss;
-    ss << BN_Counter << " , " << analogReadMilliVolts(36)  << "\r\n";
+    ss << BN_Counter << " , " << analogReadMilliVolts(devicePin)  << "\r\n";
     // Serial.println(ss.str().c_str());
     // client->write(ss.str().c_str());
   #ifdef WiFistaTCP_h
@@ -49,7 +49,7 @@ String adcStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &operati
   String answer;
   
   if (operation == ADCSTREAM_MSG && !ADCSTREAM_flag){
-    uint8_t devicePin = doc["devicePin"];
+    devicePin = (uint8_t) doc["devicePin"];
     uint16_t freq = doc["frequence"];
     int64_t timeSimulation = doc["timeout"];
     std::cout << devicePin<<"\n"<< freq<<"\n"<< timeSimulation<<"\n";

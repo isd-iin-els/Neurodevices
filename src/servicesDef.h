@@ -23,12 +23,15 @@
 #define FESBIKESTART_MSG 23
 #define ADCSTREAM_MSG 24
 #define UPDATE_FIRMWARE_MSG 25
+#define BPMSTREAM_MSG 26
+#define STOPBPMSTREAM_MSG 27
+#define INSOLESTREAM_MSG 28
 
 #define RESTART_PARAMETERS                      "{\"op\":7}"
 #define WHOAMI_PARAMETERS                       "{\"op\":9}"
 #define BLINKME_PARAMETERS                      "{\"op\":10}"
 #define IMUSENDINIT_PARAMETERS                  "{\"op\":1,\"simulationTime\":\"float\",\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
-#define OPENLOOPFESUPDATE_PARAMETERS            "{\"op\":2,\"m\":\"Channel String Vector\",\"t\":\"Ton Uint\",\"p\":\"Period Uint\"}"
+#define OPENLOOPFESUPDATE_PARAMETERS            "{\"op\":2,\"m\":\"Channel String Vector\",\"t\":\"Ton Uint\",\"p\":\"Period Uint\",\"f\":\"fade time microsseconds\"}"
 #define STOPOPENLOOPFES_PARAMETERS              "{\"op\":8}"
 #define CLOSEDLOOPFESCONTROL_PARAMETERS         "{\"op\":3,\"simulationTime\":\"float\",\"controlSampleTime\":\"float\",\"sensorSampleTime\":\"float\",\"Ton\":\"float\",\"period\":\"float\",\"kp\":\"vectorfloat\",\"ki\":\"vectorfloat\",\"kd\":\"vectorfloat\",\"minInputLimit\":\"vectorfloat\",\"maxInputLimit\":\"vectorfloat\",\"ref\":\"vectorfloat\",\"operationalP\":\"vectorfloat\"}"
 #define CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS "{\"op\":4,\"r\":\"vectorfloat\"}"
@@ -46,4 +49,7 @@
 #define FESBIKESTART_PARAMETERS                 "{\"op\":23,\"Ton\":\"Ton Uint\",\"period\":\"Period Uint\",\"frequence\":\"float\",\"simulationTime\":\"float\",\"fesCyclingMin\":\"float\",\"fesCyclingMax\":\"float\"}"
 #define ADCSTREAM_PARAMETERS  "{\"op\":24,\"frequence\":\"float\",\"timeout\":\"float\",\"devicePin\":\"uint8\"}"
 #define UPDATE_FIRMWARE_PARAMETERS  "{\"op\":25,\"url\":\"hostName\",\"binLocation\":\"urlToFile\",\"md5\":\"hash\"}"
+#define BPMSTREAM_PARAMETERS  "{\"op\":26,\"frequence\":\"float\",\"timeout\":\"float\",\"bpm_devicePin\":\"uint8\",\"bpm_threshold\":\"double\"}"
+#define STOPBPMSTREAM_PARAMETERS  "{\"op\":27}"
+#define INSOLESTREAM_PARAMETERS  "{\"op\":28,\"frequence\":\"float\",\"timeout\":\"float\"}"
 #endif

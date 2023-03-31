@@ -17,6 +17,7 @@ extern "C" {
 #include <AsyncMqttClient.h>
 #include "otaMqtt.h"
 
+
 AsyncMqttClient mqttClient;
 TimerHandle_t mqttReconnectTimer;
 TimerHandle_t wifiReconnectTimer;
@@ -80,14 +81,6 @@ String whoAmI(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation)
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
   WiFi.begin(WIFI_SSID.c_str(), WIFI_PASSWORD.c_str());
-}
-
-void createWIFIAP(){
-  WiFi.softAPConfig(IPAddress(10,1,1,1), IPAddress(10,1,1,1), IPAddress(255,255,255,0));
-  Serial.println(WiFi.softAP("BNConfig", "12345678") ? "Ready" : "Failed!");
-
-  delay(2000);
-  initWebServer();
 }
 
 void connectToMqtt() {
@@ -171,7 +164,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   StaticJsonDocument<sizejson> doc;
   DeserializationError error = deserializeJson(doc, payload);
 
-  Serial.print(F("msg\n"));
+  //Serial.print(F("msg\n"));
 
   if (error) {
     Serial.print(F("deserializeJson() failed: "));
@@ -196,7 +189,7 @@ void onMqttPublish(uint16_t packetId) {
   // Serial.println(packetId);
 }
 
-void wifiSTAMQTTInit(){
+bool wifiSTAMQTTInit(){
   Serial.begin(115200);
   Serial.println();
   Serial.println();
@@ -227,8 +220,9 @@ void wifiSTAMQTTInit(){
       cmd2dev << "cmd2dev" << shortMacAddress.str().c_str();
       devans <<"dev" << shortMacAddress.str().c_str() << "ans";
       devstream <<"dev" << shortMacAddress.str().c_str() << "ss";
+      return false;
   
-  } else createWIFIAP();
+  } else {createWIFIAP(); return true;}
   
   // addFunctions("renameTopics",RENAMETOPICS_PARAMETERS,renameTopics);
 }

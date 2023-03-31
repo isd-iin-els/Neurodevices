@@ -11,8 +11,10 @@ volatile bool openLoop_flag = false, sensor_flag = false;
 //         levelPin[4]  = {13,19,2,18};
 // uint8_t modPin[4]    = {27,19,12,18},//cc
 //         levelPin[4]  = {13,4,2,5};]
-uint8_t modPin[8]    = {27,19,12,18,23,14,26,25},//ca
-        levelPin[4]  = {13,4,2,33};
+// uint8_t modPin[8]    = {27,19,12,18,23,14,26,25},//ca
+//         levelPin[4]  = {13,4,2,33};
+uint8_t modPin[8]    = {12,14,2,15,21,23,26,32},//ca
+        levelPin[4]  = {13,4,22,18};
 
 Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000,350,100000,true);
 
@@ -64,18 +66,22 @@ String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t 
     if(dispositivo.stopLoopFlag){
       openLoopFesInit(doc["t"],doc["p"]);
     }
+    if (doc.containsKey("f")) //f is for fade
+      for(uint8_t i = 0; i < code.getNumberOfColumns(); ++i)
+        dispositivo.fes[i].setFadeTime(doc["f"]); 
 
     // if(!sensor_flag)
       // if(sensorType == 1)
         // mpu6050Flag = mpuInit();
       // else if(sensorType == 2)
-    gy80Flag = sensors.init();
+    //gy80Flag = sensors.init();
 
-    answer += getIMUData();
-    std::cout << answer.c_str() << std::endl; 
+    //answer += getIMUData();
+    //std::cout << answer.c_str() << std::endl; 
+    answer += "1";
   }
   else
-    answer += "";
+    answer += "1";
   return answer;
 }
 
