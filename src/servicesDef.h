@@ -26,6 +26,8 @@
 #define BPMSTREAM_MSG 26
 #define STOPBPMSTREAM_MSG 27
 #define INSOLESTREAM_MSG 28
+#define STOPINSOLESTREAM_MSG 29
+#define STOPADCSTREAM_MSG 30
 
 #define RESTART_PARAMETERS                      "{\"op\":7}"
 #define WHOAMI_PARAMETERS                       "{\"op\":9}"
@@ -52,4 +54,6 @@
 #define BPMSTREAM_PARAMETERS  "{\"op\":26,\"frequence\":\"float\",\"timeout\":\"float\",\"bpm_devicePin\":\"uint8\",\"bpm_threshold\":\"double\"}"
 #define STOPBPMSTREAM_PARAMETERS  "{\"op\":27}"
 #define INSOLESTREAM_PARAMETERS  "{\"op\":28,\"frequence\":\"float\",\"timeout\":\"float\"}"
+#define STOPINSOLESTREAM_PARAMETERS "{\"op\":29}"
+#define STOPADCSTREAM_PARAMETERS  "{\"op\":30}"
 #endif

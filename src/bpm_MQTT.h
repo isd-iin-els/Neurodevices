@@ -1,6 +1,6 @@
 #ifndef NBSTIMULATOR_h
 #define NBSTIMULATOR_h
-
+//Alterar limiar de corte via rede
 #include "SistemasdeControle/headers/primitiveLibs/LinAlg/matrix.h"
 #include "SistemasdeControle/embeddedTools/signalAnalysis/systemLoop.h"
 #include <sstream>
@@ -20,28 +20,41 @@ volatile uint64_t bpm_Counter; volatile bool bpm_flag = false, bpmSTREAM_flag = 
 esp_timer_create_args_t bpm_periodic_timer_args;
 esp_timer_handle_t bpm_periodic_timer = nullptr;
 double bpm_filt = 0,bpm_threshold = 50;
-double bpm_time, bpm_atime, bpm_afilt = 0,bpm=0;
+double bpm_time, bpm_atime, bpm_afilt = 0,bpm=0,last_dbpm = 0;
 uint8_t bpm_devicePin;
-
-
-float EMA_a_low = 1.0;    //initialization of EMA alpha
-float EMA_a_high = 10.;
- 
-int EMA_S_low = 0;        //initialization of EMA S
-int EMA_S_high = 0;
- 
-int highpass = 0;
-int bandpass = 0;
+uint16_t bpm_freq = 0,batimentos = 0;
+bool flag_bpmTime = false;
 int lastValue = 0;
+int dbpm = 0;
 
 void IRAM_ATTR bpmUpdate(void *param){
     bpm_Counter++;
     
     int sensorValue = analogRead(bpm_devicePin);
-    bpm_filt += 0.1*(sensorValue-bpm_filt);
-    int dbpm = bpm_filt-lastValue;
+    bpm_filt += 0.01*(sensorValue-bpm_filt);
+    last_dbpm = dbpm;
+    dbpm = bpm_filt-lastValue;
     lastValue = bpm_filt;
-
+    
+    if(dbpm >= 0 && last_dbpm<0)
+      batimentos++;
+    if(int(bpm_Counter)%(int(bpm_freq/2)) == 0){
+      double bpmTemp = batimentos*2*3.4;
+      bpm_afilt += 0.03*(bpmTemp-bpm_afilt);
+      Serial.println(bpm_afilt);
+      batimentos = 0;
+      std::stringstream ss;
+      ss << bpm_Counter << " , " << bpm_afilt  << "\r\n";
+      //Serial.print("BPM = ");Serial.println(bpm);
+      #ifdef WiFistaTCP_h
+      client->write(ss.str().c_str());
+      #endif
+      #ifdef WiFistaMQTT_h
+      mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());
+      #endif
+    }
+    
+    
     // EMA_S_low = (EMA_a_low*sensorValue) + ((1-EMA_a_low)*EMA_S_low);  //run the EMA
     // EMA_S_high = (EMA_a_high*sensorValue) + ((1-EMA_a_high)*EMA_S_high);
 
@@ -72,12 +85,12 @@ void IRAM_ATTR bpmUpdate(void *param){
     //       mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());
     //     #endif
     //   // }
-    // }
-    Serial.println(dbpm);
-  // if(bpm/400 < 30)
-  //   digitalWrite(2,0);
-  // else if(bpm/400 > 50)
-  //   digitalWrite(2,1);
+    // }uint16_t 
+    // Serial.println(dbpm);
+  if(bpm_afilt < 30)
+     digitalWrite(2,0);
+  else if(bpm_afilt > 50)
+     digitalWrite(2,1);
   // Serial.println(bpm_Counter);
   if(bpm_Counter==(uint64_t)param || !bpmSTREAM_flag)
   {
@@ -98,9 +111,9 @@ String bpmStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &operati
   if (operation == BPMSTREAM_MSG && !bpmSTREAM_flag){
     bpm_threshold = double(doc["bpm_threshold"]);
     bpm_devicePin = uint8_t(doc["bpm_devicePin"]);
-    uint16_t freq = doc["frequence"];
+    bpm_freq = doc["frequence"];
     int64_t timeSimulation = doc["timeout"];
-    std::cout << bpm_devicePin<<"\n"<< freq<<"\n"<< timeSimulation<<"\n";
+    std::cout << bpm_devicePin<<"\n"<< bpm_freq<<"\n"<< timeSimulation<<"\n";
     
     analogReadResolution(12);
     analogSetPinAttenuation(bpm_devicePin, ADC_11db);
@@ -113,9 +126,9 @@ String bpmStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &operati
     bpmSTREAM_flag = true;
     bpm_periodic_timer_args.callback = &bpmUpdate;
     bpm_periodic_timer_args.name = "bpmUpdate";
-    bpm_periodic_timer_args.arg = (void*)((int64_t)(timeSimulation*freq));
+    bpm_periodic_timer_args.arg = (void*)((int64_t)(timeSimulation*bpm_freq));
     ESP_ERROR_CHECK(esp_timer_create(&bpm_periodic_timer_args, &bpm_periodic_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(bpm_periodic_timer, 1000000.0/freq));
+    ESP_ERROR_CHECK(esp_timer_start_periodic(bpm_periodic_timer, 1000000.0/bpm_freq));
     
     
     std::cout << "Tudo Inicializado\n";

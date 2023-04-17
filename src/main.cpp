@@ -65,13 +65,14 @@
 
 #include <wifistaMQTT.h>
 #include <sendIMUData.h>
-#include "openLoopFes.h"
+//#include "openLoopFes.h"
 // #include "closedLoopFes.h"
 // #include "blinkled.h"
 // #include "fesBike.h"
-#include "NBStimulator.h"
+// #include "NBStimulator.h"
 //#include "bpm_MQTT.h"
 // #include <IRremote.hpp>
+#include "sendInsoleData.h"
 
 EEPROMClass  accelM("eeprom0");
 EEPROMClass  gyrM("eeprom1");
@@ -85,7 +86,7 @@ void setup() {
   // IrReceiver.begin(32, DISABLE_LED_FEEDBACK);
   
   addFunctions("OTAMQTT::updateFirmware",UPDATE_FIRMWARE_PARAMETERS,OTAMQTT::updateFirmware);
-  addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate);
+  //addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate);
   addFunctions("restart",RESTART_PARAMETERS,restart);
   addFunctions("alive",ALIVE_PARAMETERS,alive);
   addFunctions("whoAmI",WHOAMI_PARAMETERS,whoAmI);
@@ -94,12 +95,15 @@ void setup() {
   // addFunctions("imuAccelerometerCalibration",IMUACCELEROMETERCALIBRATION_PARAMETERS,imuAccelerometerCalibration);  //sensors.init();
   // addFunctions("imuGiroscopeCalibration",IMUGIROSCOPECALIBRATION_PARAMETERS,imuGiroscopeCalibration);  //sensors.init();
   // addFunctions("imuMagnetometerCalibration",IMUMAGNETOMETERCALIBRATION_PARAMETERS,imuMagnetometerCalibration);  //sensors.init();
-  addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes);
-  addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate);
+  //addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes);
+  //addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate);
   // addFunctions("fesBikeStart",FESBIKESTART_PARAMETERS,fesBikeStart);
-  addFunctions("adcStream",ADCSTREAM_PARAMETERS,adcStream); 
-  //addFunctions("bpmStream",BPMSTREAM_PARAMETERS,bpmStream); 
-  //addFunctions("stopBpmStream",STOPBPMSTREAM_PARAMETERS,stopBpmStream); 
+  //addFunctions("adcStream",ADCSTREAM_PARAMETERS,adcStream); 
+  //addFunctions("stopadcStream",STOPADCSTREAM_PARAMETERS,stopAdcStream); 
+  // addFunctions("bpmStream",BPMSTREAM_PARAMETERS,bpmStream); 
+  // addFunctions("stopBpmStream",STOPBPMSTREAM_PARAMETERS,stopBpmStream); 
+  addFunctions("insoleStream",INSOLESTREAM_PARAMETERS,insoleStream); 
+  addFunctions("stopInsoleStream",STOPINSOLESTREAM_PARAMETERS,stopInsoleStream); 
 
 
   // addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);

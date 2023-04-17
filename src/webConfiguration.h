@@ -151,13 +151,32 @@ void initWebServer(){
       WIFI_SSID = request->getParam("wifiSSID")->value();
       WIFI_PASSWORD =  request->getParam("wifiPassword")->value();
     //   writeString(login,mqttLogin);
-      mqttLogin.writeString(0,login.c_str());
-      mqttPass.writeString(0,pass.c_str());
-      mqttHost.writeString(0,MQTT_HOST.c_str());
-      mqttPort.writeUInt(0,MQTT_PORT);
-      wifiSSID.writeString(0,WIFI_SSID.c_str());
-      wifiPassword.writeString(0,WIFI_PASSWORD.c_str());
-      mqttLogin.commit();mqttPass.commit();mqttHost.commit();mqttPort.commit();wifiSSID.commit();wifiPassword.commit();
+      if(login.length()>0){
+        mqttLogin.writeString(0,login.c_str());
+        mqttLogin.commit();
+      }
+      if(pass.length()>0){
+        mqttPass.writeString(0,pass.c_str());
+        mqttPass.commit();
+      }
+      if(MQTT_HOST.length()>0){
+        mqttHost.writeString(0,MQTT_HOST.c_str());
+        mqttHost.commit();
+      }
+      if(MQTT_PORT>0){
+        mqttPort.writeUInt(0,MQTT_PORT);
+        mqttPort.commit();
+      }
+      if(WIFI_SSID.length()>0){
+        wifiSSID.writeString(0,WIFI_SSID.c_str());
+        wifiSSID.commit();
+      }
+      if(WIFI_PASSWORD.length()>0){
+        wifiPassword.writeString(0,WIFI_PASSWORD.c_str());
+        wifiPassword.commit();
+      }
+
+      
       std::cout << login.c_str()<<"\n"<<pass.c_str()<<"\n"<<MQTT_HOST.c_str()<<"\n"<<MQTT_PORT<<"\n";
       request->send(200, "text/plain", "Data Updated");
       delay(1000);

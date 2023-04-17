@@ -22,22 +22,23 @@ esp_timer_handle_t insole_periodic_timer = nullptr;
 void IRAM_ATTR insoleUpdate(void *param){
     insole_Counter++;
     std::stringstream ss;
-    ss << insole_Counter << " , " << analogRead(ADC1_CHANNEL_0)  
-                         << " , " << analogRead(ADC1_CHANNEL_1) 
-                         << " , " << analogRead(ADC1_CHANNEL_2) 
-                         << " , " << analogRead(ADC1_CHANNEL_3)
-                         << " , " << analogRead(ADC1_CHANNEL_4)
-                         << " , " << analogRead(ADC1_CHANNEL_5)
-                         << " , " << analogRead(ADC1_CHANNEL_6)
-                         << " , " << analogRead(ADC1_CHANNEL_7)
-                         << " , " << analogRead(ADC2_CHANNEL_0)
-                         << " , " << analogRead(ADC2_CHANNEL_1)
-                         << " , " << analogRead(ADC2_CHANNEL_2)
-                         << " , " << analogRead(ADC2_CHANNEL_3)
-                         << " , " << analogRead(ADC2_CHANNEL_4)
-                         << " , " << analogRead(ADC2_CHANNEL_5) 
-                         << " , " << analogRead(ADC2_CHANNEL_6)
-                         << " , " << analogRead(ADC2_CHANNEL_7) << "\r\n";
+    ss << insole_Counter << " , " << analogRead(36)  
+                        //  << " , " << analogRead(37) 
+                        //  << " , " << analogRead(38) 
+                         << " , " << analogRead(39)
+                         << " , " << analogRead(32)
+                         << " , " << analogRead(33)
+                         << " , " << analogRead(34)
+                         << " , " << analogRead(35)
+                        //  << " , " << analogRead(0)
+                        //  << " , " << analogRead(ADC2_CHANNEL_1)
+                        //  << " , " << analogRead(ADC2_CHANNEL_2)
+                        //  << " , " << analogRead(ADC2_CHANNEL_3)
+                        //  << " , " << analogRead(ADC2_CHANNEL_4)
+                        //  << " , " << analogRead(ADC2_CHANNEL_5) 
+                        //  << " , " << analogRead(ADC2_CHANNEL_6)
+                        //  << " , " << analogRead(ADC2_CHANNEL_7)
+                         << "\r\n";
     Serial.println(ss.str().c_str());
     // client->write(ss.str().c_str());
   #ifdef WiFistaTCP_h
@@ -60,6 +61,23 @@ void IRAM_ATTR insoleUpdate(void *param){
   }
 }
 
+String stopInsoleStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+  String answer;
+  if (operation == STOPINSOLESTREAM_MSG && insoleSTREAM_flag){
+    if(insole_periodic_timer != nullptr){
+      ESP_ERROR_CHECK(esp_timer_stop(insole_periodic_timer)); //Timer pause
+      ESP_ERROR_CHECK(esp_timer_delete(insole_periodic_timer)); //Timer delete
+    }
+      insole_periodic_timer = nullptr;
+      insoleSTREAM_flag = false;
+      // IMUDataLoop_counter = -1;
+      answer = "aCQUISITION Stopped";
+      // std::cout << IMUDataLoop_counter << " " << answer.c_str() << std::endl;
+  } else
+    answer += "";
+  return answer;
+}
+
 String insoleStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
   String answer;
   
@@ -70,38 +88,38 @@ String insoleStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &oper
     
     analogReadResolution(12);
 
-    analogSetPinAttenuation(ADC1_CHANNEL_0, ADC_11db);
-    adcAttachPin(ADC1_CHANNEL_0);
-    analogSetPinAttenuation(ADC1_CHANNEL_1, ADC_11db);
-    adcAttachPin(ADC1_CHANNEL_1);
-    analogSetPinAttenuation(ADC1_CHANNEL_2, ADC_11db);
-    adcAttachPin(ADC1_CHANNEL_2);
-    analogSetPinAttenuation(ADC1_CHANNEL_3, ADC_11db);
-    adcAttachPin(ADC1_CHANNEL_3);
-    analogSetPinAttenuation(ADC1_CHANNEL_4, ADC_11db);
-    adcAttachPin(ADC1_CHANNEL_4);
-    analogSetPinAttenuation(ADC1_CHANNEL_5, ADC_11db);
-    adcAttachPin(ADC1_CHANNEL_5);
-    analogSetPinAttenuation(ADC1_CHANNEL_6, ADC_11db);
-    adcAttachPin(ADC1_CHANNEL_6);
-    analogSetPinAttenuation(ADC1_CHANNEL_7, ADC_11db);
-    adcAttachPin(ADC1_CHANNEL_7);
-    analogSetPinAttenuation(ADC2_CHANNEL_0, ADC_11db);
-    adcAttachPin(ADC2_CHANNEL_0);
-    analogSetPinAttenuation(ADC2_CHANNEL_1, ADC_11db);
-    adcAttachPin(ADC2_CHANNEL_1);
-    analogSetPinAttenuation(ADC2_CHANNEL_2, ADC_11db);
-    adcAttachPin(ADC2_CHANNEL_2);
-    analogSetPinAttenuation(ADC2_CHANNEL_3, ADC_11db);
-    adcAttachPin(ADC2_CHANNEL_3);
-    analogSetPinAttenuation(ADC2_CHANNEL_4, ADC_11db);
-    adcAttachPin(ADC2_CHANNEL_4);
-    analogSetPinAttenuation(ADC2_CHANNEL_5, ADC_11db);
-    adcAttachPin(ADC2_CHANNEL_5);
-    analogSetPinAttenuation(ADC2_CHANNEL_6, ADC_11db);
-    adcAttachPin(ADC2_CHANNEL_6);
-    analogSetPinAttenuation(ADC2_CHANNEL_7, ADC_11db);
-    adcAttachPin(ADC2_CHANNEL_7);
+    analogSetPinAttenuation(36, ADC_11db);
+    adcAttachPin(36);
+    // analogSetPinAttenuation(37, ADC_11db);
+    // adcAttachPin(37);
+    // analogSetPinAttenuation(38, ADC_11db);
+    adcAttachPin(38);
+    analogSetPinAttenuation(39, ADC_11db);
+    adcAttachPin(39);
+    analogSetPinAttenuation(32, ADC_11db);
+    adcAttachPin(32);
+    analogSetPinAttenuation(33, ADC_11db);
+    adcAttachPin(33);
+    analogSetPinAttenuation(34, ADC_11db);
+    adcAttachPin(34);
+    analogSetPinAttenuation(35, ADC_11db);
+    adcAttachPin(35);
+    // analogSetPinAttenuation(0, ADC_11db);
+    // adcAttachPin(0);
+    // analogSetPinAttenuation(ADC2_CHANNEL_1, ADC_11db);
+    // adcAttachPin(ADC2_CHANNEL_1);
+    // analogSetPinAttenuation(ADC2_CHANNEL_2, ADC_11db);
+    // adcAttachPin(ADC2_CHANNEL_2);
+    // analogSetPinAttenuation(ADC2_CHANNEL_3, ADC_11db);
+    // adcAttachPin(ADC2_CHANNEL_3);
+    // analogSetPinAttenuation(ADC2_CHANNEL_4, ADC_11db);
+    // adcAttachPin(ADC2_CHANNEL_4);
+    // analogSetPinAttenuation(ADC2_CHANNEL_5, ADC_11db);
+    // adcAttachPin(ADC2_CHANNEL_5);
+    // analogSetPinAttenuation(ADC2_CHANNEL_6, ADC_11db);
+    // adcAttachPin(ADC2_CHANNEL_6);
+    // analogSetPinAttenuation(ADC2_CHANNEL_7, ADC_11db);
+    // adcAttachPin(ADC2_CHANNEL_7);
 
     insole_Counter = 0;
     insoleSTREAM_flag = true;
