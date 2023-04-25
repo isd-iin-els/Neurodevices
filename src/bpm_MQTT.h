@@ -19,9 +19,9 @@
 volatile uint64_t bpm_Counter; volatile bool bpm_flag = false, bpmSTREAM_flag = false;
 esp_timer_create_args_t bpm_periodic_timer_args;
 esp_timer_handle_t bpm_periodic_timer = nullptr;
-double bpm_filt = 0,bpm_threshold = 50;
-double bpm_time, bpm_atime, bpm_afilt = 0,bpm=0,last_dbpm = 0;
-uint8_t bpm_devicePin;
+double bpm_filt = 0,bpm_threshold = 30;
+double bpm_time, bpm_atime, bpm_afilt = 0,bpm=0,last_dbpm = 0,bpm_scale=4.4;
+uint8_t bpm_devicePin=36;
 uint16_t bpm_freq = 0,batimentos = 0;
 bool flag_bpmTime = false;
 int lastValue = 0;
@@ -39,7 +39,7 @@ void IRAM_ATTR bpmUpdate(void *param){
     if(dbpm >= 0 && last_dbpm<0)
       batimentos++;
     if(int(bpm_Counter)%(int(bpm_freq/2)) == 0){
-      double bpmTemp = batimentos*2*3.4;
+      double bpmTemp = batimentos*2*bpm_scale;
       bpm_afilt += 0.03*(bpmTemp-bpm_afilt);
       Serial.println(bpm_afilt);
       batimentos = 0;
@@ -87,9 +87,9 @@ void IRAM_ATTR bpmUpdate(void *param){
     //   // }
     // }uint16_t 
     // Serial.println(dbpm);
-  if(bpm_afilt < 30)
+  if(bpm_afilt < bpm_threshold)
      digitalWrite(2,0);
-  else if(bpm_afilt > 50)
+  else if(bpm_afilt > bpm_threshold+20)
      digitalWrite(2,1);
   // Serial.println(bpm_Counter);
   if(bpm_Counter==(uint64_t)param || !bpmSTREAM_flag)
@@ -110,7 +110,7 @@ String bpmStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &operati
   
   if (operation == BPMSTREAM_MSG && !bpmSTREAM_flag){
     bpm_threshold = double(doc["bpm_threshold"]);
-    bpm_devicePin = uint8_t(doc["bpm_devicePin"]);
+    bpm_scale = uint8_t(doc["bpm_scale"]);
     bpm_freq = doc["frequence"];
     int64_t timeSimulation = doc["timeout"];
     std::cout << bpm_devicePin<<"\n"<< bpm_freq<<"\n"<< timeSimulation<<"\n";

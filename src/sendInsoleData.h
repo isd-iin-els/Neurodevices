@@ -93,7 +93,7 @@ String insoleStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &oper
     // analogSetPinAttenuation(37, ADC_11db);
     // adcAttachPin(37);
     // analogSetPinAttenuation(38, ADC_11db);
-    adcAttachPin(38);
+    //adcAttachPin(38);
     analogSetPinAttenuation(39, ADC_11db);
     adcAttachPin(39);
     analogSetPinAttenuation(32, ADC_11db);
