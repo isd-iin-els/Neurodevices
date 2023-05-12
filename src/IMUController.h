@@ -38,12 +38,21 @@ double __get_roll(double ax, double ay, double az){
   return atan2(ay, az + 0.05*ax);
 }
 
+double filterX=0, filterY=0, tyme = 0;
+// char last_key = '0';
+// std::string __keys[2]; 
+char matrix[2][2] = {{'A', 'S'}, {'D', 'W'}};
+char resultArr[2] = {'0', '0'};
+char previousArr[2] = {'0', '0'};
+
 static void IMUControllerLoop(void *param){
   std::stringstream ss; 
   if(IMUControllergy80Flag){
     IMUControllerLoop_counter++;
     IMUControllergyData = sensors.updateRaw();
     // ss << IMUControllerLoop_counter << "," ;
+    filterX += 0.05*(IMUControllergyData(0,0)-filterX);
+    filterY += 0.05*(IMUControllergyData(0,1)-filterY);
     ss <<= IMUControllergyData;
     ss << std::endl;
   }
@@ -56,7 +65,74 @@ static void IMUControllerLoop(void *param){
     client->write(ss.str().c_str());
   #endif
   #ifdef WiFistaMQTT_h
-    mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());
+    // //IMUControllergyData(0,0), IMUControllergyData(0,1);
+    // //mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());
+    // // if(millis()-tyme > 0.5){
+    // //   if (filterX > 0.200)
+    // //     mqttClient.publish("sendkey", 0, false,"D"); // D
+    // //   else if (filterX < -0.200) 
+    // //     mqttClient.publish("sendkey", 0, false, "W"); // W
+
+    // //   else if (filterY > 0.200)
+    // //     mqttClient.publish("sendkey", 0, false,"A"); // A
+    // //   else if (filterY < -0.200) 
+    // //     mqttClient.publish("sendkey", 0, false, "S"); // S
+
+    // //     tyme = millis();
+    // // }
+    //     for (int i = 0; i < 2; i++) {
+    //       float val=IMUControllergyData(0,i); 
+    //       //cout << "coluna: "<< i << "   "; cin >> val;
+    //       int pos_neg = 0;
+    //       char key;
+    
+    //       if (val >= 0.2) pos_neg++;
+    //       if (pos_neg || val <= -0.2) {
+    //         key = __keys[pos_neg][i];
+    //       }
+    //       //else key = 'n';
+    
+    //       if (last_key != key) {
+    //         last_key = key;
+    //         char* strkey = new char[2];
+    //         strkey[0] = key;strkey[1] = '\0';
+    //         //cout << strkey;
+    //         mqttClient.publish("sendkey", 0, false, strkey);
+    //       }
+    //     }
+
+    
+
+    for (int i = 0; i < 2; i++) {
+      float val=IMUControllergyData(0,i);
+      int pos_neg = 0;
+      
+      if (val >= 0.2) pos_neg++;
+      if (pos_neg || val <= -0.2) resultArr[i] = matrix[pos_neg][i];
+    }
+    bool booleanArr[2] = {false, false};
+
+    for (int i = 0; i < 2; i++) {
+      if (previousArr[i] != resultArr[i]) {
+        previousArr[i] = resultArr[i];
+        booleanArr[i] = true;
+      }
+    }
+
+    char* strkey = new char[3];
+    strkey[2] = '\0';
+    for (int i = 0; i < 2; i++) {
+      if (booleanArr[i]) {
+        strkey[i] = resultArr[i];
+        mqttClient.publish("sendkey", 0, false, strkey);
+      }else{
+        strkey[i] = '0';
+      }
+    }
+        //cout << strkey;
+
+    
+    
   #endif
     std::cout << ss.str().c_str() << std::endl;
   // }
@@ -88,6 +164,7 @@ String IMUControllerStop(const StaticJsonDocument<sizejson> &doc, const uint8_t 
 
 String IMUControllerInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
   String answer;
+  //__keys[0] = "AS"; __keys[1] = "DW";
   if (operation == IMUControllerINIT_MSG && !IMUControllerLoop_flag){
     uint8_t sensorType = doc["sensorType"];
     uint16_t freq = doc["frequence"];

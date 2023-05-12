@@ -113,17 +113,17 @@ static void IMUDataLoop(void *param){
   //ss << gx << ",    " << gy << ",    " << gz << "\r\n";//gyData(0,0) << ',    ' << gyData(0,1) << ',    ' << gyData(0,2) << ',    ' << gx*rad2degree << ',    ' << gy*rad2degree << ',    ' << gz*rad2degree << ',    ' << gyData(0,6) << ',    ' << gyData(0,7) << ',    ' << gyData(0,8) << '\r\n';
 
    
-    std::cout << ss.str().c_str() << std::endl;
+    std::cout << IMUDataLoop_counter << ss.str().c_str() << std::endl;
   // }
 
-  // if(IMUDataLoop_counter>=(int)param)
-  // {
-  //   ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
-  //   ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
-  //   IMUDataLoop_periodic_timer = nullptr;
-  //   IMUDataLoop_flag = false;
-  //   std::cout << "Finalizou\n";
-  // }
+  if(IMUDataLoop_counter>=(int)param)
+  {
+    ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
+    ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
+    IMUDataLoop_periodic_timer = nullptr;
+    IMUDataLoop_flag = false;
+    std::cout << "Finalizou\n";
+  }
 }
 
 String imuSendStop(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
@@ -137,6 +137,7 @@ String imuSendStop(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
       IMUDataLoop_flag = false;
       // IMUDataLoop_counter = -1;
       answer = "IMU Stopped";
+      std::cout << "Finalizou\n";
       // std::cout << IMUDataLoop_counter << " " << answer.c_str() << std::endl;
   } else
     answer += "";
