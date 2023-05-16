@@ -42,7 +42,6 @@ double filterX=0, filterY=0, tyme = 0;
 // char last_key = '0';
 // std::string __keys[2]; 
 char matrix[2][2] = {{'A', 'S'}, {'D', 'W'}};
-char resultArr[2] = {'0', '0'};
 char previousArr[2] = {'0', '0'};
 
 static void IMUControllerLoop(void *param){
@@ -65,77 +64,51 @@ static void IMUControllerLoop(void *param){
     client->write(ss.str().c_str());
   #endif
   #ifdef WiFistaMQTT_h
-    // //IMUControllergyData(0,0), IMUControllergyData(0,1);
-    // //mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());
-    // // if(millis()-tyme > 0.5){
-    // //   if (filterX > 0.200)
-    // //     mqttClient.publish("sendkey", 0, false,"D"); // D
-    // //   else if (filterX < -0.200) 
-    // //     mqttClient.publish("sendkey", 0, false, "W"); // W
-
-    // //   else if (filterY > 0.200)
-    // //     mqttClient.publish("sendkey", 0, false,"A"); // A
-    // //   else if (filterY < -0.200) 
-    // //     mqttClient.publish("sendkey", 0, false, "S"); // S
-
-    // //     tyme = millis();
-    // // }
-    //     for (int i = 0; i < 2; i++) {
-    //       float val=IMUControllergyData(0,i); 
-    //       //cout << "coluna: "<< i << "   "; cin >> val;
-    //       int pos_neg = 0;
-    //       char key;
     
-    //       if (val >= 0.2) pos_neg++;
-    //       if (pos_neg || val <= -0.2) {
-    //         key = __keys[pos_neg][i];
-    //       }
-    //       //else key = 'n';
+    String sendKey = "";
+    bool isChanged = false;
+    //char resultArr[2] = {'0', '0'};
     
-    //       if (last_key != key) {
-    //         last_key = key;
-    //         char* strkey = new char[2];
-    //         strkey[0] = key;strkey[1] = '\0';
-    //         //cout << strkey;
-    //         mqttClient.publish("sendkey", 0, false, strkey);
-    //       }
-    //     }
-
-    
-
-    for (int i = 0; i < 2; i++) {
-      float val=IMUControllergyData(0,i);
-      int pos_neg = 0;
-      
-      if (val >= 0.2) pos_neg++;
-      if (pos_neg || val <= -0.2) resultArr[i] = matrix[pos_neg][i];
-    }
-    bool booleanArr[2] = {false, false};
-
-    for (int i = 0; i < 2; i++) {
-      if (previousArr[i] != resultArr[i]) {
-        previousArr[i] = resultArr[i];
-        booleanArr[i] = true;
-      }
+    if(IMUControllergyData(0,0) > 0.6  && previousArr[0] != matrix[0][0]){
+      previousArr[0] = matrix[0][0];
+      sendKey += matrix[0][0];
+      isChanged = true;
+    }else if(IMUControllergyData(0,0) < -0.6 && previousArr[0] != matrix[0][1]){
+      previousArr[0] = matrix[0][1];
+      sendKey += matrix[0][1];
+      isChanged = true;
+    }else if(IMUControllergyData(0,0) < 0.2 && IMUControllergyData(0,0) > -0.2 && ((previousArr[0] != '0') && (previousArr[0] != '0'))){
+      sendKey += "0";
+      previousArr[0] = '0';
+      isChanged = true;
+    }else{
+      sendKey += previousArr[0];
     }
 
-    char* strkey = new char[3];
-    strkey[2] = '\0';
-    for (int i = 0; i < 2; i++) {
-      if (booleanArr[i]) {
-        strkey[i] = resultArr[i];
-        mqttClient.publish("sendkey", 0, false, strkey);
-      }else{
-        strkey[i] = '0';
-      }
+    if(IMUControllergyData(0,1) > 0.6 && previousArr[1] != matrix[1][0]){
+      previousArr[1] = matrix[1][0];
+      sendKey += matrix[1][0];
+      isChanged = true;
+    }else if(IMUControllergyData(0,1) < -0.6 && previousArr[1] != matrix[1][1]){
+      previousArr[1] = matrix[1][1];
+      sendKey += matrix[1][1];
+      isChanged = true;
+    }else if(IMUControllergyData(0,1) < 0.2 && IMUControllergyData(0,1) > -0.2  && (previousArr[1] != '0' && previousArr[1] != '0')){
+      previousArr[1] = '0';
+      sendKey += "0";
+      isChanged = true;
+    }else{
+      sendKey += previousArr[1];
     }
-        //cout << strkey;
-
     
+    if(isChanged){
+      mqttClient.publish("sendkey", 0, false, sendKey.c_str());
+      std::cout << sendKey.c_str() << std::endl;
+    }
     
   #endif
-    std::cout << ss.str().c_str() << std::endl;
-  // }
+    //std::cout << ss.str().c_str() << std::endl;
+  
 
   if(IMUControllerLoop_counter>=(int)param)
   {
