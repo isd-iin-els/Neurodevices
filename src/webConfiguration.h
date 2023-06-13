@@ -232,8 +232,16 @@ void resetEEPROMValuesRoutine(){
 
 
 void createWIFIAP(){
+  std::stringstream shortMacAddress; shortMacAddress << ESP.getEfuseMac();
+      String macAddress = shortMacAddress.str().c_str();
+      shortMacAddress.str(""); shortMacAddress  << macAddress[macAddress.length()-4] << macAddress[macAddress.length()-3]  
+                                                << macAddress[macAddress.length()-2] << macAddress[macAddress.length()-1];
+
+  macAddress = "dev";
+  macAddress += shortMacAddress.str().c_str();
+  
   WiFi.softAPConfig(IPAddress(8,8,8,8), IPAddress(8,8,8,8), IPAddress(255,255,255,0));
-  Serial.println(WiFi.softAP("BNConfig", "12345678") ? "Ready" : "Failed!");
+  Serial.println(WiFi.softAP(macAddress.c_str(), "12345678") ? "Ready" : "Failed!");
   dnsServer.setErrorReplyCode(DNSReplyCode::NoError); 
   dnsServer.start(53, "*", IPAddress(8,8,8,8));
   delay(2000);

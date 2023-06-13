@@ -18,6 +18,7 @@ extern "C" {
 #include "otaMqtt.h"
 
 
+
 AsyncMqttClient mqttClient;
 TimerHandle_t mqttReconnectTimer;
 TimerHandle_t wifiReconnectTimer;
@@ -78,6 +79,8 @@ String whoAmI(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation)
   return answer;
 }
 
+#include "blinkled.h"
+
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
   WiFi.begin(WIFI_SSID.c_str(), WIFI_PASSWORD.c_str());
@@ -95,6 +98,7 @@ void WiFiEvent(WiFiEvent_t event) {
         Serial.println("WiFi connected");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP());
+        blinkTime = 5; blinkMe(StaticJsonDocument<sizejson>(), 10);
         //connectToMqtt();
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
@@ -113,6 +117,7 @@ void onMqttConnect(bool sessionPresent) {
   mqttClient.publish("newdev", 0, true, whoAmI(StaticJsonDocument<sizejson>(), WHOAMI_MSG).c_str());
   mqttClient.subscribe(cmd2dev.str().c_str(), 0);
   mqttClient.subscribe("OTAMQTT", 0);
+  blinkTime = 5; blinkMe(StaticJsonDocument<sizejson>(), 10);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
@@ -174,7 +179,9 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
 
   // if(topico == cmd2dev.str().c_str()){
   uint8_t operation = doc["op"]; 
+  
   for (std::map<String,SDLEventFunction>::iterator it = functions.begin() ; it != functions.end(); ++it){
+    Serial.println(it->first);
     String ans = ((it->second)(doc,operation));
     if( ans != ""){
       mqttClient.publish(devans.str().c_str(), 0, true, ans.c_str());
@@ -222,7 +229,7 @@ bool wifiSTAMQTTInit(){
       devstream <<"dev" << shortMacAddress.str().c_str() << "ss";
       return false;
   
-  } else {createWIFIAP(); return true;}
+  } else {blinkTime = 1000; blinkMe(StaticJsonDocument<sizejson>(), 10); createWIFIAP();  return true;}
   
   // addFunctions("renameTopics",RENAMETOPICS_PARAMETERS,renameTopics);
 }

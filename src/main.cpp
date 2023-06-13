@@ -73,7 +73,8 @@
 // #include "NBStimulator.h"
 //#include "bpm_MQTT.h"
 // #include <IRremote.hpp>
-// #include "sendInsoleData.h"
+//#include "sendInsoleData.h"
+// #include "tsPCS.h"
 
 EEPROMClass  accelM("eeprom0");
 EEPROMClass  gyrM("eeprom1");
@@ -91,8 +92,10 @@ void setup() {
   addFunctions("restart",RESTART_PARAMETERS,restart);
   addFunctions("alive",ALIVE_PARAMETERS,alive);
   addFunctions("whoAmI",WHOAMI_PARAMETERS,whoAmI);
-  //addFunctions("imuSendInit",IMUSENDINIT_PARAMETERS,imuSendInit);  //sensors.init();
-  //addFunctions("imuSendStop",IMUSENDSTOP_PARAMETERS,imuSendStop);
+  // addFunctions("imuSendInit",IMUSENDINIT_PARAMETERS,imuSendInit);  //sensors.init();
+  // addFunctions("imuSendStop",IMUSENDSTOP_PARAMETERS,imuSendStop);
+  // addFunctions("tsPCS::sendInit",TSPCSSENDINIT_PARAMETERS,tsPCS::sendtsPCSInit);  
+  // addFunctions("tsPCS::openLoopUpdate",DURINGCICLEUPDATE_PARAMETERS,tsPCS::openLoopUpdate);
   addFunctions("IMUControllerInit",IMUControllerINIT_PARAMETERS,IMUControllerInit);  //sensors.init();
   addFunctions("IMUControllerStops",IMUControllerStop_PARAMETERS,IMUControllerStop);
 
@@ -106,8 +109,8 @@ void setup() {
   //addFunctions("stopadcStream",STOPADCSTREAM_PARAMETERS,stopAdcStream); 
   //addFunctions("bpmStream",BPMSTREAM_PARAMETERS,bpmStream); 
   //addFunctions("stopBpmStream",STOPBPMSTREAM_PARAMETERS,stopBpmStream); 
-  // addFunctions("insoleStream",INSOLESTREAM_PARAMETERS,insoleStream); 
-  // addFunctions("stopInsoleStream",STOPINSOLESTREAM_PARAMETERS,stopInsoleStream); 
+  //addFunctions("insoleStream",INSOLESTREAM_PARAMETERS,insoleStream); 
+  //addFunctions("stopInsoleStream",STOPINSOLESTREAM_PARAMETERS,stopInsoleStream); 
 
 
   // addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);
