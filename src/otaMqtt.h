@@ -74,9 +74,9 @@ namespace OTAMQTT{
 
     
 
-    String updateFirmware(const StaticJsonDocument<512> &doc, const uint8_t &operation) {
+    String updateFirmware(const StaticJsonDocument<512> &doc/*, const uint8_t &operation*/)  {
         String answer = "";
-        if (operation == UPDATE_FIRMWARE_MSG){
+        // if (operation == UPDATE_FIRMWARE_MSG){
             String binFolder = doc["binLocation"];
             String url = doc["url"];
             String md5 = doc["md5"];
@@ -84,7 +84,7 @@ namespace OTAMQTT{
             Serial.println("Requesting Update!");
             //Serial.println();
             update(binFolder,url,md5);
-        }
+        // }
         return answer; 
     }
 }

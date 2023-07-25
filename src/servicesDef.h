@@ -33,7 +33,7 @@
 #define TSPCSSENDINIT_MSG 33
 #define DURINGCICLEUPDATE_MSG 34
 
-
+//nome das funções para usar map no lugar do for :~
 #define RESTART_PARAMETERS                      "{\"op\":7}"
 #define WHOAMI_PARAMETERS                       "{\"op\":9}"
 #define BLINKME_PARAMETERS                      "{\"op\":10}"

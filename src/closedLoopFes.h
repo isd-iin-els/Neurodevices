@@ -88,10 +88,10 @@ void IRAM_ATTR TwoDOFLimbControlLoop(void *param){
   }
 }
 
-String TwoDOFLimbFesControl(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String TwoDOFLimbFesControl(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
 
   String answer;
-  if (operation == CLOSEDLOOPFESCONTROL_MSG && !closedLoop_flag){
+  // if (operation == CLOSEDLOOPFESCONTROL_MSG && !closedLoop_flag){
     closedLoop_flag = true;
     // mpuInit();
     sensors.init();
@@ -134,28 +134,28 @@ String TwoDOFLimbFesControl(const StaticJsonDocument<sizejson> &doc, const uint8
     // ESP_ERROR_CHECK(esp_timer_start_periodic(IMUClosedLoop_periodic_timer, code(0,2)*1000000.0));
     // closedLoopIMU_Counter = 0;
     answer += "Loop para estimulacao em malha fechada\r\n";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 
-String closedLoopFesReferenceUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String closedLoopFesReferenceUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
-  if (operation == CLOSEDLOOPFESREFERENCEUPDATE_MSG){
+  // if (operation == CLOSEDLOOPFESREFERENCEUPDATE_MSG){
     String referencet  = doc["r"];
     ref = referencet.c_str();
     std::cout << referencet.c_str() << std::endl;
     answer += "Referencias dos controladores PID atualizadas\r\n";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 
-String PIDsParametersUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String PIDsParametersUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
-  if (operation == PIDSPARAMETERSUPDATE_MSG){
+  // if (operation == PIDSPARAMETERSUPDATE_MSG){
     String kpt = doc["kp"], kit  = doc["ki"], kdt = doc["kd"], minInputLimitt  = doc["minInputLimit"], 
            maxInputLimitt  = doc["maxInputLimit"], opPt  = doc["operationalP"], referencet  = doc["r"];
     LinAlg::Matrix<double> kp = kpt.c_str(), ki = kit.c_str(), kd = kdt.c_str(), minInputLimit = minInputLimitt.c_str(), 
@@ -173,9 +173,9 @@ String PIDsParametersUpdate(const StaticJsonDocument<sizejson> &doc, const uint8
     }
     
     answer += "Parametros dos PIDs atualizados\r\n";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 

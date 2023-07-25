@@ -41,23 +41,23 @@ void openLoopFesStop(){
     
 }
 
-String openLoopTonFreqUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String openLoopTonFreqUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/) {
 
   String answer;
-  if (operation == OPENLOOPTONFREQUPDATE_MSG){
+  // if (operation == OPENLOOPTONFREQUPDATE_MSG){
     openLoopFesStop();
     openLoopFesInit(doc["t"],doc["p"]);
     answer += "Ton and Frequency sucessfully updated!";
-  }
-  else
-    answer += "";
+  // }
+  // else
+    // answer += "";
   return answer;
 }
 
-String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
 
   String answer;
-  if (operation == OPENLOOPFESUPDATE_MSG){
+  // if (operation == OPENLOOPFESUPDATE_MSG){
     const char *msg = doc["m"];
     LinAlg::Matrix<double> code = msg;
 
@@ -79,22 +79,22 @@ String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t 
     //answer += getIMUData();
     //std::cout << answer.c_str() << std::endl; 
     answer += "1";
-  }
-  else
-    answer += "1";
+  // }
+  // else
+  //   answer += "1";
   return answer;
 }
 
 
-String stopOpenLoopFes(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String stopOpenLoopFes(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
-  if (operation == STOPOPENLOOPFES_MSG){
+  // if (operation == STOPOPENLOOPFES_MSG){
     // Serial.print("Operation 8, received data: "); Serial.println(msg);
     openLoopFesStop();
     answer += "1";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 

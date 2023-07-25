@@ -126,9 +126,9 @@ static void IMUDataLoop(void *param){
   }
 }
 
-String imuSendStop(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String imuSendStop(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
-  if (operation == IMUSENDSTOP__MSG && IMUDataLoop_flag){
+  // if (operation == IMUSENDSTOP__MSG && IMUDataLoop_flag){
     if(IMUDataLoop_periodic_timer != nullptr){
       ESP_ERROR_CHECK(esp_timer_stop(IMUDataLoop_periodic_timer)); //Timer pause
       ESP_ERROR_CHECK(esp_timer_delete(IMUDataLoop_periodic_timer)); //Timer delete
@@ -139,14 +139,14 @@ String imuSendStop(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
       answer = "IMU Stopped";
       std::cout << "Finalizou\n";
       // std::cout << IMUDataLoop_counter << " " << answer.c_str() << std::endl;
-  } else
-    answer += "";
+  // } else
+  //   answer += "";
   return answer;
 }
 
-String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String imuSendInit(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
-  if (operation == IMUSENDINIT_MSG && !IMUDataLoop_flag){
+  // if (operation == IMUSENDINIT_MSG && !IMUDataLoop_flag){
     uint8_t sensorType = doc["sensorType"];
     uint16_t freq = doc["frequence"];
     int64_t timeSimulation = doc["simulationTime"];
@@ -181,9 +181,9 @@ String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
     
     std::cout << "Tudo Inicializado\n";
     answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 
@@ -208,9 +208,9 @@ String imuSendInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &opera
 //     vTaskDelete(NULL);
 // }
 
-String imuAccelerometerCalibration(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String imuAccelerometerCalibration(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
-  if (operation == IMUACCELEROMETERCALIBRATION_MSG && !IMUDataLoop_flag){
+  // if (operation == IMUACCELEROMETERCALIBRATION_MSG && !IMUDataLoop_flag){
     uint8_t sensorType = doc["sensorType"];
     uint16_t freq = doc["frequence"];
 
@@ -255,9 +255,9 @@ String imuAccelerometerCalibration(const StaticJsonDocument<sizejson> &doc, cons
     
     // std::cout << "sensor: " << gy80Flag << "\n"; 
     answer += "Acelerômetro calibrado com Sucesso\r\n";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 
@@ -280,9 +280,9 @@ String imuAccelerometerCalibration(const StaticJsonDocument<sizejson> &doc, cons
 //     vTaskDelete(NULL);
 // }
 
-String imuGiroscopeCalibration(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String imuGiroscopeCalibration(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
-  if (operation == IMUGIROSCOPECALIBRATION_MSG && !IMUDataLoop_flag){
+  // if (operation == IMUGIROSCOPECALIBRATION_MSG && !IMUDataLoop_flag){
     uint8_t sensorType = doc["sensorType"];
     uint16_t freq = doc["frequence"];
 
@@ -325,9 +325,9 @@ String imuGiroscopeCalibration(const StaticJsonDocument<sizejson> &doc, const ui
     }
   
     answer += "Giroscópio calibrado com Sucesso\r\n";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 
@@ -371,9 +371,9 @@ void calibMag(void *arg){
     vTaskDelete(NULL);
 }
 
-String imuMagnetometerCalibration(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String imuMagnetometerCalibration(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
-  if (operation == IMUMAGNETOMETERCALIBRATION_MSG && !IMUDataLoop_flag){
+  // if (operation == IMUMAGNETOMETERCALIBRATION_MSG && !IMUDataLoop_flag){
     uint8_t sensorType = doc["sensorType"];
     uint16_t freq = doc["frequence"];
 
@@ -396,9 +396,9 @@ String imuMagnetometerCalibration(const StaticJsonDocument<sizejson> &doc, const
     }
     
     answer += "Magnetômetro calibrado com Sucesso\r\n";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 

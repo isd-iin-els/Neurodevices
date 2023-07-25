@@ -25,10 +25,10 @@ volatile uint16_t pulse_width;
 volatile uint16_t count = 0;
 volatile uint16_t time_max = 0;
 
-String openLoopUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String openLoopUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
 
   String answer;
-  if (operation == DURINGCICLEUPDATE_MSG){
+  // if (operation == DURINGCICLEUPDATE_MSG){
     const char *msg = doc["m"];
     LinAlg::Matrix<double> code = msg;
 
@@ -42,9 +42,9 @@ String openLoopUpdate(const StaticJsonDocument<sizejson> &doc, const uint8_t &op
     //     dispositivo.fes[i].setFadeTime(doc["f"]); 
  
     answer += "1";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 
@@ -63,7 +63,7 @@ static void DataLoop(void *param){
     }
   }else{
     digitalWrite(modPin[1],0);
-    digitalWrite(modPin[0],0);
+    digitalWrite(modPin[0],0);  
   }
   count++;
   if(count > time_max){
@@ -89,10 +89,10 @@ static void DataLoop(void *param){
   }
 }
 
-String sendtsPCSInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String sendtsPCSInit(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
    std::cout << "Tudo Inicializado\n";
-  if (operation == TSPCSSENDINIT_MSG && !DataLoop_flag){
+  // if (operation == TSPCSSENDINIT_MSG && !DataLoop_flag){
 
     freq_boost = (uint16_t)doc["freq_boost"]; //high
     freq_high = 2*(uint16_t)doc["freq_high"]; //high
@@ -118,9 +118,9 @@ String sendtsPCSInit(const StaticJsonDocument<sizejson> &doc, const uint8_t &ope
     
     std::cout << "Tudo Inicializado\n";
     answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 }

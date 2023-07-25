@@ -65,8 +65,8 @@
 
 #include <wifistaMQTT.h>
 #include <sendIMUData.h>
-#include "IMUController.h"
-#include "openLoopFes.h"
+//#include "IMUController.h"
+//#include "openLoopFes.h"
 // #include "closedLoopFes.h"
 // #include "blinkled.h"
 // #include "fesBike.h"
@@ -74,7 +74,7 @@
 //#include "bpm_MQTT.h"
 // #include <IRremote.hpp>
 //#include "sendInsoleData.h"
-// #include "tsPCS.h"
+#include "tsPCS.h"
 
 EEPROMClass  accelM("eeprom0");
 EEPROMClass  gyrM("eeprom1");
@@ -87,23 +87,23 @@ void setup() {
   captivPortal = wifiSTAMQTTInit();
   // IrReceiver.begin(32, DISABLE_LED_FEEDBACK);
   
-  addFunctions("OTAMQTT::updateFirmware",UPDATE_FIRMWARE_PARAMETERS,OTAMQTT::updateFirmware);
-  addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate);
-  addFunctions("restart",RESTART_PARAMETERS,restart);
-  addFunctions("alive",ALIVE_PARAMETERS,alive);
-  addFunctions("whoAmI",WHOAMI_PARAMETERS,whoAmI);
-  // addFunctions("imuSendInit",IMUSENDINIT_PARAMETERS,imuSendInit);  //sensors.init();
-  // addFunctions("imuSendStop",IMUSENDSTOP_PARAMETERS,imuSendStop);
-  // addFunctions("tsPCS::sendInit",TSPCSSENDINIT_PARAMETERS,tsPCS::sendtsPCSInit);  
-  // addFunctions("tsPCS::openLoopUpdate",DURINGCICLEUPDATE_PARAMETERS,tsPCS::openLoopUpdate);
-  addFunctions("IMUControllerInit",IMUControllerINIT_PARAMETERS,IMUControllerInit);  //sensors.init();
-  addFunctions("IMUControllerStops",IMUControllerStop_PARAMETERS,IMUControllerStop);
+  addFunctions("OTAMQTT::updateFirmware",UPDATE_FIRMWARE_PARAMETERS,OTAMQTT::updateFirmware,25);
+  //addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate,2);
+  addFunctions("restart",RESTART_PARAMETERS,restart,7);
+  // addFunctions("alive",ALIVE_PARAMETERS,alive);
+  addFunctions("whoAmI",WHOAMI_PARAMETERS,whoAmI,9);
+  addFunctions("imuSendInit",IMUSENDINIT_PARAMETERS,imuSendInit,1);  //sensors.init();
+  addFunctions("imuSendStop",IMUSENDSTOP_PARAMETERS,imuSendStop,22);
+  addFunctions("tsPCS::sendInit",TSPCSSENDINIT_PARAMETERS,tsPCS::sendtsPCSInit,33);  
+  addFunctions("tsPCS::openLoopUpdate",DURINGCICLEUPDATE_PARAMETERS,tsPCS::openLoopUpdate,34);
+  // addFunctions("IMUControllerInit",IMUControllerINIT_PARAMETERS,IMUControllerInit);  //sensors.init();
+  // addFunctions("IMUControllerStops",IMUControllerStop_PARAMETERS,IMUControllerStop);
 
   // addFunctions("imuAccelerometerCalibration",IMUACCELEROMETERCALIBRATION_PARAMETERS,imuAccelerometerCalibration);  //sensors.init();
   // addFunctions("imuGiroscopeCalibration",IMUGIROSCOPECALIBRATION_PARAMETERS,imuGiroscopeCalibration);  //sensors.init();
   // addFunctions("imuMagnetometerCalibration",IMUMAGNETOMETERCALIBRATION_PARAMETERS,imuMagnetometerCalibration);  //sensors.init();
-  addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes);
-  addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate);
+  //addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes,8);
+  //addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate,18);
   // addFunctions("fesBikeStart",FESBIKESTART_PARAMETERS,fesBikeStart);
   //addFunctions("adcStream",ADCSTREAM_PARAMETERS,adcStream); 
   //addFunctions("stopadcStream",STOPADCSTREAM_PARAMETERS,stopAdcStream); 

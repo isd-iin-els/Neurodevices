@@ -25,13 +25,13 @@ void IRAM_ATTR blink(void *param){
   }
 }
 
-String blinkMe(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String blinkMe(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   // char* d = reinterpret_cast<char*>(data); String msg,answer;
   // for (size_t i = 0; i < len; ++i) msg += d[i];
   // uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);
   // msg = msg.substring(index+1,msg.length());
   String answer;
-  if (operation == BLINKME_MSG){
+  // if (operation == BLINKME_MSG){
     blink_periodic_timer_args.callback = &blink;
     blink_periodic_timer_args.name = "blink";
     blink_periodic_timer_args.arg = (void*)(int (blinkTime));
@@ -42,8 +42,8 @@ String blinkMe(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation
     ss << "start blinking\n";
     answer = ss.str().c_str();
     return answer;
-  }
-  answer = "";
+  // }
+  // answer = "";
   return answer;
 }
 
