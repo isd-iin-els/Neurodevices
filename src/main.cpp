@@ -88,22 +88,22 @@ void setup() {
   // IrReceiver.begin(32, DISABLE_LED_FEEDBACK);
   
   addFunctions("OTAMQTT::updateFirmware",UPDATE_FIRMWARE_PARAMETERS,OTAMQTT::updateFirmware,25);
-  //addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate,2);
+  addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate,2);
   addFunctions("restart",RESTART_PARAMETERS,restart,7);
   // addFunctions("alive",ALIVE_PARAMETERS,alive);
   addFunctions("whoAmI",WHOAMI_PARAMETERS,whoAmI,9);
   addFunctions("imuSendInit",IMUSENDINIT_PARAMETERS,imuSendInit,1);  //sensors.init();
   addFunctions("imuSendStop",IMUSENDSTOP_PARAMETERS,imuSendStop,22);
-  addFunctions("tsPCS::sendInit",TSPCSSENDINIT_PARAMETERS,tsPCS::sendtsPCSInit,33);  
-  addFunctions("tsPCS::openLoopUpdate",DURINGCICLEUPDATE_PARAMETERS,tsPCS::openLoopUpdate,34);
+  // addFunctions("tsPCS::sendInit",TSPCSSENDINIT_PARAMETERS,tsPCS::sendtsPCSInit,33);  
+  // addFunctions("tsPCS::openLoopUpdate",DURINGCICLEUPDATE_PARAMETERS,tsPCS::openLoopUpdate,34);
   // addFunctions("IMUControllerInit",IMUControllerINIT_PARAMETERS,IMUControllerInit);  //sensors.init();
   // addFunctions("IMUControllerStops",IMUControllerStop_PARAMETERS,IMUControllerStop);
 
   // addFunctions("imuAccelerometerCalibration",IMUACCELEROMETERCALIBRATION_PARAMETERS,imuAccelerometerCalibration);  //sensors.init();
   // addFunctions("imuGiroscopeCalibration",IMUGIROSCOPECALIBRATION_PARAMETERS,imuGiroscopeCalibration);  //sensors.init();
   // addFunctions("imuMagnetometerCalibration",IMUMAGNETOMETERCALIBRATION_PARAMETERS,imuMagnetometerCalibration);  //sensors.init();
-  //addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes,8);
-  //addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate,18);
+  addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes,8);
+  addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate,18);
   // addFunctions("fesBikeStart",FESBIKESTART_PARAMETERS,fesBikeStart);
   //addFunctions("adcStream",ADCSTREAM_PARAMETERS,adcStream); 
   //addFunctions("stopadcStream",STOPADCSTREAM_PARAMETERS,stopAdcStream); 

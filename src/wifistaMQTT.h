@@ -63,7 +63,7 @@ String whoAmI(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operatio
     std::stringstream ss;
     ss << "{";
     ss <<  "\"Device\":\"DOIT Esp32 DevKit v1\",";
-    ss << "\"Device Attribute\":\"4-Channel FES\",";
+    ss << "\"Device Function\":\"" << devFunction.c_str() << "\",";
     ss << "\"Device ID\":" << ESP.getEfuseMac() << ","; 
     ss << "\"Device IP\":\"" << WiFi.localIP().toString().c_str() << "\","; 
     ss << "\"Topics\":[\"" << cmd2dev.str().c_str() << "\",\"" << devans.str().c_str() << "\",\"" << devstream.str().c_str()<< "\",\"" << connectionStatus.str().c_str()<< "\"],"; 

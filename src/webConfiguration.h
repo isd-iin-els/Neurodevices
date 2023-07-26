@@ -13,23 +13,26 @@ EEPROMClass mqttHost  ("host");
 EEPROMClass mqttPort  ("port");
 EEPROMClass wifiSSID  ("ssid");
 EEPROMClass wifiPassword  ("wifipass");
-String login = "",pass = "",MQTT_HOST = "", WIFI_SSID = "", WIFI_PASSWORD = "";
+EEPROMClass deviceFunction  ("deviceFunction");
+String login = "",pass = "",MQTT_HOST = "", WIFI_SSID = "", WIFI_PASSWORD = "", devFunction = "";
 uint16_t MQTT_PORT = 0;
 
 
 bool loadEEPROM(){
   if (mqttLogin.begin(0x50) && mqttPass.begin(0x50)  && 
       mqttHost.begin(0x50)  && mqttPort.begin(0x10)  && 
-      wifiSSID.begin(0x50)  && wifiPassword.begin(0x50)) {
+      wifiSSID.begin(0x50)  && wifiPassword.begin(0x50)  && deviceFunction.begin(0x50)) {
         login = mqttLogin.readString(0);
         pass = mqttPass.readString(0);
         MQTT_HOST = mqttHost.readString(0);
         MQTT_PORT = mqttPort.readUInt(0);
         WIFI_SSID = wifiSSID.readString(0);
         WIFI_PASSWORD =  wifiPassword.readString(0);
+        devFunction = deviceFunction.readString(0);
         std::cout << login.c_str()         << "\n" << pass.c_str() <<"\n"
                   << MQTT_HOST.c_str()     << "\n" << MQTT_PORT    <<"\n"
-                  << WIFI_SSID.c_str()     << "\n" << WIFI_PASSWORD.c_str() <<"\n";
+                  << WIFI_SSID.c_str()     << "\n" << WIFI_PASSWORD.c_str() <<"\n" 
+                  << devFunction.c_str()   << "\n";
         if (MQTT_HOST==""||WIFI_SSID==""||WIFI_PASSWORD=="")
           return false;
         return true;
@@ -99,6 +102,9 @@ const char index_html[] PROGMEM = R"rawliteral(
       <label>MQTT Server port:</label>
       <input type="text" name="mqttPort">
       <br>
+      <label>Device Function:</label>
+      <input type="text" name="devFunction">
+      <br>
       <input type="submit" value="Submit">
     </form><br>
   </body>
@@ -150,6 +156,7 @@ void initWebServer(){
       MQTT_PORT = request->getParam("mqttPort")->value().toInt();
       WIFI_SSID = request->getParam("wifiSSID")->value();
       WIFI_PASSWORD =  request->getParam("wifiPassword")->value();
+      devFunction =  request->getParam("devFunction")->value();
     //   writeString(login,mqttLogin);
       if(login.length()>0){
         mqttLogin.writeString(0,login.c_str());
@@ -175,9 +182,13 @@ void initWebServer(){
         wifiPassword.writeString(0,WIFI_PASSWORD.c_str());
         wifiPassword.commit();
       }
+      if(devFunction.length()>0){
+        deviceFunction.writeString(0,devFunction.c_str());
+        deviceFunction.commit();
+      }
 
       
-      std::cout << login.c_str()<<"\n"<<pass.c_str()<<"\n"<<MQTT_HOST.c_str()<<"\n"<<MQTT_PORT<<"\n";
+      std::cout << login.c_str()<<"\n"<<pass.c_str()<<"\n"<<MQTT_HOST.c_str()<<"\n"<<MQTT_PORT<<"\n"<<devFunction<<"\n";
       request->send(200, "text/plain", "Data Updated");
       delay(1000);
       ESP.restart();

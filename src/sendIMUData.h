@@ -147,7 +147,7 @@ String imuSendStop(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &ope
 String imuSendInit(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
   // if (operation == IMUSENDINIT_MSG && !IMUDataLoop_flag){
-    uint8_t sensorType = doc["sensorType"];
+    //uint8_t sensorType = doc["sensorType"];
     uint16_t freq = doc["frequence"];
     int64_t timeSimulation = doc["simulationTime"];
 
