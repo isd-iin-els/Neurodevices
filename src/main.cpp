@@ -82,9 +82,10 @@ EEPROMClass  magM("eeprom2");
 bool captivPortal;
 
 void setup() {
-  
+
   sleep(2);
   captivPortal = wifiSTAMQTTInit();
+  
   // IrReceiver.begin(32, DISABLE_LED_FEEDBACK);
   
   addFunctions("OTAMQTT::updateFirmware",UPDATE_FIRMWARE_PARAMETERS,OTAMQTT::updateFirmware,25);
@@ -127,6 +128,8 @@ void setup() {
   // addFunctions("MP_PIDSParametersUpdate",MP_PIDSParametersUpdate);
 
   // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
+
+  loadLastSectionConfig();
 }
 
 void loop() {

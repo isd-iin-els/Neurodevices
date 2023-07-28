@@ -1,15 +1,9 @@
 #ifndef WiFistaMQTT_h
 #define WiFistaMQTT_h
 
-#include <Arduino.h>
-#include <map>
-#include <ArduinoJson.h>
-#include "servicesDef.h"
-#include <WiFi.h>
-#include <WiFiAP.h>
-#include <sstream>
-#include <iostream>
+#include <globals.h>
 #include <webConfiguration.h>
+
 extern "C" {
 	#include "freertos/FreeRTOS.h"
 	#include "freertos/timers.h"
@@ -26,10 +20,6 @@ const uint16_t sizejson = 512;
 std::stringstream cmd2dev,devans,devstream,connectionStatus;
 String lastWillTopic;
 
-
-typedef String (*SDLEventFunction)(const StaticJsonDocument<sizejson> &doc);
-std::map<int,SDLEventFunction> functions;
-std::map<String,String> functionalitiesParameters;
 
 //-------------------------------------------------------------------------------
 void addFunctions(String functioname, String parameters, SDLEventFunction function, uint16_t operation) {
@@ -60,19 +50,17 @@ String alive(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation
 String whoAmI(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
   // if (operation == WHOAMI_MSG){
-    std::stringstream ss;
+    std::stringstream ss, functionalities;
     ss << "{";
     ss <<  "\"Device\":\"DOIT Esp32 DevKit v1\",";
     ss << "\"Device Function\":\"" << devFunction.c_str() << "\",";
     ss << "\"Device ID\":" << ESP.getEfuseMac() << ","; 
     ss << "\"Device IP\":\"" << WiFi.localIP().toString().c_str() << "\","; 
     ss << "\"Topics\":[\"" << cmd2dev.str().c_str() << "\",\"" << devans.str().c_str() << "\",\"" << devstream.str().c_str()<< "\",\"" << connectionStatus.str().c_str()<< "\"],"; 
-    ss << "\"Implemented Functionalities\": {" ;
-    for(std::map<String,String>::iterator iter = functionalitiesParameters.begin(); iter != functionalitiesParameters.end(); ++iter)
-      ss << "\"" << iter->first.c_str() << "\":" << functionalitiesParameters[iter->first.c_str()].c_str() << ",";
-    ss.seekp(-1, std::ios_base::end);
-    ss.seekp(-1, std::ios_base::end);
-    ss << "} }\0";
+    ss << "\"Implemented Functionalities\":";
+    functionalities << globaljson.as<String>().c_str();
+    ss << functionalities.str() << " }\0";
+
     answer = ss.str().c_str();
     return answer;
   // }
@@ -186,13 +174,14 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   StaticJsonDocument<sizejson> doc;
   DeserializationError error = deserializeJson(doc, payload);
 
-  //Serial.print(F("msg\n"));
-
   if (error) {
     Serial.print(F("deserializeJson() failed: "));
     Serial.println(error.f_str());
     return;
   }
+  
+  updateLastSectionIfDifferent(doc); //Criar função de configuração e colocar isso dentro... usa o dado configurado... se as keys não existirem, não importa, é só devolver o globaljson no doc com a configuração pré-determinada... Devolver nessa função os parâmetros de globaljson adaptado, exceto o que precisar mudar... isso implica que só altera no global js quando a função for de configuração... aqui na on mqttmessage o globaljso deveria apenas ser usado para completar as configurações e evitar que isso seja enviado o tempo todo.
+  std::cout << globaljson.as<String>().c_str() << "\n";
 
     int op = uint16_t(doc["op"]); 
   if(functions.count(op) != 0){
@@ -203,22 +192,6 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     if( ans != "")//{
         mqttClient.publish(devans.str().c_str(), 0, true, ans.c_str());
   }
-
-  // if(topico == cmd2dev.str().c_str()){]
-  //---------------------------------------------------------------------------------------------
-  
-
-  //   uint8_t operation = doc["op"]; 
-  //     // break;
-  // // }
-  // for (std::map<String,SDLEventFunction>::iterator it = functions.begin() ; it != functions.end(); ++it){
-  //   Serial.println(it->first);
-  //   String ans = ((it->second)(doc,operation));
-  //   if( ans != ""){
-  //     mqttClient.publish(devans.str().c_str(), 0, true, ans.c_str());
-  //     break;
-  //   }
-  // }
 }
 
 void onMqttPublish(uint16_t packetId) {

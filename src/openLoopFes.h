@@ -11,10 +11,10 @@ volatile bool openLoop_flag = false, sensor_flag = false;
 //         levelPin[4]  = {13,19,2,18};
 // uint8_t modPin[4]    = {27,19,12,18},//cc
 //         levelPin[4]  = {13,4,2,5};]
-uint8_t modPin[8]    = {27,19,12,18,23,14,26,25},//ca
+uint8_t modPin[8]    = {27,19,12,18,23,14,26,25},//ca andré
         levelPin[4]  = {13,4,2,33};
-// uint8_t modPin[8]    = {12,14,2,15,21,23,26,32},//ca
-//         levelPin[4]  = {13,4,22,18};
+// uint8_t modPin[8]    = {14,26,19,15,21,23,26,32},//ca Jorge
+//         levelPin[4]  = {13,16,22,18};
 
 Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000,350,100000,true);
 
