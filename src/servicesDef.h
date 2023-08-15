@@ -65,4 +65,5 @@
 #define IMUControllerStop_PARAMETERS                  "{\"op\":32}"
 #define TSPCSSENDINIT_PARAMETERS "{\"op\":33,\"freq_boost\":\"int\",\"freq_high\":\"int\",\"freq_low\":\"int\",\"p_width\":\"int\"}"
 #define DURINGCICLEUPDATE_PARAMETERS  "{\"op\":34,\"m\":\"float\"}"
+#define RESET_PARAMETERS                      "{\"op\":35}"
 #endif

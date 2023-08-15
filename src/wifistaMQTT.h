@@ -40,11 +40,21 @@ String restart(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operati
   return answer;
 }
 
+String resetDevice(const StaticJsonDocument<sizejson> &doc)  {
+  String answer;
+  // if (operation == ALIVE_MSG)
+  wifiSSID.writeString(0,"");
+  wifiSSID.commit();
+  //Serial.println("Reiniciando para alterar configurações de rede!\n");
+  ESP.restart();
+  return "1";
+
+}
+
 String alive(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
   String answer;
   // if (operation == ALIVE_MSG)
     return "1";
-  return answer;
 }
 
 String whoAmI(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {

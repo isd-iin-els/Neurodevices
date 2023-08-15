@@ -33,7 +33,9 @@ String openLoopUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &
     LinAlg::Matrix<double> code = msg;
 
     // for(uint8_t i = 0; i < code.getNumberOfColumns(); ++i)
-    ledcWrite(0, code(0,0));  
+    // ledcWrite(0, code(0,0));  
+    dispositivo.fes[0].setPowerLevel(code(0,0));  
+    dispositivo.fes[2].setPowerLevel(code(0,0));  
     // if(dispositivo.stopLoopFlag){
     //   openLoopFesInit(doc["t"],doc["p"]);
     // }
@@ -52,21 +54,33 @@ static void DataLoop(void *param){
 
   if(count < pulse_width){
     if(state){
-      digitalWrite(modPin[0],0);
+      // std::cout << "lado 1\n";
+      // digitalWrite(modPin[0],0);
+      dispositivo.fes[0].resetOutputReversePin();
       //Verificar a necessidade de um delay
-      digitalWrite(modPin[1],1);
+      // digitalWrite(modPin[1],1);
+      dispositivo.fes[0].setOutputDirectPin();
       state = !state;
     }else{
-      digitalWrite(modPin[1],0);
-      digitalWrite(modPin[0],1); 
+      dispositivo.fes[0].resetOutputDirectPin();
+      // std::cout << "lado 2\n";
+      dispositivo.fes[0].setOutputReversePin();
+      //Verificar a necessidade de um delay
+      // digitalWrite(modPin[1],1);
+      // digitalWrite(modPin[1],0);
+      // digitalWrite(modPin[0],1); 
       state = !state;
     }
   }else{
-    digitalWrite(modPin[1],0);
-    digitalWrite(modPin[0],0);  
+    // std::cout << "parado\n";
+    // digitalWrite(modPin[1],0);
+    // digitalWrite(modPin[0],0);  
+    dispositivo.fes[0].resetOutputDirectPin();
+    dispositivo.fes[0].resetOutputReversePin();
   }
   count++;
   if(count > time_max){
+    // std::cout << "Fim de loop\n";
     count = 0;
   }
 
@@ -97,15 +111,20 @@ String sendtsPCSInit(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &o
     freq_boost = (uint16_t)doc["freq_boost"]; //high
     freq_high = 2*(uint16_t)doc["freq_high"]; //high
     freq_low = (uint16_t)doc["freq_low"]; //low
-    pulse_width = (uint16_t)((uint16_t)doc["p_width"])/(1000000.0/freq_high); //low
+    float speed_high = (1.0/float(freq_high))*1000000.0;
+    pulse_width = (uint16_t)(speed_high/float((uint16_t)doc["p_width"])); //low
     count = 0;
     time_max = freq_high/freq_low;
+    std::cout << "Boost: " << freq_boost;
+    std::cout << "freq_high: " << freq_high;
+    std::cout << "freq_low: " << freq_low;
+    std::cout << "Boost: " << pulse_width;
 
-    pinMode(modPin[0], OUTPUT); //Channel 3
-    pinMode(modPin[1], OUTPUT); //Channel 3
+    // pinMode(modPin[0], OUTPUT); //Channel 3
+    // pinMode(modPin[1], OUTPUT); //Channel 3
 
-    ledcSetup(0, freq_boost, LEDC_TIMER_12_BIT);
-    ledcAttachPin(levelPin[0], 0);
+    // ledcSetup(0, freq_boost, LEDC_TIMER_12_BIT);
+    // ledcAttachPin(levelPin[0], 0);
 
 
 

@@ -54,6 +54,11 @@ String openLoopTonFreqUpdate(const StaticJsonDocument<sizejson> &doc/*, const ui
   return answer;
 }
 
+String openLoopFesConfig(const StaticJsonDocument<sizejson> &doc)  {
+  openLoopFesInit(doc["t"],doc["p"]);
+  return String("System Successfully Configured");
+}
+
 String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
 
   String answer;
