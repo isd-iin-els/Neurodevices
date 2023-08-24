@@ -54,44 +54,22 @@ static void DataLoop(void *param){
 
   if(count < pulse_width){
     if(state){
-      // std::cout << "lado 1\n";
-      // digitalWrite(modPin[0],0);
       dispositivo.fes[0].resetOutputReversePin();
-      //Verificar a necessidade de um delay
-      // digitalWrite(modPin[1],1);
       dispositivo.fes[0].setOutputDirectPin();
       state = !state;
     }else{
       dispositivo.fes[0].resetOutputDirectPin();
-      // std::cout << "lado 2\n";
       dispositivo.fes[0].setOutputReversePin();
-      //Verificar a necessidade de um delay
-      // digitalWrite(modPin[1],1);
-      // digitalWrite(modPin[1],0);
-      // digitalWrite(modPin[0],1); 
       state = !state;
     }
   }else{
-    // std::cout << "parado\n";
-    // digitalWrite(modPin[1],0);
-    // digitalWrite(modPin[0],0);  
     dispositivo.fes[0].resetOutputDirectPin();
     dispositivo.fes[0].resetOutputReversePin();
   }
   count++;
   if(count > time_max){
-    // std::cout << "Fim de loop\n";
     count = 0;
   }
-
-  // #ifdef WiFistaTCP_h
-  //   client->write(ss.str().c_str());
-  // #endif
-  // #ifdef WiFistaMQTT_h
-  //   mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());
-  // #endif 
-    
-  //std::cout << IMUDataLoop_counter << ss.str().c_str() << std::endl;
 
   if(DataLoop_counter>=(int)param)
   {

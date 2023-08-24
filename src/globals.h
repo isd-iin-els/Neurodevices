@@ -21,7 +21,7 @@
     void loadLastSectionConfig(){
         if(EEPROM.begin(1024)){
             DeserializationError error = deserializeJson(globaljson, eepromStream);
-            if (error) {
+            //if (error) {
                 Serial.print(F("deserializeJson() failed: "));
                 Serial.println(error.f_str());
                 std::stringstream functionalities;
@@ -34,7 +34,7 @@
                 deserializeJson(globaljson, functionalities.str().c_str());
                 serializeJson(globaljson, eepromStream);
                 eepromStream.flush();
-            }
+            //}
             std::cout << globaljson.as<String>().c_str() << "\n";
         }
     }
