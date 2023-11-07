@@ -66,15 +66,15 @@
 #include <wifistaMQTT.h>
 #include <sendIMUData.h>
 //#include "IMUController.h"
-//#include "openLoopFes.h"
+#include "openLoopFes.h"
 // #include "closedLoopFes.h"
 // #include "blinkled.h"
 // #include "fesBike.h"
 // #include "NBStimulator.h"
 //#include "bpm_MQTT.h"
 // #include <IRremote.hpp>
-//#include "sendInsoleData.h"
-#include "tsPCS.h"
+// #include "sendInsoleData.h"
+// #include "tsPCS.h"
 
 EEPROMClass  accelM("eeprom0");
 EEPROMClass  gyrM("eeprom1");
@@ -111,8 +111,8 @@ void setup() {
   //addFunctions("stopadcStream",STOPADCSTREAM_PARAMETERS,stopAdcStream); 
   //addFunctions("bpmStream",BPMSTREAM_PARAMETERS,bpmStream); 
   //addFunctions("stopBpmStream",STOPBPMSTREAM_PARAMETERS,stopBpmStream); 
-  //addFunctions("insoleStream",INSOLESTREAM_PARAMETERS,insoleStream); 
-  //addFunctions("stopInsoleStream",STOPINSOLESTREAM_PARAMETERS,stopInsoleStream); 
+  // addFunctions("insoleStream",INSOLESTREAM_PARAMETERS,insoleStream,28); 
+  // addFunctions("stopInsoleStream",STOPINSOLESTREAM_PARAMETERS,stopInsoleStream,29); 
 
 
   // addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);

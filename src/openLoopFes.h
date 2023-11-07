@@ -16,7 +16,7 @@ uint8_t modPin[8]    = {27,19,12,18,23,14,26,25},//ca andré
 // uint8_t modPin[8]    = {19,26,5,14,21,23,26,32},//ca Jorge
 //         levelPin[4]  = {16,13,22,18};
 
-Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000,350,100000,true);
+Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000,200,20000,true);
 
 void openLoopFesInit(uint32_t ton, uint32_t period){
     openLoop_flag = true;

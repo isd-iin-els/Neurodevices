@@ -61,9 +61,9 @@ void IRAM_ATTR insoleUpdate(void *param){
   }
 }
 
-String stopInsoleStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String stopInsoleStream(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/) {
   String answer;
-  if (operation == STOPINSOLESTREAM_MSG && insoleSTREAM_flag){
+  // if (operation == STOPINSOLESTREAM_MSG && insoleSTREAM_flag){
     if(insole_periodic_timer != nullptr){
       ESP_ERROR_CHECK(esp_timer_stop(insole_periodic_timer)); //Timer pause
       ESP_ERROR_CHECK(esp_timer_delete(insole_periodic_timer)); //Timer delete
@@ -73,15 +73,15 @@ String stopInsoleStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &
       // IMUDataLoop_counter = -1;
       answer = "aCQUISITION Stopped";
       // std::cout << IMUDataLoop_counter << " " << answer.c_str() << std::endl;
-  } else
-    answer += "";
+  // } else
+  //   answer += "";
   return answer;
 }
 
-String insoleStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &operation) {
+String insoleStream(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/) {
   String answer;
   
-  if (operation == INSOLESTREAM_MSG && !insoleSTREAM_flag){
+  // if (operation == INSOLESTREAM_MSG && !insoleSTREAM_flag){
     uint16_t freq = doc["frequence"];
     int64_t timeSimulation = doc["timeout"];
     std::cout << freq<<"\n"<< timeSimulation<<"\n";
@@ -132,9 +132,9 @@ String insoleStream(const StaticJsonDocument<sizejson> &doc, const uint8_t &oper
     
     std::cout << "Tudo Inicializado\n";
     answer += "Loop para aquisicao e envio de dados criado a taxa de 1ms\r\n";
-  }
-  else
-    answer += "";
+  // }
+  // else
+  //   answer += "";
   return answer;
 }
 
