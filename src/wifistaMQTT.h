@@ -82,9 +82,13 @@ String whoAmI(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operatio
 
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
+  WiFi.mode (WIFI_MODE_STA);
+  WiFi.setSleep(false);
   WiFi.begin(WIFI_SSID.c_str(), WIFI_PASSWORD.c_str());
-  
-
+  while (!WiFi.isConnected ()) {
+		Serial.print ('.');
+		delay (100);
+	}
 }
 
 void connectToMqtt() {
