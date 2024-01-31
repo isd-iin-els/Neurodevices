@@ -3,6 +3,7 @@
 #include <ESPAsyncWebServer.h>
 #include <EEPROM.h>
 #include <DNSServer.h>
+#include "sstream"
 
 DNSServer dnsServer;
 AsyncWebServer server(80);
@@ -29,10 +30,12 @@ bool loadEEPROM(){
         WIFI_SSID = wifiSSID.readString(0);
         WIFI_PASSWORD =  wifiPassword.readString(0);
         devFunction = deviceFunction.readString(0);
-        std::cout << login.c_str()         << "\n" << pass.c_str() <<"\n"
-                  << MQTT_HOST.c_str()     << "\n" << MQTT_PORT    <<"\n"
-                  << WIFI_SSID.c_str()     << "\n" << WIFI_PASSWORD.c_str() <<"\n" 
-                  << devFunction.c_str()   << "\n";
+        std::stringstream ss;
+        ss  << login.c_str()         << "\n" << pass.c_str() <<"\n"
+            << MQTT_HOST.c_str()     << "\n" << MQTT_PORT    <<"\n"
+            << WIFI_SSID.c_str()     << "\n" << WIFI_PASSWORD.c_str() <<"\n" 
+            << devFunction.c_str()   << "\n";
+        Serial.println(ss.str().c_str());
         if (MQTT_HOST==""||WIFI_SSID==""||WIFI_PASSWORD=="")
           return false;
         return true;
@@ -188,7 +191,9 @@ void initWebServer(){
       }
 
       
-      std::cout << login.c_str()<<"\n"<<pass.c_str()<<"\n"<<MQTT_HOST.c_str()<<"\n"<<MQTT_PORT<<"\n"<<devFunction<<"\n";
+      std::stringstream ss;
+      ss << login.c_str()<<"\n"<<pass.c_str()<<"\n"<<MQTT_HOST.c_str()<<"\n"<<MQTT_PORT<<"\n"<<devFunction<<"\n";
+      Serial.println(ss.str().c_str());
       request->send(200, "text/plain", "Data Updated");
       delay(1000);
       ESP.restart();
@@ -199,16 +204,22 @@ void initWebServer(){
     
     
   });
-//   std::cout << "Aqui5\n";
+  Serial.println("Aqui5");
   server.begin();
-//   std::cout << "Aqui6\n";
+  Serial.println("Aqui6");
 }
-
-#define INTERRUPT_PIN 0
+#ifdef ESP32DEV
+  #define INTERRUPT_PIN 0
+#elif ESP32C3DEV
+  #define INTERRUPT_PIN D9
+#elif ESP32S2DEV
+  #define INTERRUPT_PIN 0
+#endif
 //portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED; 
 bool counter_reinit = false;
 uint64_t millisRestart = 0;
 void IRAM_ATTR resetEEPROMValues(){
+  // Serial.println("_");
   //portENTER_CRITICAL_ISR(&mux);  
   counter_reinit = digitalRead(INTERRUPT_PIN);
   uint64_t mill = millis();
@@ -228,7 +239,7 @@ void IRAM_ATTR resetEEPROMValues(){
   // else if(counter_reinit){
   //   //counter_reinit = false;
   //   //Serial.print("Nao reiniciou... Milis = ");
-  //   Serial.println(mill-millisRestart);
+    Serial.println(mill-millisRestart);
   // }
   //portEXIT_CRITICAL_ISR(&mux);
 }
@@ -237,16 +248,17 @@ void IRAM_ATTR zeroResetFlag(){
 }
 
 void resetEEPROMValuesRoutine(){
+
   pinMode(INTERRUPT_PIN, INPUT);
-  attachInterrupt(INTERRUPT_PIN, resetEEPROMValues, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), resetEEPROMValues, CHANGE);
 }
 
 
 void createWIFIAP(){
   std::stringstream shortMacAddress; shortMacAddress << ESP.getEfuseMac();
-      String macAddress = shortMacAddress.str().c_str();
-      shortMacAddress.str(""); shortMacAddress  << macAddress[macAddress.length()-4] << macAddress[macAddress.length()-3]  
-                                                << macAddress[macAddress.length()-2] << macAddress[macAddress.length()-1];
+  String macAddress = shortMacAddress.str().c_str();
+  shortMacAddress.str(""); shortMacAddress  << macAddress[macAddress.length()-4] << macAddress[macAddress.length()-3]  
+                                            << macAddress[macAddress.length()-2] << macAddress[macAddress.length()-1];
 
   macAddress = "dev";
   macAddress += shortMacAddress.str().c_str();

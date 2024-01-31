@@ -7,16 +7,24 @@
 
 volatile bool openLoop_flag = false, sensor_flag = false;
 
-// uint8_t modPin[4]    = {27,4,12,5},
-//         levelPin[4]  = {13,19,2,18};
-// uint8_t modPin[4]    = {27,19,12,18},//cc
-//         levelPin[4]  = {13,4,2,5};]
+// -----------------------ESP32devkit-------------------------------------------
+#ifdef ESP32DEV
 uint8_t modPin[8]    = {27,19,12,18,23,14,26,25},//ca andré
         levelPin[4]  = {13,4,2,33};
-// uint8_t modPin[8]    = {19,26,5,14,21,23,26,32},//ca Jorge
-//         levelPin[4]  = {16,13,22,18};
-
 Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000,200,20000,true);
+
+// -----------------------ESP32C3-------------------------------------------
+#elif ESP32C3DEV
+uint8_t modPin[2]    = {3,4},//ca andré
+        levelPin[1]  = {2};
+Devices::fes4channels dispositivo(levelPin, modPin, 1, 18000,200,20000,true);
+
+#elif ESP32S2DEV
+uint8_t modPin[2]    = {3,4},//ca andré
+        levelPin[1]  = {2};
+Devices::fes4channels dispositivo(levelPin, modPin, 1, 18000,200,20000,true);
+
+#endif
 
 void openLoopFesInit(uint32_t ton, uint32_t period){
     openLoop_flag = true;
@@ -62,7 +70,7 @@ String openLoopFesConfig(const StaticJsonDocument<sizejson> &doc)  {
 String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
 
   String answer;
-  // if (operation == OPENLOOPFESUPDATE_MSG){
+
     const char *msg = doc["m"];
     LinAlg::Matrix<double> code = msg;
 
@@ -75,18 +83,8 @@ String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_
       for(uint8_t i = 0; i < code.getNumberOfColumns(); ++i)
         dispositivo.fes[i].setFadeTime(doc["f"]); 
 
-    // if(!sensor_flag)
-      // if(sensorType == 1)
-        // mpu6050Flag = mpuInit();
-      // else if(sensorType == 2)
-    //gy80Flag = sensors.init();
 
-    //answer += getIMUData();
-    //std::cout << answer.c_str() << std::endl; 
-    answer += "1";
-  // }
-  // else
-  //   answer += "1";
+  answer += "1";
   return answer;
 }
 

@@ -1,72 +1,9 @@
 
-// // #define DEVICEID uint64_t chipid = ESP.getEfuseMac();
-
-// #include <Arduino.h>
-// #include <AsyncTCP.h>
-// #include "WiFi.h"
-// #include <sstream>
-// #include "wifistaTCP.h"
-// // #include "sendIMUData.h"
-// // #include "openLoopFes.h"
-// // #include "closedLoopFes.h"
-// // #include "blinkled.h"
-// // #include "fesBike.h"
-// // #include "NBStimulator.h"
-// // #include "mp_closedLoopFes.h"
-// // #include "estimuladorBN.h"
-
-// void setup() {
-//   Serial.begin(115200); //initDMP6(gpio_num_t(23));
-//   // serverIP = IPAddress(192,168,137,101);
-//   wifiSTATCPInit();
-//   // addFunctions("imuSendInit",imuSendInit);  //sensors.init();
-//   // addFunctions("stopOpenLoopFes",stopOpenLoopFes);
-//   // addFunctions("openLoopFesUpdate",openLoopFesUpdate);
-//   // addFunctions("TwoDOFLimbFesControl",TwoDOFLimbFesControl);
-//   // addFunctions("closedLoopFesReferenceUpdate",closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
-//   // addFunctions("PIDsParametersUpdate",PIDsParametersUpdate);//Fazer isso para o caso geral]
-  
-//   // // addFunctions("fesBikeStart",fesBikeStart);
-//   addFunctions("whoAmI",whoAmI);
-//   // addFunctions("blinkMe",blinkMe);
-//   // // addFunctions("neurogenic_bladder_init",neurogenic_bladder_init);
-//   // addFunctions("MP_PIDSclosedLoopFesmpreferenceUpdate",MP_PIDSFesReferenceUpdate);
-//   // addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSTwoDOFLimbFes);
-//   // addFunctions("MP_PIDSParametersUpdate",MP_PIDSParametersUpdate);
-
-//   // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
-//   // analogSetAttenuation((adc_attenuation_t) ADC_ATTEN_0db);
-//   WiFiClient client;
- 
-//   if (!client.connect("192.168.137.1", 5000)) {
-
-//     Serial.println("Connection to host failed");
-
-//     delay(1000);
-//     return;
-//   }
-//   std::stringstream ss;
-//   ss << "{\"api_command\":\"registerClient\"," << "\"Device IP\":\"" << WiFi.localIP().toString().c_str()<< "\"}"; 
-//   Serial.println("Connected to server successful!");
-
-//   client.print(ss.str().c_str());
-//   delay(1000);
-//   Serial.println("Disconnecting...");
-//   client.stop();
-// }
-// // float x = 0, h = 0.01; uint8_t contador = 0;
-// void loop() {
-//   // delay(10);
-//   // x = x + h*(analogReadMilliVolts(36)-x);
-//   // if(contador==0)
-//   //   Serial.println(x);
-//   // contador++;
-// }
-
-#include <wifistaMQTT.h>
+#include <wifiMQTT.h>
 #include <sendIMUData.h>
 //#include "IMUController.h"
 #include "openLoopFes.h"
+#include "adc1115_mqtt.h"
 // #include "closedLoopFes.h"
 // #include "blinkled.h"
 // #include "fesBike.h"
@@ -76,65 +13,70 @@
 // #include "sendInsoleData.h"
 // #include "tsPCS.h"
 
-EEPROMClass  accelM("eeprom0");
-EEPROMClass  gyrM("eeprom1");
-EEPROMClass  magM("eeprom2");
+// EEPROMClass  accelM("eeprom0");
+// EEPROMClass  gyrM("eeprom1");
+// EEPROMClass  magM("eeprom2");
 bool captivPortal;
 
 void setup() {
 
   sleep(2);
+  // Serial.begin (115200);
   captivPortal = wifiSTAMQTTInit();
   
-  // IrReceiver.begin(32, DISABLE_LED_FEEDBACK);
+  // // IrReceiver.begin(32, DISABLE_LED_FEEDBACK);
   
-  addFunctions("OTAMQTT::updateFirmware",UPDATE_FIRMWARE_PARAMETERS,OTAMQTT::updateFirmware,25);
+  // // addFunctions("OTAMQTT::updateFirmware",UPDATE_FIRMWARE_PARAMETERS,OTAMQTT::updateFirmware,25);
   addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate,2);
   addFunctions("restart",RESTART_PARAMETERS,restart,7);
-  addFunctions("reset",RESET_PARAMETERS,resetDevice,35);
-  // addFunctions("alive",ALIVE_PARAMETERS,alive);
+  // addFunctions("reset",RESET_PARAMETERS,resetDevice,35);
+  // // addFunctions("alive",ALIVE_PARAMETERS,alive);
   addFunctions("whoAmI",WHOAMI_PARAMETERS,whoAmI,9);
   addFunctions("imuSendInit",IMUSENDINIT_PARAMETERS,imuSendInit,1);  //sensors.init();
   addFunctions("imuSendStop",IMUSENDSTOP_PARAMETERS,imuSendStop,22);
-  // addFunctions("tsPCS::sendInit",TSPCSSENDINIT_PARAMETERS,tsPCS::sendtsPCSInit,33);  
-  // addFunctions("tsPCS::openLoopUpdate",DURINGCICLEUPDATE_PARAMETERS,tsPCS::openLoopUpdate,34);
-  // addFunctions("IMUControllerInit",IMUControllerINIT_PARAMETERS,IMUControllerInit);  //sensors.init();
-  // addFunctions("IMUControllerStops",IMUControllerStop_PARAMETERS,IMUControllerStop);
+  // // addFunctions("tsPCS::sendInit",TSPCSSENDINIT_PARAMETERS,tsPCS::sendtsPCSInit,33);  
+  // // addFunctions("tsPCS::openLoopUpdate",DURINGCICLEUPDATE_PARAMETERS,tsPCS::openLoopUpdate,34);
+  // // addFunctions("IMUControllerInit",IMUControllerINIT_PARAMETERS,IMUControllerInit);  //sensors.init();
+  // // addFunctions("IMUControllerStops",IMUControllerStop_PARAMETERS,IMUControllerStop);
 
-  // addFunctions("imuAccelerometerCalibration",IMUACCELEROMETERCALIBRATION_PARAMETERS,imuAccelerometerCalibration);  //sensors.init();
-  // addFunctions("imuGiroscopeCalibration",IMUGIROSCOPECALIBRATION_PARAMETERS,imuGiroscopeCalibration);  //sensors.init();
-  // addFunctions("imuMagnetometerCalibration",IMUMAGNETOMETERCALIBRATION_PARAMETERS,imuMagnetometerCalibration);  //sensors.init();
+  // // addFunctions("imuAccelerometerCalibration",IMUACCELEROMETERCALIBRATION_PARAMETERS,imuAccelerometerCalibration);  //sensors.init();
+  // // addFunctions("imuGiroscopeCalibration",IMUGIROSCOPECALIBRATION_PARAMETERS,imuGiroscopeCalibration);  //sensors.init();
+  // // addFunctions("imuMagnetometerCalibration",IMUMAGNETOMETERCALIBRATION_PARAMETERS,imuMagnetometerCalibration);  //sensors.init();
   addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes,8);
   addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate,18);
-  // addFunctions("fesBikeStart",FESBIKESTART_PARAMETERS,fesBikeStart);
-  //addFunctions("adcStream",ADCSTREAM_PARAMETERS,adcStream); 
-  //addFunctions("stopadcStream",STOPADCSTREAM_PARAMETERS,stopAdcStream); 
-  //addFunctions("bpmStream",BPMSTREAM_PARAMETERS,bpmStream); 
-  //addFunctions("stopBpmStream",STOPBPMSTREAM_PARAMETERS,stopBpmStream); 
-  // addFunctions("insoleStream",INSOLESTREAM_PARAMETERS,insoleStream,28); 
-  // addFunctions("stopInsoleStream",STOPINSOLESTREAM_PARAMETERS,stopInsoleStream,29); 
+  // // addFunctions("fesBikeStart",FESBIKESTART_PARAMETERS,fesBikeStart);
+  // //addFunctions("adcStream",ADCSTREAM_PARAMETERS,adcStream); 
+  // //addFunctions("stopadcStream",STOPADCSTREAM_PARAMETERS,stopAdcStream); 
+  // //addFunctions("bpmStream",BPMSTREAM_PARAMETERS,bpmStream); 
+  // //addFunctions("stopBpmStream",STOPBPMSTREAM_PARAMETERS,stopBpmStream); 
+  // // addFunctions("insoleStream",INSOLESTREAM_PARAMETERS,insoleStream,28); 
+  // // addFunctions("stopInsoleStream",STOPINSOLESTREAM_PARAMETERS,stopInsoleStream,29); 
 
 
-  // addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);
-  // addFunctions("closedLoopFesReferenceUpdate",CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS,closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
-  // addFunctions("PIDsParametersUpdate",PIDSPARAMETERSUPDATE_PARAMETERS,PIDsParametersUpdate);//Fazer isso para o caso geral]
+  // // addFunctions("TwoDOFLimbFesControl",CLOSEDLOOPFESCONTROL_PARAMETERS,TwoDOFLimbFesControl);
+  // // addFunctions("closedLoopFesReferenceUpdate",CLOSEDLOOPFESREFERENCEUPDATE_PARAMETERS,closedLoopFesReferenceUpdate); //Fazer isso para o caso geral
+  // // addFunctions("PIDsParametersUpdate",PIDSPARAMETERSUPDATE_PARAMETERS,PIDsParametersUpdate);//Fazer isso para o caso geral]
 
-  // addFunctions("blinkMe",BLINKME_PARAMETERS,blinkMe);
+  // // addFunctions("blinkMe",BLINKME_PARAMETERS,blinkMe);
 
   
   
-  // // addFunctions("neurogenic_bladder_init",neurogenic_bladder_init);
-  // addFunctions("MP_PIDSclosedLoopFesmpreferenceUpdate",MP_PIDSFesReferenceUpdate);
-  // addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSTwoDOFLimbFes);
-  // addFunctions("MP_PIDSParametersUpdate",MP_PIDSParametersUpdate);
+  // // // addFunctions("neurogenic_bladder_init",neurogenic_bladder_init);
+  // // addFunctions("MP_PIDSclosedLoopFesmpreferenceUpdate",MP_PIDSFesReferenceUpdate);
+  // // addFunctions("TwoDOFLimbMP_PIDSFes",MP_PIDSTwoDOFLimbFes);
+  // // addFunctions("MP_PIDSParametersUpdate",MP_PIDSParametersUpdate);
 
-  // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
-
-  loadLastSectionConfig();
+  // // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
+  #ifdef ESP32DEV
+  addFunctions("sendAdc1115Init",ADC1115SENDINIT_PARAMETERS,adc1115MQTT::sendAdc1115Init,35);  //sensors.init();
+  #endif
+  // // loadLastSectionConfig();
 }
 
 void loop() {
   if (captivPortal) dnsServer.processNextRequest();
+  // delay(1000);
+  // Serial.println("_");
   // if (IrReceiver.decode()) {  // Grab an IR code
   //     if (IrReceiver.decodedIRData.numberOfBits > 0 && IrReceiver.decodedIRData.protocol == 18) {
   //         Serial.println();  
@@ -191,3 +133,45 @@ void loop() {
 //   // }
 //   // delay(20);
 // }
+
+// #include <Arduino.h>
+// #include "WiFi.h"
+
+// void printWifiStatus() {
+//   Serial.print("SSID: ");
+//   Serial.println(WiFi.SSID());
+
+//   IPAddress ip = WiFi.localIP();
+//   Serial.print("IP Address: ");
+//   Serial.println(ip);
+
+//   long rssi = WiFi.RSSI();
+//   Serial.print("signal strength (RSSI):");
+//   Serial.print(rssi);
+//   Serial.println(" dBm");
+// }
+
+
+// void setup() {
+//   Serial.begin(115200);
+//   delay(1000);
+//   Serial.println("lkjbkln");
+
+//   WiFi.useStaticBuffers(true);
+//   WiFi.mode(WIFI_STA);
+//   WiFi.begin("CAMPUS", "IINELS_educacional");
+//   while (WiFi.status() != WL_CONNECTED) {
+//     delay(500);
+//     Serial.print(".");
+//   }
+
+//   Serial.println("");
+//   Serial.println("Connected to WiFi");
+//   printWifiStatus();
+// }
+
+// void loop() {
+//   Serial.println("lkjbkln");
+//   delay(1000);
+// }
+

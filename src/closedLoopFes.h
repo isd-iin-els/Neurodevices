@@ -26,6 +26,15 @@ esp_timer_handle_t closedLoop_periodic_timer = nullptr, IMUClosedLoop_periodic_t
 //     IMUClosedLoop_periodic_timer = nullptr;
 //   }
 // }
+double pitch, roll, rad2degree = 180/M_PI;
+double get_pitch( double ax, double ay, double az){
+    return atan2(-1*ax, sqrt(ay*ay + az*az ))*rad2degree;
+}
+		
+double get_roll(double ax, double ay, double az){
+    return atan2(ay, az + 0.05*ax)*rad2degree;
+}
+
 void getEulerAnglesGY80(){
     // mpu.getEvent(&a, &g, &temp);
     LinAlg::Matrix<double> sensorsRaw = sensors.updateRaw();

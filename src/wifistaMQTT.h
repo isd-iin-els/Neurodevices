@@ -96,7 +96,8 @@ void connectToMqtt() {
 void WiFiEvent(WiFiEvent_t event) {
     Serial.printf("[WiFi-event] event: %d\n", event);
     switch(event) {
-    case SYSTEM_EVENT_STA_GOT_IP:
+
+        case SYSTEM_EVENT_STA_GOT_IP:
         Serial.println("WiFi connected");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP()); 
@@ -105,7 +106,9 @@ void WiFiEvent(WiFiEvent_t event) {
         // mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
         // xTimerStart(mqttReconnectTimer, 0);
         break;
-    case SYSTEM_EVENT_STA_DISCONNECTED:
+
+        case SYSTEM_EVENT_STA_DISCONNECTED:
+
         Serial.println("WiFi lost connection");
         connectToWifi();
         //xTimerStop(mqttReconnectTimer, 0); // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
@@ -212,9 +215,10 @@ void onMqttPublish(uint16_t packetId) {
 
 bool wifiSTAMQTTInit(){
   Serial.begin(115200);
-  Serial.println();
+  Serial.println("Serial Inicializada");
   Serial.println();
   
+  // if(false){
   if(loadEEPROM()){
       // wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
 

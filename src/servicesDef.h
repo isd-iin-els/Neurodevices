@@ -32,6 +32,7 @@
 #define IMUControllerSTOP__MSG 32
 #define TSPCSSENDINIT_MSG 33
 #define DURINGCICLEUPDATE_MSG 34
+#define ADC1115SENDINIT_MSG 36
 
 //nome das funções para usar map no lugar do for :~
 #define RESTART_PARAMETERS                      "{\"op\":7}"
@@ -46,24 +47,25 @@
 #define MP_PIDSPARAMETERSUPDATE_PARAMETERS 13
 #define MP_PIDSFESREFERENCEUPDATE_PARAMETERS 14
 #define MP_PIDSTWODOFLIMBFES_PARAMETERS 15
-#define RENAMETOPICS_PARAMETERS  "{\"op\":16,\"topic\":\"string\"}"
-#define ALIVE_PARAMETERS "{\"op\":17}"
-#define OPENLOOPTONFREQUPDATE_PARAMETERS "{\"op\":18,\"t\":\"Ton Uint\",\"p\":\"Period Uint\"}"
-#define IMUACCELEROMETERCALIBRATION_PARAMETERS "{\"op\":19,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
-#define IMUGIROSCOPECALIBRATION_PARAMETERS "{\"op\":20,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
-#define IMUMAGNETOMETERCALIBRATION_PARAMETERS "{\"op\":21,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
+#define RENAMETOPICS_PARAMETERS                 "{\"op\":16,\"topic\":\"string\"}"
+#define ALIVE_PARAMETERS                        "{\"op\":17}"
+#define OPENLOOPTONFREQUPDATE_PARAMETERS        "{\"op\":18,\"t\":\"Ton Uint\",\"p\":\"Period Uint\"}"
+#define IMUACCELEROMETERCALIBRATION_PARAMETERS  "{\"op\":19,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
+#define IMUGIROSCOPECALIBRATION_PARAMETERS      "{\"op\":20,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
+#define IMUMAGNETOMETERCALIBRATION_PARAMETERS   "{\"op\":21,\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
 #define IMUSENDSTOP_PARAMETERS                  "{\"op\":22}"
 #define FESBIKESTART_PARAMETERS                 "{\"op\":23,\"Ton\":\"Ton Uint\",\"period\":\"Period Uint\",\"frequence\":\"float\",\"simulationTime\":\"float\",\"fesCyclingMin\":\"float\",\"fesCyclingMax\":\"float\"}"
-#define ADCSTREAM_PARAMETERS  "{\"op\":24,\"frequence\":\"float\",\"timeout\":\"float\",\"devicePin\":\"uint8\"}"
-#define UPDATE_FIRMWARE_PARAMETERS  "{\"op\":25,\"url\":\"hostName\",\"binLocation\":\"urlToFile\",\"md5\":\"hash\"}"
-#define BPMSTREAM_PARAMETERS  "{\"op\":26,\"frequence\":\"float\",\"timeout\":\"float\",\"bpm_scale\":\"uint8\",\"bpm_threshold\":\"double\"}"
-#define STOPBPMSTREAM_PARAMETERS  "{\"op\":27}"
-#define INSOLESTREAM_PARAMETERS  "{\"op\":28,\"frequence\":\"float\",\"timeout\":\"float\"}"
-#define STOPINSOLESTREAM_PARAMETERS "{\"op\":29}"
-#define STOPADCSTREAM_PARAMETERS  "{\"op\":30}"
-#define IMUControllerINIT_PARAMETERS                  "{\"op\":31,\"simulationTime\":\"float\",\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
-#define IMUControllerStop_PARAMETERS                  "{\"op\":32}"
-#define TSPCSSENDINIT_PARAMETERS "{\"op\":33,\"freq_boost\":\"int\",\"freq_high\":\"int\",\"freq_low\":\"int\",\"p_width\":\"int\"}"
+#define ADCSTREAM_PARAMETERS                    "{\"op\":24,\"frequence\":\"float\",\"timeout\":\"float\",\"devicePin\":\"uint8\"}"
+#define UPDATE_FIRMWARE_PARAMETERS              "{\"op\":25,\"url\":\"hostName\",\"binLocation\":\"urlToFile\",\"md5\":\"hash\"}"
+#define BPMSTREAM_PARAMETERS                    "{\"op\":26,\"frequence\":\"float\",\"timeout\":\"float\",\"bpm_scale\":\"uint8\",\"bpm_threshold\":\"double\"}"
+#define STOPBPMSTREAM_PARAMETERS      "{\"op\":27}"
+#define INSOLESTREAM_PARAMETERS       "{\"op\":28,\"frequence\":\"float\",\"timeout\":\"float\"}"
+#define STOPINSOLESTREAM_PARAMETERS   "{\"op\":29}"
+#define STOPADCSTREAM_PARAMETERS      "{\"op\":30}"
+#define IMUControllerINIT_PARAMETERS  "{\"op\":31,\"simulationTime\":\"float\",\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"
+#define IMUControllerStop_PARAMETERS  "{\"op\":32}"
+#define TSPCSSENDINIT_PARAMETERS      "{\"op\":33,\"freq_boost\":\"int\",\"freq_high\":\"int\",\"freq_low\":\"int\",\"p_width\":\"int\"}"
 #define DURINGCICLEUPDATE_PARAMETERS  "{\"op\":34,\"m\":\"float\"}"
-#define RESET_PARAMETERS                      "{\"op\":35}"
+#define RESET_PARAMETERS              "{\"op\":35}"
+#define ADC1115SENDINIT_PARAMETERS    "{\"op\":36,\"timeSimulation\":\"float\",\"freq\":\"float\"}"
 #endif
