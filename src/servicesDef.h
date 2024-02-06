@@ -33,6 +33,7 @@
 #define TSPCSSENDINIT_MSG 33
 #define DURINGCICLEUPDATE_MSG 34
 #define ADC1115SENDINIT_MSG 36
+#define SENDWHEELCHAIRINIT_MSG 37
 
 //nome das funções para usar map no lugar do for :~
 #define RESTART_PARAMETERS                      "{\"op\":7}"
@@ -68,4 +69,5 @@
 #define DURINGCICLEUPDATE_PARAMETERS  "{\"op\":34,\"m\":\"float\"}"
 #define RESET_PARAMETERS              "{\"op\":35}"
 #define ADC1115SENDINIT_PARAMETERS    "{\"op\":36,\"timeSimulation\":\"float\",\"freq\":\"float\"}"
+#define SENDWHEELCHAIRINIT_PARAMETERS "{\"op\":37,\"timeSimulation\":\"float\",\"freq\":\"float\"}"
 #endif
