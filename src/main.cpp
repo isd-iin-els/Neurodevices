@@ -3,7 +3,8 @@
 #include <sendIMUData.h>
 //#include "IMUController.h"
 #include "openLoopFes.h"
-#include "adc1115_mqtt.h"
+#include "wheelChair.h"
+// #include "adc1115_mqtt.h"
 // #include "closedLoopFes.h"
 // #include "blinkled.h"
 // #include "fesBike.h"
@@ -34,6 +35,7 @@ void setup() {
   addFunctions("whoAmI",WHOAMI_PARAMETERS,whoAmI,9);
   addFunctions("imuSendInit",IMUSENDINIT_PARAMETERS,imuSendInit,1);  //sensors.init();
   addFunctions("imuSendStop",IMUSENDSTOP_PARAMETERS,imuSendStop,22);
+  addFunctions("sendWheelChairInit",SENDWHEELCHAIRINIT_PARAMETERS,wheelChair::sendWheelChairInit,37);
   // // addFunctions("tsPCS::sendInit",TSPCSSENDINIT_PARAMETERS,tsPCS::sendtsPCSInit,33);  
   // // addFunctions("tsPCS::openLoopUpdate",DURINGCICLEUPDATE_PARAMETERS,tsPCS::openLoopUpdate,34);
   // // addFunctions("IMUControllerInit",IMUControllerINIT_PARAMETERS,IMUControllerInit);  //sensors.init();
@@ -67,9 +69,9 @@ void setup() {
   // // addFunctions("MP_PIDSParametersUpdate",MP_PIDSParametersUpdate);
 
   // // addFunctions("estimuladorBN",neuromoduladoBNUpdate); initialisateNeuromoduladoBNControl();
-  #ifdef ESP32DEV
-  addFunctions("sendAdc1115Init",ADC1115SENDINIT_PARAMETERS,adc1115MQTT::sendAdc1115Init,35);  //sensors.init();
-  #endif
+  // #ifdef ESP32DEV
+  // addFunctions("sendAdc1115Init",ADC1115SENDINIT_PARAMETERS,adc1115MQTT::sendAdc1115Init,35);  //sensors.init();
+  // #endif
   // // loadLastSectionConfig();
 }
 

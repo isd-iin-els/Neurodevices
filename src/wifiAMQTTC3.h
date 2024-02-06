@@ -87,6 +87,7 @@ void connectToWifi() {
 	Serial.println("Connecting to Wi-Fi...");
 	WiFi.onEvent(WiFiEvent);
 	WiFi.mode (WIFI_MODE_STA);
+	WiFi.setSleep(false);
 	WiFi.begin (WIFI_SSID, WIFI_PASSWORD);
 	while (!WiFi.isConnected ()) {
 		Serial.print ('.');
