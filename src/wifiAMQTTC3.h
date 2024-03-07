@@ -71,13 +71,20 @@ String whoAmI(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operatio
     std::stringstream ss, functionalities;
     ss << "{";
     ss <<  "\"Device\":\"DOIT Esp32 DevKit v1\",";
-    ss << "\"Device Function\":\"" << "devFunction.c_str()" << "\",";
+    ss << "\"Device Function\":\"" << devFunction.c_str() << "\",";
     ss << "\"Device ID\":" << ESP.getEfuseMac() << ","; 
     ss << "\"Device IP\":\"" << WiFi.localIP().toString().c_str() << "\","; 
     ss << "\"Topics\":[\"" << cmd2dev.str().c_str() << "\",\"" << devans.str().c_str() << "\",\"" << devstream.str().c_str()<< "\",\"" << connectionStatus.str().c_str()<< "\"],"; 
     ss << "\"Implemented Functionalities\":";
     // functionalities << globaljson.as<String>().c_str();
-    ss << functionalities.str() << " }\0";
+    // ss << functionalities.str() << " }\0";
+	functionalities << " {" ;
+    for(std::map<String,String>::iterator iter = functionalitiesParameters.begin(); iter != functionalitiesParameters.end(); ++iter)
+        functionalities << "\"" << iter->first.c_str() << "\":" << functionalitiesParameters[iter->first.c_str()].c_str() << ",";
+    functionalities.seekp(-1, std::ios_base::end);
+    functionalities.seekp(-1, std::ios_base::end);
+    functionalities << "}\0";
+	ss << functionalities.str() << " }\0";
 
     answer = ss.str().c_str();
     return answer;

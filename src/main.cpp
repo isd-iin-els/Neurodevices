@@ -4,6 +4,8 @@
 //#include "IMUController.h"
 #include "openLoopFes.h"
 #include "wheelChair.h"
+#include "asyncSerialServices.h"
+
 // #include "adc1115_mqtt.h"
 // #include "closedLoopFes.h"
 // #include "blinkled.h"
@@ -24,7 +26,7 @@ void setup() {
   sleep(2);
   // Serial.begin (115200);
   captivPortal = wifiSTAMQTTInit();
-  
+  startSerialService();
   // // IrReceiver.begin(32, DISABLE_LED_FEEDBACK);
   
   // // addFunctions("OTAMQTT::updateFirmware",UPDATE_FIRMWARE_PARAMETERS,OTAMQTT::updateFirmware,25);
