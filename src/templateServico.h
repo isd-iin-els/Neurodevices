@@ -50,7 +50,7 @@ static void loop(void *param){
 
 
   mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());//Não mexe se o padrão é mandar dados de stream
-
+  DataLoop_counter++;//Não mexe
   if(DataLoop_counter>=(int)param)
   {
     ESP_ERROR_CHECK(esp_timer_stop(DataLoop_periodic_timer)); //Timer pause
@@ -79,7 +79,7 @@ String setup(const StaticJsonDocument<sizejson> &doc)  {
    
     
 
-
+    DataLoop_counter = 0;//Não mexe
     DataLoop_flag = true;
     DataLoop_periodic_timer_args.callback = &loop;
     DataLoop_periodic_timer_args.name = "setup";//Se quiser pode mudar a string e renomear a função
