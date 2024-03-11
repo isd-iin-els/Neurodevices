@@ -26,7 +26,7 @@ void setup() {
   sleep(2);
   // Serial.begin (115200);
   captivPortal = wifiSTAMQTTInit();
-  startSerialService();
+  startSerialService(); // Não é compactível com C3
   // // IrReceiver.begin(32, DISABLE_LED_FEEDBACK);
   
   // // addFunctions("OTAMQTT::updateFirmware",UPDATE_FIRMWARE_PARAMETERS,OTAMQTT::updateFirmware,25);

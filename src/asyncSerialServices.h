@@ -44,6 +44,7 @@ void startSerialService() {
   Serial.begin(115200);
 
   // Create a task to handle serial communication
+  #ifndef ESP32C3DEV
   xTaskCreatePinnedToCore(
       onDataReceivedTask,   // Task function
       "SerialTask",         // Task name
@@ -51,6 +52,7 @@ void startSerialService() {
       NULL,                 // Task parameters
       1,                    // Priority
       &serialTaskHandle,    // Task handle
-      0);                   // Task runs on core 0
+      0);   
+  #endif                // Task runs on core 0
 }
 

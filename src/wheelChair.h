@@ -7,7 +7,7 @@
 #include <AsyncTCP.h>
 #include "WiFi.h"
 #include <stdio.h>
-#include "SistemasdeControle/headers/primitiveLibs/LinAlg/matrix.h"
+#include "SistemasdeControle/embeddedTools/primitiveLibs/LinAlg/matrix.h"
 #include <wifiMQTT.h>
 
 
