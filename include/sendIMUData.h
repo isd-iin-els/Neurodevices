@@ -88,9 +88,9 @@ static void IMUDataLoop(void *param){
   #ifdef WiFistaTCP_h
     client->write(ss.str().c_str());
   #endif
-  #ifdef WiFistaMQTT_h
+  // #ifdef WiFistaMQTT_h
     mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());
-  #endif
+  // #endif
   // Serial.println(ss.str().c_str());
   //  if(readDMP6()){
   //     // gyData = OUTPUT_YAWPITCHROLL() * 180/M_PI;
