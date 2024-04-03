@@ -3,6 +3,7 @@
 #include <sendIMUData.h>
 #include "openLoopFes.h"
 #include "asyncSerialServices.h"
+#include "Stimperturb.h"
 
 bool captivPortal;
 
@@ -19,6 +20,7 @@ void setup() {
   addFunctions("imuSendStop",IMUSENDSTOP_PARAMETERS,imuSendStop,22);
   addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes,8);
   addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate,18);
+  addFunctions("StimPerturb",SENDINSOLE_PARAMETERS,protpertubation::StimPerturb,38);
 }
 
 void loop() {
