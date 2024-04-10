@@ -31,8 +31,14 @@ namespace protpertubation{
     double Tempenvio;
     String datasave;
     double freq;
+    double tempoBaseline = 10;
+    u8_t stimState = 0;
+    unsigned long startTime;
+    unsigned long  recovery_time;
 
-    static void loop(void *param){
+    //calcâneo 1, calcâneo 2, Meta2, Médiopé, Meta1, hálux 
+    std::stringstream readData()
+    {
       std::stringstream ss;
 
       ss << DataLoop_counter << " , " << analogRead(36)   
@@ -43,20 +49,128 @@ namespace protpertubation{
                             << " , " << analogRead(35)
                             << "\r\n";
       datasave += ss.str().c_str();
+      return ss;
+    }
 
+    void publishData(){
       if (DataLoop_counter%uint16_t(Tempenvio*freq)==0){
         mqttClient.publish(devstream.str().c_str(), 0, false, datasave.c_str());
         datasave="";
       }
+    }
 
-      DataLoop_counter++;
-      if(DataLoop_counter>=(int)param && DataLoop_flag){
+    void baseline(double freq, uint64_t DataLoop_counter)
+    {
+        readData();
+        publishData();
+    }
+
+    void heelStrike(LinAlg::Matrix<double> data, double Stimtime,String Stimtopics)
+    {
+      if(data(0,1) > Trigger(0,0) && data(0,2) > Trigger(0,0) && stimState == 0){
+        std::stringstream stim;
+
+        stim << "{\"op\":2,\"m\":\"" << "0,0," << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
+
+        mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
+        stimState = 1;
+        startTime = millis(); 
+        recovery_time = random(30,60);
+        
+      } 
+    }
+
+    void midFootStrike(LinAlg::Matrix<double> data, double Stimtime,String Stimtopics)
+    {
+      if(data(0,1) < Threshold(0,0) && data(0,2) < Threshold(0,0) &&
+         data(0,4) > Trigger(0,0)   && stimState == 2){
+        std::stringstream stim;
+
+        stim << "{\"op\":2,\"m\":\"" << "0,0," << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
+
+        mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
+        stimState = 3;
+        startTime = millis(); 
+        recovery_time = random(30,60);
+        
+      } 
+    }
+
+    void foreFootStrike(LinAlg::Matrix<double> data, double Stimtime,String Stimtopics)
+    {
+       //grupo 1 calcâneo 1, calcâneo 2 ativando e 
+      if(data(0,4) < Threshold(0,0) && 
+         data(0,3) > Trigger(0,0)   && data(0,5) < Trigger(0,0) && data(0,6) < Trigger(0,0) && 
+         stimState == 4){
+        std::stringstream stim;
+
+        stim << "{\"op\":2,\"m\":\"" << "0,0," << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
+
+        mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
+        stimState = 5;
+        startTime = millis(); 
+        recovery_time = random(30,60);
+        
+      } 
+    }
+
+    void recoverTime(double freq, uint64_t DataLoop_counter, uint8_t state, bool lastState = false)
+    {
+      if(stimState == state){
+        unsigned long elapsedTime = millis() - startTime; 
+        if(elapsedTime > recovery_time){
+          std::stringstream stim;
+
+          stim << "{\"op\":2,\"m\":\"0,0,0,0\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
+
+          mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
+          stimState = state+1;
+          if(lastState)
+            stimState = 0;  
+        }
+      }
+    }
+
+    void experiment(double Stimtime,String Stimtopics)
+    { 
+      std::stringstream ss = readData();
+      
+      heelStrike(ss.str().c_str(), Stimtime, Stimtopics);
+      recoverTime(freq,DataLoop_counter,1);
+
+      midFootStrike(ss.str().c_str(), Stimtime,Stimtopics);
+      recoverTime(freq,DataLoop_counter,3);
+
+      foreFootStrike(ss.str().c_str(), Stimtime, Stimtopics);
+      recoverTime(freq,DataLoop_counter,5,true);
+      
+      publishData();
+    }
+
+    void canIFinishExperiment(void *param)
+    {
+       if(DataLoop_counter>=(int)param && DataLoop_flag){
         ESP_ERROR_CHECK(esp_timer_stop(DataLoop_periodic_timer)); //Timer pause
         ESP_ERROR_CHECK(esp_timer_delete(DataLoop_periodic_timer)); //Timer delete
         DataLoop_periodic_timer = nullptr;
         DataLoop_flag = false;
         Serial.println("Finalizou");
       }
+    }
+
+    static void loop(void *param){// 8.3ms
+      // Serial.println("Entrou Loop");
+      if(DataLoop_counter <= tempoBaseline*freq){
+        baseline(freq, DataLoop_counter);
+        Serial.println("Entrou Baseline");
+      }
+      else{
+        //Serial.println("Entrou experimento");
+        experiment(Stimtime,Stimtopics);
+      }
+
+      DataLoop_counter++;
+      canIFinishExperiment(param);
     }
 
     String json2String(const char* json){
@@ -79,6 +193,11 @@ namespace protpertubation{
         Stimintensidade = (double)doc["Stimintensidade"];
         
         uint16_t timeSimulation = (uint16_t)doc["timeSimulation"]; 
+
+        stimState = 0;
+
+        // Serial.println(doc.as<String>().c_str());
+        // delay(5000);
 
         analogReadResolution(12);
         analogSetPinAttenuation(36, ADC_11db);        adcAttachPin(36);
