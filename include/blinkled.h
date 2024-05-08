@@ -1,6 +1,8 @@
 #ifndef BLINKLEDMQTT_h
 #define BLINKLEDMQTT_h
-#include "closedLoopFes.h"
+#include "openLoopFes.h"
+#include "ArduinoJson.h"
+#define json_size 512
 
 volatile uint64_t blink_Counter; volatile bool blink_flag = false;
 esp_timer_create_args_t blink_periodic_timer_args;
@@ -25,7 +27,7 @@ void IRAM_ATTR blink(void *param){
   }
 }
 
-String blinkMe(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
+String blinkMe(const StaticJsonDocument<json_size> &doc/*, const uint8_t &operation*/)  {
   // char* d = reinterpret_cast<char*>(data); String msg,answer;
   // for (size_t i = 0; i < len; ++i) msg += d[i];
   // uint16_t index = msg.indexOf('?'); String op = msg.substring(0,index);

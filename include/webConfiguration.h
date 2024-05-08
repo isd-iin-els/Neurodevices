@@ -230,7 +230,7 @@ void IRAM_ATTR resetEEPROMValues(){
     //Serial.print("Entrou... Milis = ");
     //Serial.println(millisRestart);
   }
-  else if(counter_reinit && mill-millisRestart > 6000){
+  else if(counter_reinit && mill-millisRestart > 3000){
     wifiSSID.writeString(0,"");
     wifiSSID.commit();
     //Serial.println("Reiniciando para alterar configurações de rede!\n");
@@ -252,7 +252,6 @@ void resetEEPROMValuesRoutine(){
   pinMode(INTERRUPT_PIN, INPUT);
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), resetEEPROMValues, CHANGE);
 }
-
 
 void createWIFIAP(){
   std::stringstream shortMacAddress; shortMacAddress << ESP.getEfuseMac();
