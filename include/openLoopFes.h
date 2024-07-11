@@ -11,6 +11,8 @@ volatile bool openLoop_flag = false, sensor_flag = false;
 #ifdef ESP32DEV
 uint8_t modPin[8]    = {27,19,12,18,23,14,26,25},//ca andré
         levelPin[4]  = {13,4,2,33};
+// uint8_t modPin[8]    = {4,12,0,0,0,0,0,0},//ca andré
+//         levelPin[4]  = {2,0,0,0};
 Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000,200,20000,true);
 
 // -----------------------ESP32C3-------------------------------------------
