@@ -10,12 +10,12 @@
 #include <StreamUtils.h>
 #include "iostream"
 #include "sstream"
-#include <WiFi.h>
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_event.h"
 #include "mqtt_client.h"
 #include <map>
+#include "esp_wifi.h"
 // #include "blinkled.h"
 
 class MqttClient {
@@ -70,12 +70,12 @@ String whoAmI(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operatio
 
     std::stringstream ss, functionalities;
     ss << "{";
-    ss <<  "\"Device\":\"DOIT Esp32 DevKit v1\",";
-    ss << "\"Device Function\":\"" << devFunction.c_str() << "\",";
-    ss << "\"Device ID\":" << ESP.getEfuseMac() << ","; 
-    ss << "\"Device IP\":\"" << WiFi.localIP().toString().c_str() << "\","; 
-    ss << "\"Topics\":[\"" << cmd2dev.str().c_str() << "\",\"" << devans.str().c_str() << "\",\"" << devstream.str().c_str()<< "\",\"" << connectionStatus.str().c_str()<< "\"],"; 
-    ss << "\"Implemented Functionalities\":";
+    ss <<  "\"device\":\"DOIT Esp32 DevKit v1\",";
+    ss << "\"serviceType\":\"" << devFunction.c_str() << "\",";
+    ss << "\"deviceID\":" << ESP.getEfuseMac() << ","; 
+    ss << "\"deviceIP\":\"" << WiFi.localIP().toString().c_str() << "\","; 
+    ss << "\"topics\":[\"" << cmd2dev.str().c_str() << "\",\"" << devans.str().c_str() << "\",\"" << devstream.str().c_str()<< "\",\"" << connectionStatus.str().c_str()<< "\"],"; 
+    ss << "\"implementedFunctionalities\":";
     // functionalities << globaljson.as<String>().c_str();
     // ss << functionalities.str() << " }\0";
 	functionalities << " {" ;
@@ -97,6 +97,7 @@ void connectToWifi() {
 	WiFi.onEvent(WiFiEvent);
 	WiFi.mode (WIFI_MODE_STA);
 	WiFi.setSleep(false);
+	esp_wifi_set_ps (WIFI_PS_NONE);
 	WiFi.begin (WIFI_SSID, WIFI_PASSWORD);
 	while (!WiFi.isConnected ()) {
 		Serial.print ('.');
@@ -170,7 +171,7 @@ static esp_err_t mqtt_event_handler (esp_mqtt_event_handle_t event) {
 	} else  if (event->event_id == MQTT_EVENT_PUBLISHED) {
     	Serial.println("Evento publicou");
 	} else  if (event->event_id == MQTT_EVENT_DATA) {
-		Serial.println("Evento Recebeu Dado");
+		// Serial.println("Evento Recebeu Dado");
 		onMqttMessage(event->topic, event->data);
 	} else  if (event->event_id == MQTT_EVENT_BEFORE_CONNECT) {
     	Serial.println("Antes de conectar");
@@ -190,10 +191,17 @@ void onMqttConnect() {
 	mqttClient.publish("newdev", 1, false, whoAmI(StaticJsonDocument<sizejson>()).c_str());
 	mqttClient.publish(connectionStatus.str().c_str(), 0, true, "Online");
 	mqttClient.subscribe(cmd2dev.str().c_str(), 0);
+	mqttClient.subscribe("getServices", 0);
 }
 
 void onMqttMessage(char* topic, char* payload){
 	String topico = topic;
+	// Serial.println(topico);
+	if(topico.indexOf("getServices") != -1){
+		mqttClient.publish("newdev", 1, false, whoAmI(StaticJsonDocument<sizejson>()).c_str());
+		// Serial.println("newdev");
+		return;
+	}
 	StaticJsonDocument<sizejson> doc;
 	DeserializationError error = deserializeJson(doc, payload);
 
@@ -205,9 +213,9 @@ void onMqttMessage(char* topic, char* payload){
 
 	int op = uint16_t(doc["op"]); 
 	if(functions.count(op) != 0){
-		std::cout << "Entrou aqui1\n";
+		// std::cout << "Entrou aqui1\n";
 		String ans = functions[op](doc);
-		std::cout << "Entrou aqui2\n";
+		// std::cout << "Entrou aqui2\n";
 		std::cout << ans;
 		if( ans != "")//{
 			mqttClient.publish(devans.str().c_str(), 0, true, ans.c_str());
