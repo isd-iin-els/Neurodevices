@@ -33,12 +33,12 @@ Implementação de Serviços e Publicação de Artigo em Congresso de Engenharia
    - Fazer upload do projeto Neurodevices para o ESP a partir do VSCode
    - Conectar (preferivelmente celular) à rede Wi-Fi devXXXX (XXXX é o número do dispositivo ESP. Ex.: dev3952)
    - Acessar o endereço 8.8.8.8 no _browser_ (chrome, firefox, etc...)
-   - Preencher seguintes campos do formulário
+   - Preencher seguintes campos do formulário para configuração do ESP
      - WiFi SSID: CAMPUS
      - WiFi _Password_: IINELS_educacional
      - MQTT _Server Host Name_: endereço IP da máquina onde está instalado o servidor _broker_ MQTT (verificar IP conectado à rede Wi-Fi CAMPUS)
      - MQTT _Server port_: número da porta configurada para o _broker_ MQTT
-       - Caso o arquivo de configuração do _broker_ MQTT esteja configurado para conexão _websocket_ na porta 1887, configurar essa porta para acessar dados através da interface `directStimulation.html`
+       - Nesse caso, deve-se configurar a porta 1883, padrão do MQTT
      - _Submit_
    - Estando a máquina do _broker_ conectada à rede CAMPUS, abrir interface `directStimulation.html` no _browser_ e preencher as seguintes informações para coleta de dados com a palmilha:
      - _Server address_: endereço IP da máquina onde está instalado o servidor _broker_ MQTT (verificar IP conectado à rede Wi-Fi CAMPUS)
