@@ -23,3 +23,28 @@ Configuração e funcionamento de serviços em Python para envio de dados via MQ
 Implementação de Serviços e Comunicação de Dados em Dispositivos Perspectiva sobre envio de dados e funções de inicialização de sensores. Processo de envio e recebimento de dados entre dispositivos e Python. Adaptação de serviços para integração com o Unit e Open Vibe.
 
 Implementação de Serviços e Publicação de Artigo em Congresso de Engenharia Biomédica Simplificação do script Python e exclusão de arquivos desnecessários. Adição de informações essenciais ao script para visualização e publicação de artigo. Discussão sobre publicação de artigo em congresso de engenharia biomédica e planejamento de implementação.
+
+## Procedimentos para conexão Neurodevices MQTT com ESP e aquisição de dados via _websocket_
+
+1. Clonar repositório [Neurodevices](https://github.com/isd-iin-els/Neurodevices/tree/main)
+2. Abrir projeto no VSCode
+3. Conectar ESP à porta USB
+4. Caso o projeto ainda não esteja gravado na memória _flash_ do ESP
+   - Fazer upload do projeto Neurodevices para o ESP a partir do VSCode
+   - Conectar (preferivelmente celular) à rede Wi-Fi devXXXX (XXXX é o número do dispositivo ESP. Ex.: dev3952)
+   - Acessar o endereço 8.8.8.8 no _browser_ (chrome, firefox, etc...)
+   - Preencher seguintes campos do formulário para configuração do ESP
+     - WiFi SSID: CAMPUS
+     - WiFi _Password_: IINELS_educacional
+     - MQTT _Server Host Name_: endereço IP da máquina onde está instalado o servidor _broker_ MQTT (verificar IP conectado à rede Wi-Fi CAMPUS)
+     - MQTT _Server port_: número da porta configurada para o _broker_ MQTT
+       - Nesse caso, deve-se configurar a porta 1883, padrão do MQTT
+     - _Submit_
+   - Estando a máquina do _broker_ conectada à rede CAMPUS, abrir interface `directStimulation.html` no _browser_ e preencher as seguintes informações para coleta de dados com a palmilha:
+     - _Server address_: endereço IP da máquina onde está instalado o servidor _broker_ MQTT (verificar IP conectado à rede Wi-Fi CAMPUS)
+     - _Port_: número da porta configurada para o _broker_ MQTT
+       - Caso o arquivo de configuração do _broker_ MQTT esteja configurado para conexão _websocket_ na porta 1887, configurar essa porta.
+     - Tópico da palmilha: número do dispositivo ESP (Ex.: 3952)
+     - Tempo de experimento: em segundos
+   - Connect to MQTT
+   - Começar experimento
