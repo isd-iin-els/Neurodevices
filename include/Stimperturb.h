@@ -36,17 +36,35 @@ namespace protpertubation{
     unsigned long startTime;
     unsigned long  recovery_time;
 
-    //calcâneo 1, calcâneo 2, Meta2, Médiopé, Meta1, hálux 
+    // Sequência pinagem para placa palmilha v1.0
+    // calcâneo 1 (36), calcâneo 2 (39), Meta2 (32), Médiopé (33), Meta1 (34), hálux (35)
+    // std::stringstream readData()
+    // {
+    //   std::stringstream ss;
+
+    //   ss << DataLoop_counter << " , " << analogRead(36)   
+    //                         << " , " << analogRead(39)
+    //                         << " , " << analogRead(32)
+    //                         << " , " << analogRead(33)
+    //                         << " , " << analogRead(34)
+    //                         << " , " << analogRead(35)
+    //                         << "\r\n";
+    //   datasave += ss.str().c_str();
+    //   return ss;
+    // }
+
+    // Sequência pinagem para placa palmilha v2.0
+    // calcâneo 1 (33), calcâneo 2 (32), Meta2 (35), Médiopé (36), Meta1 (39), hálux (34)
     std::stringstream readData()
     {
       std::stringstream ss;
 
-      ss << DataLoop_counter << " , " << analogRead(36)   
-                            << " , " << analogRead(39)
+      ss << DataLoop_counter << " , " << analogRead(33) 
                             << " , " << analogRead(32)
-                            << " , " << analogRead(33)
-                            << " , " << analogRead(34)
                             << " , " << analogRead(35)
+                            << " , " << analogRead(36)
+                            << " , " << analogRead(39)
+                            << " , " << analogRead(34)
                             << "\r\n";
       datasave += ss.str().c_str();
       return ss;
