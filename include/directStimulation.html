@@ -213,6 +213,7 @@
             deviceName1 = document.getElementById("deviceName1").value;
             deviceName2 = document.getElementById("deviceName2").value;
             client.subscribe("toOpenVibe");
+            client.subscribe("newdev");
             client.subscribe("cmd2dev" + deviceName1, subscribeOptions);
             client.subscribe("cmd2dev" + deviceName2, subscribeOptions);
             client.subscribe("dev" + deviceName1 + "ss", subscribeOptions);
@@ -240,7 +241,7 @@
             }else if(message1.destinationName == "dev"+deviceName1+"ans"){
                 let log = document.getElementById("responselog");
                 log.value += "\n"+message1.payloadString
-            }else if(message1.destinationName == "devices"){
+            }else{ //if(message1.destinationName == "devices"){
                 let log = document.getElementById("deviceLog");
                 log.value += "\n"+message1.payloadString
             }
@@ -265,7 +266,8 @@
             Recoverytime = document.getElementById("Recoverytime").value;
             Stimfreq = document.getElementById("Stimfreq").value;
             Stimpulsew = document.getElementById("ton").value;
-            Stimintensidade = '0,0,0,0'//document.getElementById("Stimintensidade").value; // pegar os valores dos slides
+            //Stimintensidade = '0,0,0,0'//document.getElementById("Stimintensidade").value; // pegar os valores dos slides
+            Stimintensidade = document.getElementById("ch1").value; // pegar os valores dos slides
             Stimtime = 1//document.getElementById("Stimtime").value;
             Tempenvio = document.getElementById("Tempenvio").value;
             freq = document.getElementById("freq").value;
