@@ -48,7 +48,7 @@
                     <div style="flex: 1; min-width: 200px; margin: 10px;">
                         <p>
                             <label>Server address</label>
-                            <input id="mqttHost" value="10.1.0.18">
+                            <input id="mqttHost" value="192.168.0.3">
                         </p>
                 
                         <p>
@@ -90,7 +90,7 @@
 
                         <p>
                             <label>Periodo (s)</label>
-                            <input id="period" value="10">
+                            <input id="period" value="20000">
                         </p>
 
                         <p>
@@ -281,7 +281,7 @@
 
         function sendChannelCangedCommand() {
             period = document.getElementById("period").value;
-            Stimtopics = document.getElementById("deviceName2").value;
+            Stimtopics = document.getElementById("deviceName1").value;
             ton = document.getElementById("ton").value;
             ch1 = document.getElementById("ch1").value;
             ch2 = document.getElementById("ch2").value;
