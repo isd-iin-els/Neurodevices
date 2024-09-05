@@ -3,6 +3,7 @@
 #include <sendIMUData.h>
 #include "openLoopFes.h"
 #include "asyncSerialServices.h"
+#include "sendInsoleData.h"
 #include "Stimperturb.h"
 #include "adc1115_mqtt.h"
 #include "controlStim.h"
@@ -21,6 +22,8 @@ void setup() {
   addFunctions("whoAmI",WHOAMI_PARAMETERS,whoAmI,9);
   addFunctions("imuSendInit",IMUSENDINIT_PARAMETERS,imuSendInit,1);  //sensors.init();
   addFunctions("imuSendStop",IMUSENDSTOP_PARAMETERS,imuSendStop,22);
+  addFunctions("INSOLESTREAM",INSOLESTREAM_PARAMETERS,insoleStream,28); 
+  addFunctions("STOPINSOLESTREAM",STOPINSOLESTREAM_PARAMETERS,stopInsoleStream,29);
   addFunctions("stopOpenLoopFes",STOPOPENLOOPFES_PARAMETERS,stopOpenLoopFes,8);
   addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate,18);
   addFunctions("StimPerturb",SENDINSOLE_PARAMETERS, protpertubation::StimPerturb,38);

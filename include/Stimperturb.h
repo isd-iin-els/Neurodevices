@@ -35,23 +35,24 @@ namespace protpertubation{
     u8_t stimState = 0;
     unsigned long startTime;
     unsigned long  recovery_time;
+    bool stimFlag = false;
 
-    //calcâneo 1, calcâneo 2, Meta2, Médiopé, Meta1, hálux 
+    //calcâneo 1 (4), calcâneo 2 (3), Meta2 (2), Médiopé (1), Meta1(6), hálux (5)
     std::stringstream readData()
     {
       std::stringstream ss;
 
-      ss << DataLoop_counter << " , " << analogRead(36)   
-                            << " , " << analogRead(39)
-                            << " , " << analogRead(32)
-                            << " , " << analogRead(33)
-                            << " , " << analogRead(34)
-                            << " , " << analogRead(35)
+      ss << DataLoop_counter << " , " << analogRead(33) //Calcaneo 1
+                            << " , " << analogRead(32) // Calcaneo 2
+                            << " , " << analogRead(39) // Meta 1
+                            << " , " << analogRead(36) //Mediopé
+                            << " , " << analogRead(35) // Meta 2
+                            << " , " << analogRead(34) //Halux
                             << "\r\n";
       datasave += ss.str().c_str();
       return ss;
     }
-
+    
     void publishData(){
       if (DataLoop_counter%uint16_t(Tempenvio*freq)==0){
         mqttClient.publish(devstream.str().c_str(), 0, false, datasave.c_str());
@@ -67,31 +68,36 @@ namespace protpertubation{
 
     void heelStrike(LinAlg::Matrix<double> data, double Stimtime,String Stimtopics)
     {
+      // std::stringstream ss; ss << data(0,0) << "," << data(0,1) << "," << data(0,2) << "," << data(0,3) << "," << data(0,4) << "," << data(0,5) << "," << data(0,6) << "," << data(0,7);
+      // Serial.println(ss.str().c_str());
+      //calcâneo 1 (4), calcâneo 2 (3), Meta2 (2), Médiopé (1), Meta1(6), hálux (5)
       if(data(0,1) > Trigger(0,0) && data(0,2) > Trigger(0,0) && stimState == 0){
         std::stringstream stim;
-
-        stim << "{\"op\":2,\"m\":\"" << "0,0," << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
+        Serial.println("Entrou heelStrike");
+        stim << "{\"op\":2,\"m\":\"" << Stimintensidade << ',' <<Stimintensidade << ',' << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
 
         mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
         stimState = 1;
         startTime = millis(); 
-        recovery_time = random(30,60);
+        recovery_time = random(Recoverytime(0,0),Recoverytime(0,1))*1000;
         
       } 
     }
 
     void midFootStrike(LinAlg::Matrix<double> data, double Stimtime,String Stimtopics)
     {
+      //calcâneo 1 (4), calcâneo 2 (3), Meta2 (2), Médiopé (1), Meta1(6), hálux (5)
       if(data(0,1) < Threshold(0,0) && data(0,2) < Threshold(0,0) &&
          data(0,4) > Trigger(0,0)   && stimState == 2){
         std::stringstream stim;
+      Serial.println("Entrou midFootStrike");
 
-        stim << "{\"op\":2,\"m\":\"" << "0,0," << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
-
+        //stim << "{\"op\":2,\"m\":\"" << "0,0," << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
+        stim << "{\"op\":2,\"m\":\"" << Stimintensidade << ',' <<Stimintensidade << ',' << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
         mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
         stimState = 3;
         startTime = millis(); 
-        recovery_time = random(30,60);
+        recovery_time = random(Recoverytime(0,0),Recoverytime(0,1))*1000;
         
       } 
     }
@@ -99,34 +105,44 @@ namespace protpertubation{
     void foreFootStrike(LinAlg::Matrix<double> data, double Stimtime,String Stimtopics)
     {
        //grupo 1 calcâneo 1, calcâneo 2 ativando e 
+       //calcâneo 1 (4), calcâneo 2 (3), Meta2 (2), Médiopé (1), Meta1(6), hálux (5)
       if(data(0,4) < Threshold(0,0) && 
          data(0,3) > Trigger(0,0)   && data(0,5) < Trigger(0,0) && data(0,6) < Trigger(0,0) && 
          stimState == 4){
         std::stringstream stim;
+        Serial.println("Entrou foreFootStrike");
 
-        stim << "{\"op\":2,\"m\":\"" << "0,0," << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
-
+        //stim << "{\"op\":2,\"m\":\"" << "0,0," << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
+        stim << "{\"op\":2,\"m\":\"" << Stimintensidade << ',' <<Stimintensidade << ',' << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
         mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
         stimState = 5;
         startTime = millis(); 
-        recovery_time = random(30,60);
+        recovery_time = random(Recoverytime(0,0),Recoverytime(0,1))*1000;
         
       } 
     }
 
-    void recoverTime(double freq, uint64_t DataLoop_counter, uint8_t state, bool lastState = false)
+    void recoverTime(double freq, uint64_t DataLoop_counter, uint8_t state, bool lastState = false, double stimTime = 0)
     {
       if(stimState == state){
         unsigned long elapsedTime = millis() - startTime; 
         if(elapsedTime > recovery_time){
           std::stringstream stim;
-
+          Serial.println(recovery_time);
+        Serial.println("Entrou recoverTime");
           stim << "{\"op\":2,\"m\":\"0,0,0,0\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
 
           mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
+          stimFlag = false;
           stimState = state+1;
           if(lastState)
             stimState = 0;  
+        }else if(elapsedTime > stimTime*1000 && !stimFlag){
+          stimFlag = true;
+          std::stringstream stim;
+          stim << "{\"op\":2,\"m\":\"0,0,0,0\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
+
+          mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str());
         }
       }
     }
@@ -136,13 +152,13 @@ namespace protpertubation{
       std::stringstream ss = readData();
       
       heelStrike(ss.str().c_str(), Stimtime, Stimtopics);
-      recoverTime(freq,DataLoop_counter,1);
+      recoverTime(freq,DataLoop_counter,1,false,Stimtime);
 
       midFootStrike(ss.str().c_str(), Stimtime,Stimtopics);
-      recoverTime(freq,DataLoop_counter,3);
+      recoverTime(freq,DataLoop_counter,3,false,Stimtime);
 
       foreFootStrike(ss.str().c_str(), Stimtime, Stimtopics);
-      recoverTime(freq,DataLoop_counter,5,true);
+      recoverTime(freq,DataLoop_counter,5,true,Stimtime);
       
       publishData();
     }
@@ -159,15 +175,15 @@ namespace protpertubation{
     }
 
     static void loop(void *param){// 8.3ms
-      // Serial.println("Entrou Loop");
-      if(DataLoop_counter <= tempoBaseline*freq){
-        baseline(freq, DataLoop_counter);
+       //Serial.println("Entrou Loop");
+       if(DataLoop_counter <= tempoBaseline*freq){
+         baseline(freq, DataLoop_counter);
         Serial.println("Entrou Baseline");
-      }
+       }
       else{
         //Serial.println("Entrou experimento");
-        experiment(Stimtime,Stimtopics);
-      }
+         experiment(Stimtime,Stimtopics);
+       }
 
       DataLoop_counter++;
       canIFinishExperiment(param);
@@ -178,6 +194,7 @@ namespace protpertubation{
     }
 
     String StimPerturb(const StaticJsonDocument<sizejson> &doc)  {
+        serializeJson(doc, Serial);
         freq      = (uint16_t)doc["freq"]; 
         datasave  = "";
         Stimtime  = (double)doc["Stimtime"];

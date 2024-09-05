@@ -60,7 +60,7 @@
 #define UPDATE_FIRMWARE_PARAMETERS              "{\"op\":25,\"url\":\"hostName\",\"binLocation\":\"urlToFile\",\"md5\":\"hash\"}"
 #define BPMSTREAM_PARAMETERS                    "{\"op\":26,\"frequence\":\"float\",\"timeout\":\"float\",\"bpm_scale\":\"uint8\",\"bpm_threshold\":\"double\"}"
 #define STOPBPMSTREAM_PARAMETERS      "{\"op\":27}"
-#define INSOLESTREAM_PARAMETERS       "{\"op\":28,\"frequence\":\"float\",\"timeout\":\"float\"}"
+#define INSOLESTREAM_PARAMETERS       "{\"op\":28,\"frequency\":\"float\",\"timeout\":\"float\"}"
 #define STOPINSOLESTREAM_PARAMETERS   "{\"op\":29}"
 #define STOPADCSTREAM_PARAMETERS      "{\"op\":30}"
 #define IMUControllerINIT_PARAMETERS  "{\"op\":31,\"simulationTime\":\"float\",\"frequence\":\"float\",\"sensorType\":{\"mpu6050\":1,\"GY80\":2}}"

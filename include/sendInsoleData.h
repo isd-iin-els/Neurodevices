@@ -7,12 +7,7 @@
 #include <Arduino.h>
 #include <AsyncTCP.h>
 #include "WiFi.h"
-#ifdef WiFistaTCP_h
-  #include "wifistaTCP.h"
-#endif
-#ifdef WiFistaMQTT_h
-  #include "wifistaMQTT.h"
-#endif
+#include <wifiMQTT.h>//Não mexe
 
 
 volatile uint64_t insole_Counter; volatile bool insole_flag = false, insoleSTREAM_flag = false;
@@ -22,14 +17,14 @@ esp_timer_handle_t insole_periodic_timer = nullptr;
 void IRAM_ATTR insoleUpdate(void *param){
     insole_Counter++;
     std::stringstream ss;
-    ss << insole_Counter << " , " << analogRead(36)  
+    ss << insole_Counter << " , " << analogRead(33)  
                         //  << " , " << analogRead(37) 
                         //  << " , " << analogRead(38) 
-                         << " , " << analogRead(39)
                          << " , " << analogRead(32)
-                         << " , " << analogRead(33)
-                         << " , " << analogRead(34)
+                         << " , " << analogRead(39)
+                         << " , " << analogRead(36)
                          << " , " << analogRead(35)
+                         << " , " << analogRead(34)
                         //  << " , " << analogRead(0)
                         //  << " , " << analogRead(ADC2_CHANNEL_1)
                         //  << " , " << analogRead(ADC2_CHANNEL_2)
@@ -39,15 +34,10 @@ void IRAM_ATTR insoleUpdate(void *param){
                         //  << " , " << analogRead(ADC2_CHANNEL_6)
                         //  << " , " << analogRead(ADC2_CHANNEL_7)
                          << "\r\n";
-    Serial.println(ss.str().c_str());
-    // client->write(ss.str().c_str());
-  #ifdef WiFistaTCP_h
-    client->write(ss.str().c_str());
-  #endif
-  #ifdef WiFistaMQTT_h
-    mqttClient.publish(devstream.str().c_str(), 0, false, ss.str().c_str());
-  #endif
-  // Serial.println(insole_Counter);
+    // Serial.println(ss.str().c_str());
+
+    mqttClient.publish(devstream.str().c_str(), 0, false,  ss.str().c_str());
+
   if(insole_Counter==(uint64_t)param || !insoleSTREAM_flag)
   {
     // client->write("stop\r\n");
@@ -71,7 +61,7 @@ String stopInsoleStream(const StaticJsonDocument<sizejson> &doc/*, const uint8_t
       insole_periodic_timer = nullptr;
       insoleSTREAM_flag = false;
       // IMUDataLoop_counter = -1;
-      answer = "aCQUISITION Stopped";
+      answer = "ACQUISITION Stopped";
       // std::cout << IMUDataLoop_counter << " " << answer.c_str() << std::endl;
   // } else
   //   answer += "";
@@ -82,7 +72,7 @@ String insoleStream(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &op
   String answer;
   
   // if (operation == INSOLESTREAM_MSG && !insoleSTREAM_flag){
-    uint16_t freq = doc["frequence"];
+    uint16_t freq = doc["frequency"];
     int64_t timeSimulation = doc["timeout"];
     std::cout << freq<<"\n"<< timeSimulation<<"\n";
     
