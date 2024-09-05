@@ -4,9 +4,11 @@
 #include <EEPROM.h>
 #include <DNSServer.h>
 #include "sstream"
+#include <Update.h>
 
 DNSServer dnsServer;
 AsyncWebServer server(80);
+String upload_file_name = "";
 
 EEPROMClass mqttLogin ("login");
 EEPROMClass mqttPass  ("pass");
@@ -113,7 +115,30 @@ const char index_html[] PROGMEM = R"rawliteral(
   </body>
 </html>)rawliteral";
 
-
+void handleUpdate(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final) {
+  if (!index) {
+    Serial.printf("UploadStart: %s\n", filename.c_str());
+    upload_file_name = filename;
+    // Open the file for writing
+    if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {
+      Update.printError(Serial);
+    }
+  }
+  if (len) {
+    // Write the received data to the file
+    if (Update.write(data, len) != len) {
+      Update.printError(Serial);
+    }
+  }
+  if (final) {
+    Serial.printf("UploadEnd: %s (%u)\n", filename.c_str(), index + len);
+    if (Update.end(true)) {
+      Serial.println("Update Success");
+    } else {
+      Update.printError(Serial);
+    }
+  }
+}
 
 boolean captivePortal(AsyncWebServerRequest *request) {
   // !isIp(server.hostHeader())
@@ -150,6 +175,17 @@ void initWebServer(){
         
         //request->send_P(200, "text/html", index_html);
     });
+
+    server.on("/update", HTTP_GET, [](AsyncWebServerRequest *request) {
+      request->send_P(200, "text/html", "<form method='POST' action='/update_link' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form>");
+    });
+
+    // Handle file upload
+    server.on("/update_link", HTTP_POST, [](AsyncWebServerRequest *request) {
+      request->send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+      ESP.restart();
+    }, handleUpdate);
+
     server.on("/get", HTTP_GET, [] (AsyncWebServerRequest *request) {
     // GET input1 value on <ESP_IP>/update?output=<inputMessage1>&state=<inputMessage2>
     if (request->hasParam("mqttLogin") && request->hasParam("mqttPass")&&request->hasParam("mqttHost") && request->hasParam("mqttPort")) {
