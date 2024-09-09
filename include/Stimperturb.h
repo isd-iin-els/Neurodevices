@@ -11,7 +11,7 @@
 #include <wifiMQTT.h>//Não mexe
 #include "SistemasdeControle/embeddedTools/signalAnalysis/systemLoop.h"//Não mexe se for usar o fes
 
-#define SENDINSOLE_PARAMETERS "{\"op\":38,\"timeSimulation\":\"float\",\"freq\":\"float\",\"Trigger\":\"string\",\"Threshold\":\"string\",\"Recoverytime\":\"string\",\"Stimtopics\":\"string\",\"Stimtime\":\"float\",\"Stimfreq\":\"float\",\"Stimpulsew\":\"float\",\"Stimintensidade\":\"float\",\"Tempenvio\":\"float\"}"//Mudar para o nome da função e os parametros que ela recebe
+#define SENDINSOLE_PARAMETERS "{\"op\":38,\"timeSimulation\":\"float\",\"freq\":\"float\",\"Trigger\":\"string\",\"Threshold\":\"string\",\"Recoverytime\":\"string\",\"Stimtopics\":\"string\",\"Stimtime\":\"float\",\"Stimfreq\":\"float\",\"Stimpulsew\":\"float\",\"Stimintensidade\":\"float\",\"Tempenvio\":\"float\",\"tempoBaseline\":\"float\"}"
 
 namespace protpertubation{
 
@@ -210,6 +210,7 @@ namespace protpertubation{
         Stimintensidade = (double)doc["Stimintensidade"];
         
         uint16_t timeSimulation = (uint16_t)doc["timeSimulation"]; 
+        tempoBaseline = (float)doc["tempoBaseline"]; 
 
         stimState = 0;
 
