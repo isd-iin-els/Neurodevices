@@ -191,13 +191,13 @@ void onMqttConnect() {
 	mqttClient.publish("newdev", 1, false, whoAmI(StaticJsonDocument<sizejson>()).c_str());
 	mqttClient.publish(connectionStatus.str().c_str(), 0, true, "Online");
 	mqttClient.subscribe(cmd2dev.str().c_str(), 0);
-	mqttClient.subscribe("getServices", 0);
+	mqttClient.subscribe("broadcast/get_active_services", 0);
 }
 
 void onMqttMessage(char* topic, char* payload){
 	String topico = topic;
 	// Serial.println(topico);
-	if(topico.indexOf("getServices") != -1){
+	if(topico.indexOf("broadcast/get_active_services") != -1){
 		mqttClient.publish("newdev", 1, false, whoAmI(StaticJsonDocument<sizejson>()).c_str());
 		// Serial.println("newdev");
 		return;
