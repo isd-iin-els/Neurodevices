@@ -28,7 +28,7 @@ void setup() {
   addFunctions("openLoopTonFreqUpdate",OPENLOOPTONFREQUPDATE_PARAMETERS,openLoopTonFreqUpdate,18);
   addFunctions("StimPerturb",SENDINSOLE_PARAMETERS, protpertubation::StimPerturb,38);
   addFunctions("adc1115SendInit", ADC1115SENDINIT_PARAMETERS, adc1115MQTT::sendAdc1115Init,36);
-  addFunctions("setStim", setStim_PARAMETERS, ControlStim::setStim,41);
+  addFunctions("setStim", setStim_PARAMETERS, ControlStim::setStim,41); 
 }
 
 void loop() {

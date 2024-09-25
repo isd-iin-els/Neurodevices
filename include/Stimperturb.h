@@ -36,6 +36,8 @@ namespace protpertubation{
     unsigned long startTime;
     unsigned long  recovery_time;
     bool stimFlag = false;
+    volatile float milliTime = 0;
+    float interval_ms;
 
     //calcâneo 1 (4), calcâneo 2 (3), Meta2 (2), Médiopé (1), Meta1(6), hálux (5)
     std::stringstream readData()
@@ -78,7 +80,8 @@ namespace protpertubation{
 
         mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
         stimState = 1;
-        startTime = millis(); 
+        // startTime = millis(); 
+        startTime = milliTime; 
         recovery_time = random(Recoverytime(0,0),Recoverytime(0,1))*1000;
         
       } 
@@ -96,7 +99,8 @@ namespace protpertubation{
         stim << "{\"op\":2,\"m\":\"" << Stimintensidade << ',' <<Stimintensidade << ',' << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
         mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
         stimState = 3;
-        startTime = millis(); 
+        // startTime = millis();
+        startTime = milliTime; 
         recovery_time = random(Recoverytime(0,0),Recoverytime(0,1))*1000;
         
       } 
@@ -116,7 +120,8 @@ namespace protpertubation{
         stim << "{\"op\":2,\"m\":\"" << Stimintensidade << ',' <<Stimintensidade << ',' << Stimintensidade << ',' << Stimintensidade << "\",\"t\":" << Stimpulsew << ",\"p\":" << 1000000/Stimfreq << "}\n";
         mqttClient.publish(Stimtopics.c_str(), 0, false, stim.str().c_str()); 
         stimState = 5;
-        startTime = millis(); 
+        // startTime = millis(); 
+        startTime = milliTime;
         recovery_time = random(Recoverytime(0,0),Recoverytime(0,1))*1000;
         
       } 
@@ -125,7 +130,8 @@ namespace protpertubation{
     void recoverTime(double freq, uint64_t DataLoop_counter, uint8_t state, bool lastState = false, double stimTime = 0)
     {
       if(stimState == state){
-        unsigned long elapsedTime = millis() - startTime; 
+        // unsigned long elapsedTime = millis() - startTime; 
+        unsigned long elapsedTime = milliTime - startTime; 
         if(elapsedTime > recovery_time){
           std::stringstream stim;
           Serial.println(recovery_time);
@@ -176,6 +182,9 @@ namespace protpertubation{
 
     static void loop(void *param){// 8.3ms
        //Serial.println("Entrou Loop");
+       milliTime += interval_ms;
+       //Serial.println(milliTime);
+       //Serial.println(DataLoop_counter);
        if(DataLoop_counter <= tempoBaseline*freq){
          baseline(freq, DataLoop_counter);
         Serial.println("Entrou Baseline");
@@ -213,7 +222,7 @@ namespace protpertubation{
         tempoBaseline = (float)doc["tempoBaseline"]; 
 
         stimState = 0;
-
+        interval_ms = 1000.0/freq;
         // Serial.println(doc.as<String>().c_str());
         // delay(5000);
 
@@ -226,6 +235,7 @@ namespace protpertubation{
         analogSetPinAttenuation(35, ADC_11db);        adcAttachPin(35);
 
         DataLoop_counter= 0;
+        milliTime = 0;
         DataLoop_flag = true;
         DataLoop_periodic_timer_args.callback = &loop;
         DataLoop_periodic_timer_args.name = "Stimperturb";//Se quiser pode mudar a string e renomear a função
