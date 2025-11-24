@@ -280,17 +280,45 @@
         } 
 
         function sendChannelCangedCommand() {
-            period = document.getElementById("period").value;
-            Stimtopics = document.getElementById("deviceName1").value;
-            ton = document.getElementById("ton").value;
-            ch1 = document.getElementById("ch1").value;
-            ch2 = document.getElementById("ch2").value;
-            ch3 = document.getElementById("ch3").value;
-            ch4 = document.getElementById("ch4").value;
-            message = new Paho.MQTT.Message('{"op":2,"m":"'+ch1+','+ch2+','+ch3+','+ch4+'","t":"'+ton+'","p":"'+period+'"}');
-            message.destinationName = "cmd2dev"+Stimtopics;
-            client.send(message);
+    deviceName = document.getElementById("deviceName").value;
+    ton = document.getElementById("ton").value;
+    period = document.getElementById("period").value;
+    ch1 = document.getElementById("ch1").value;
+    ch2 = document.getElementById("ch2").value;
+    ch3 = document.getElementById("ch3").value;
+    ch4 = document.getElementById("ch4").value;
+    
+    // Envia os valores dos canais para controlar o LED
+    message = new Paho.MQTT.Message('{"op":2,"m":"'+ch1+','+ch2+','+ch3+','+ch4+'","t":"'+ton+'","p":"'+period+'"}');
+    message.destinationName = "cmd/"+deviceName;
+    client.send(message);
+    
+    // Feedback visual local (opcional)
+    updateLocalLEDFeedback(ch1, ch2, ch3, ch4);
+}
+
+// Função para feedback visual local no navegador (opcional)
+function updateLocalLEDFeedback(ch1, ch2, ch3, ch4) {
+    const channels = [parseInt(ch1), parseInt(ch2), parseInt(ch3), parseInt(ch4)];
+    const activeChannels = channels.filter(val => val > 0);
+    
+    if (activeChannels.length > 0) {
+        const averageIntensity = activeChannels.reduce((a, b) => a + b, 0) / activeChannels.length;
+        const brightness = Math.round((averageIntensity / 100) * 100);
+        
+        // Atualiza um elemento visual no HTML
+        const ledIndicator = document.getElementById('ledIndicator');
+        if (ledIndicator) {
+            ledIndicator.style.opacity = brightness / 100;
+            ledIndicator.style.backgroundColor = `rgba(0, 0, 255, ${brightness / 100})`;
         }
+    } else {
+        const ledIndicator = document.getElementById('ledIndicator');
+        if (ledIndicator) {
+            ledIndicator.style.opacity = 0.1;
+        }
+    }
+}
 
     </script>
 

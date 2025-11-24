@@ -7,6 +7,15 @@
 
 volatile bool openLoop_flag = false, sensor_flag = false;
 
+int CS_PIN  = 23;
+int UD_PIN  = 21;
+int INC_PIN = 22;
+
+int OPTO_PIN1 = 18;
+int OPTO_PIN2 = 19;
+
+void setResistance(int percent);
+
 // -----------------------ESP32devkit-------------------------------------------
 #ifdef ESP32DEV
 uint8_t modPin[8]    = {27,19,12,18,23,14,26,25},//ca andré
@@ -30,6 +39,19 @@ Devices::fes4channels dispositivo(levelPin, modPin, 1, 18000,200,20000,true);
 
 void openLoopFesInit(uint32_t ton, uint32_t period){
     openLoop_flag = true;
+
+    pinMode(CS_PIN, OUTPUT);
+    pinMode(UD_PIN, OUTPUT);
+    pinMode(INC_PIN, OUTPUT);
+    pinMode(OPTO_PIN1, OUTPUT);
+    pinMode(OPTO_PIN2, OUTPUT);
+
+    digitalWrite(CS_PIN, HIGH);
+    digitalWrite(INC_PIN, HIGH);
+
+    // valor inicial de intensidade (pode ser ajustado)
+    setResistance(10);
+
     if(dispositivo.stopLoopFlag){
       dispositivo.stopLoopFlag = false;
       dispositivo.timeOnAndPeriodUpdate(ton,period);
@@ -52,16 +74,15 @@ void openLoopFesStop(){
 }
 
 String openLoopTonFreqUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/) {
-
-  String answer;
+  
   // if (operation == OPENLOOPTONFREQUPDATE_MSG){
     openLoopFesStop();
     openLoopFesInit(doc["t"],doc["p"]);
-    answer += "Ton and Frequency sucessfully updated!";
+    return String("Ton and Frequency sucessfully updated!");
+
   // }
   // else
     // answer += "";
-  return answer;
 }
 
 String openLoopFesConfig(const StaticJsonDocument<sizejson> &doc)  {
@@ -71,37 +92,72 @@ String openLoopFesConfig(const StaticJsonDocument<sizejson> &doc)  {
 
 String openLoopFesUpdate(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
 
+  Serial.println("DEU CERTO");
+
   String answer;
 
     const char *msg = doc["m"];
     LinAlg::Matrix<double> code = msg;
 
+  setResistance(code(0,0)); // atualizar o potenciômetro digital
+
     for(uint8_t i = 0; i < code.getNumberOfColumns(); ++i)
       dispositivo.fes[i].setPowerLevel(code(0,i));  
-    if(dispositivo.stopLoopFlag){
-      openLoopFesInit(doc["t"],doc["p"]);
-    }
+
     if (doc.containsKey("f")) //f is for fade
       for(uint8_t i = 0; i < code.getNumberOfColumns(); ++i)
         dispositivo.fes[i].setFadeTime(doc["f"]); 
 
 
-  answer += "1";
-  return answer;
+         // --------- NOVO: atualizar o potenciômetro digital ---------
+    if(doc.containsKey("r"))
+        setResistance(doc["r"]);
+
+    if(dispositivo.stopLoopFlag)
+        openLoopFesInit(doc["t"],doc["p"]);
+
+  return String("1");
 }
 
 
 String stopOpenLoopFes(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operation*/)  {
-  String answer;
   // if (operation == STOPOPENLOOPFES_MSG){
     // Serial.print("Operation 8, received data: "); Serial.println(msg);
     openLoopFesStop();
-    answer += "1";
+    return String("1");
   // }
   // else
   //   answer += "";
-  return answer;
 }
+void setResistance(int percent) {
 
+    percent = constrain(percent, 0, 100);
+
+    // Zerar resistência
+    digitalWrite(UD_PIN, LOW);
+    for(int i = 0; i < 100; i++) {
+        digitalWrite(CS_PIN, LOW);
+        delayMicroseconds(5);
+        digitalWrite(INC_PIN, LOW);
+        delayMicroseconds(5);
+        digitalWrite(INC_PIN, HIGH);
+        delayMicroseconds(5);
+        digitalWrite(CS_PIN, HIGH);
+        delayMicroseconds(5);
+    }
+
+    // Posicionar na resistência desejada
+    digitalWrite(UD_PIN, HIGH);
+    for(int i = 0; i < percent; i++) {
+        digitalWrite(CS_PIN, LOW);
+        delayMicroseconds(5);
+        digitalWrite(INC_PIN, LOW);
+        delayMicroseconds(5);
+        digitalWrite(INC_PIN, HIGH);
+        delayMicroseconds(5);
+        digitalWrite(CS_PIN, HIGH);
+        delayMicroseconds(5);
+    }
+}
 
 #endif
