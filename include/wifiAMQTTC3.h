@@ -81,6 +81,7 @@ String who_am_i(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operat
 	std::stringstream ss, functionalities;
 	ss << "{";
 	ss << "\"service_id\":\"" << ESP.getEfuseMac() << "\",";   // entre aspas para ser sempre string
+	ss << "\"flow\": {\"in\": [\"float\"],\"out\": [\"float\"]}" << ",";
 	ss << "\"service_name\":\"DOIT Esp32 DevKit v1\",";
 	ss << "\"service_description\":\"" << devFunction.c_str() << "\",";
 	ss << "\"service_type\":\"default\",";

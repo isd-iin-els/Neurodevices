@@ -82,16 +82,16 @@ static void IMUDataLoop(void *param){
   else{
     IMUDataLoop_counter++;
     // ss << IMUDataLoop_counter << "," << 1.0122 << "," << 2.0122 << "," << 3.0122 << "," << 4.0122 
-    // ss << IMUDataLoop_counter << 2.0122 << "," << 3.0122 << "," << 4.0122 
-    //                           << "," << 5.0122 << "," << 6.0122 << "," << 7.0122 << "," << 8.0122 << "," << 9.0122 << std::endl;
-    if(IMUDataLoop_counter<=1000)
-      ss << 0 << std::endl;
-    else if(IMUDataLoop_counter>=1000 && IMUDataLoop_counter<=2000)
-      ss << 10 << std::endl;
-    else if(IMUDataLoop_counter>=2000 && IMUDataLoop_counter<=3000)
-      ss << 20 << std::endl;
-    else
-      ss << 30 << std::endl;
+    ss << IMUDataLoop_counter << 2.0122 << "," << 3.0122 << "," << 4.0122 
+                              << "," << 5.0122 << "," << 6.0122 << "," << 7.0122 << "," << 8.0122 << "," << 9.0122 << std::endl;
+    // if(IMUDataLoop_counter<=1000)
+    //   ss << 0 << std::endl;
+    // else if(IMUDataLoop_counter>=1000 && IMUDataLoop_counter<=2000)
+    //   ss << 10 << std::endl;
+    // else if(IMUDataLoop_counter>=2000 && IMUDataLoop_counter<=3000)
+    //   ss << 20 << std::endl;
+    // else
+    //   ss << 30 << std::endl;
   }
   #ifdef WiFistaTCP_h
     client->write(ss.str().c_str());
