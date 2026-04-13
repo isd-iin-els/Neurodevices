@@ -1,7 +1,8 @@
 
 #include <wifiMQTT.h>
 #include <sendIMUData.h>
-#include "openLoopFes.h"
+// #include "openLoopFes.h"
+#include "tsPCS.h"
 // #include "asyncSerialServices.h"
 // #include "sendInsoleData.h"
 // #include "Stimperturb.h"
@@ -14,10 +15,11 @@ bool captivPortal;
 void setup() {
 
   sleep(2);
+  // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   captivPortal = wifiSTAMQTTInit();
   // // startSerialService(); // Não é compactível com C3
 
-  addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate,2);
+  // addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate,2);
   // // addFunctions("restart",RESTART_PARAMETERS,restart,7);
   // addFunctions("subscribe",subscribe_PARAMETERS,subscribe,0);
   // addFunctions("who_am_i",WHOAMI_PARAMETERS,who_am_i,9);
@@ -30,6 +32,9 @@ void setup() {
   // // addFunctions("StimPerturb",SENDINSOLE_PARAMETERS, protpertubation::StimPerturb,38);
   // // addFunctions("adc1115SendInit", ADC1115SENDINIT_PARAMETERS, adc1115MQTT::sendAdc1115Init,36);
   // // addFunctions("setStim", setStim_PARAMETERS, ControlStim::setStim,41); 
+
+  addFunctions("TSPCS_PARAMETERS",TSPCS_PARAMETERS,tsPCS::openLoopTspcsUpdate,2);
+  addFunctions("INIT_TSPCS_PARAMETERS",INIT_TSPCS_PARAMETERS,tsPCS::sendtsPCSInit,3);
 
   addFunctions("who_am_i",WHOAMI_PARAMETERS,who_am_i,0);
   addFunctions("subscribe",subscribe_PARAMETERS,subscribe,1);

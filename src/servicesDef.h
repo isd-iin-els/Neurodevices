@@ -71,4 +71,6 @@
 #define RESET_PARAMETERS              "{\"op\":35}"
 #define ADC1115SENDINIT_PARAMETERS    "{\"op\":36,\"timeSimulation\":\"float\",\"freq\":\"float\"}"
 #define SENDWHEELCHAIRINIT_PARAMETERS "{\"op\":37,\"timeSimulation\":\"float\",\"freq\":\"float\"}"
+#define TSPCS_PARAMETERS              "{\"op\":38,\"timeSimulation\":\"float\",\"freq\":\"float\"}"
+#define INIT_TSPCS_PARAMETERS         "{\"op\":38,\"timeSimulation\":\"float\",\"freq\":\"float\",\"pulse_time\":\"int\"}"  
 #endif
