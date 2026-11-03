@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração MQTT</title>
+    <!-- Importação do MQTT.js via CDN -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; color: #333; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
+        .status { font-weight: bold; margin-bottom: 20px; }
+        .connected { color: green; }
+        .disconnected { color: red; }
+        .form-group { margin-bottom: 15px; }
+        .checkbox-group { margin-bottom: 15px; padding: 10px; background-color: #eef2f7; border-radius: 5px; border-left: 4px solid #007bff; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        .checkbox-label { display: inline-flex; align-items: center; font-weight: bold; cursor: pointer; }
+        .checkbox-label input { margin-right: 8px; width: 18px; height: 18px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input:disabled { background-color: #e9ecef; cursor: not-allowed; }
+        button { background-color: #007bff; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; }
+        button:disabled { background-color: #cccccc; cursor: not-allowed; }
+        button:hover:not(:disabled) { background-color: #0056b3; }
+        pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; max-height: 180px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Parâmetros do Dispositivo</h2>
+        
+        <!-- Status da Conexão -->
+        <div class="status">
+            Status: <span id="status" class="disconnected">Desconectado</span>
+        </div>
+
+        <!-- Formulário de Parâmetros -->
+        <form id="payloadForm" onsubmit="event.preventDefault(); sendData();">
+            
+            <!-- Flag de Inicialização -->
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="flagInicializacao" onchange="toggleInitFields(this.checked)">
+                    Enviar Parâmetros de Inicialização
+                </label>
+            </div>
+
+            <!-- Parâmetros Condicionais (Inicialização) -->
+            <div id="initFields">
+                <div class="form-group">
+                    <label for="TspcsPulsewidth">TspcsPulsewidth (float):</label>
+                    <input type="number" step="any" id="TspcsPulsewidth" value="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="Tspcsfrequency">Tspcsfrequency:</label>
+                    <input type="number" step="any" id="Tspcsfrequency" value="30">
+                </div>
+
+                <div class="form-group">
+                    <label for="pulse_time">Pulse Time (ms):</label>
+                    <input type="number" step="any" id="pulse_time" value="50">
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #ccc; margin: 20px 0;">
+
+            <!-- Parâmetros Padrão -->
+            <div class="form-group">
+                <label for="m">Parâmetro m (string):</label>
+                <input type="text" id="m" value="2,0,10,0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="t">Parâmetro t:</label>
+                <input type="number" step="any" id="t" value="200" required>
+            </div>
+
+            <div class="form-group">
+                <label for="p">Frequência p (Hz):</label>
+                <input type="number" step="any" id="p" value="20000" required>
+            </div>
+
+            <!-- Botão de Envio -->
+            <button type="submit" id="sendBtn" disabled>Enviar Parâmetros</button>
+        </form>
+
+        <h3>Logs de Comunicação:</h3>
+        <pre id="logs">Conectando ao Broker...</pre>
+    </div>
+
+    <script>
+        const BROKER_WS = "ws://127.0.0.1:9001";
+        const TOPIC = "cmd2dev4240";
+
+        const statusEl = document.getElementById("status");
+        const sendBtn = document.getElementById("sendBtn");
+        const logsEl = document.getElementById("logs");
+
+        function log(msg) {
+            logsEl.innerText += "\n" + msg;
+            logsEl.scrollTop = logsEl.scrollHeight;
+        }
+
+        // Habilita/Desabilita os campos visuais no formulário de acordo com a checkbox
+        function toggleInitFields(isEnabled) {
+            document.getElementById("TspcsPulsewidth").disabled = !isEnabled;
+            document.getElementById("Tspcsfrequency").disabled = !isEnabled;
+            document.getElementById("pulse_time").disabled = !isEnabled;
+        }
+
+        // Inicializa desabilitado por padrão
+        toggleInitFields(false);
+
+        // Conexão MQTT via WebSocket
+        const client = mqtt.connect(BROKER_WS);
+
+        client.on('connect', () => {
+            statusEl.innerText = "Conectado ao Broker";
+            statusEl.className = "status connected";
+            sendBtn.disabled = false;
+            logsEl.innerText = "Conectado com sucesso!";
+
+            client.subscribe(TOPIC, (err) => {
+                if (!err) {
+                    log(`Inscrito no tópico: ${TOPIC}`);
+                } else {
+                    log(`Erro ao se inscrever: ${err}`);
+                }
+            });
+        });
+
+        client.on('offline', () => {
+            statusEl.innerText = "Desconectado";
+            statusEl.className = "status disconnected";
+            sendBtn.disabled = true;
+        });
+
+        client.on('message', (topic, message) => {
+            log(`\n--- Mensagem Recebida ---`);
+            log(`Tópico: ${topic}`);
+            log(`Payload: ${message.toString()}`);
+        });
+
+        function sendData() {
+            if (!client.connected) {
+                alert("Cliente MQTT desconectado!");
+                return;
+            }
+
+            const isInitChecked = document.getElementById("flagInicializacao").checked;
+
+            // Base do payload (sempre presente)
+            const payload = {
+                "op": 2,
+                "m": document.getElementById("m").value,
+                "t": parseFloat(document.getElementById("t").value),
+                "p": parseFloat(document.getElementById("p").value)
+            };
+
+            // Anexa os parâmetros de inicialização APENAS se a flag estiver marcada
+            if (isInitChecked) {
+                payload["TspcsPulsewidth"] = parseFloat(document.getElementById("TspcsPulsewidth").value);
+                payload["Tspcsfrequency"] = parseFloat(document.getElementById("Tspcsfrequency").value);
+                payload["pulse_time"] = parseFloat(document.getElementById("pulse_time").value);
+            }
+
+            const jsonPayload = JSON.stringify(payload);
+            client.publish(TOPIC, jsonPayload, { qos: 0 });
+            
+            log(`\n[ENVIADO] Publicado no tópico '${TOPIC}':`);
+            log(jsonPayload);
+        }
+    </script>
+</body>
+</html>

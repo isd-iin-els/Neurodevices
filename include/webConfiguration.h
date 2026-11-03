@@ -177,7 +177,8 @@ void initWebServer(){
     });
 
     server.on("/update", HTTP_GET, [](AsyncWebServerRequest *request) {
-      request->send_P(200, "text/html", "<form method='POST' action='/update_link' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form>");
+      // Depois
+      request->send(200, "text/html", "<form method='POST' action='/update_link' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form>");
     });
 
     // Handle file upload

@@ -33,8 +33,8 @@ void setup() {
   // // addFunctions("adc1115SendInit", ADC1115SENDINIT_PARAMETERS, adc1115MQTT::sendAdc1115Init,36);
   // // addFunctions("setStim", setStim_PARAMETERS, ControlStim::setStim,41); 
 
-  addFunctions("TSPCS_PARAMETERS",TSPCS_PARAMETERS,tsPCS::openLoopTspcsUpdate,2);
-  addFunctions("INIT_TSPCS_PARAMETERS",INIT_TSPCS_PARAMETERS,tsPCS::sendtsPCSInit,3);
+  // addFunctions("TSPCS_PARAMETERS",TSPCS_PARAMETERS,tsPCS::openLoopTspcsUpdate,2);
+  // addFunctions("INIT_TSPCS_PARAMETERS",INIT_TSPCS_PARAMETERS,tsPCS::sendtsPCSInit,3);
 
   addFunctions("who_am_i",WHOAMI_PARAMETERS,who_am_i,0);
   addFunctions("subscribe",subscribe_PARAMETERS,subscribe,1);

@@ -32,8 +32,8 @@ class MqttClient {
 esp_mqtt_client_config_t mqtt_cfg = {};
 MqttClient mqttClient;
 
-// const char* WIFI_SSID = "CAMPUS";
-// const char* WIFI_PASSWD = "IINELS_educacional";
+const char* WIFI_SSID = "andre";
+const char* WIFI_PASSWD = "12345678";
 // const char* MQTT_HOST = "10.1.0.18";
 // const uint32_t MQTT_PORT = 1883;
 const uint16_t sizejson = 512;

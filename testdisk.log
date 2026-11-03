@@ -1,0 +1,119 @@
+
+
+Tue Aug 25 14:10:45 2026
+Command line: TestDisk
+
+TestDisk 7.1, Data Recovery Utility, July 2019
+Christophe GRENIER <grenier@cgsecurity.org>
+https://www.cgsecurity.org
+OS: Linux, kernel 5.15.0-139-generic (#149~20.04.1-Ubuntu SMP Wed Apr 16 08:29:56 UTC 2025) x86_64
+Compiler: GCC 9.2
+ext2fs lib: 1.45.5, ntfs lib: libntfs-3g, reiserfs lib: none, ewf lib: none, curses lib: ncurses 6.1
+/dev/sda: LBA, HPA, LBA48, DCO support
+/dev/sda: size       976773168 sectors
+/dev/sda: user_max   976773168 sectors
+/dev/sda: native_max 976773168 sectors
+/dev/sda: dco        976773168 sectors
+Warning: can't get size for Disk /dev/mapper/control - 0 B - 0 sectors, sector size=512
+Warning: can't get size for Disk /dev/loop13 - 0 B - 0 sectors (RO), sector size=512
+Hard disk list
+Disk /dev/sda - 500 GB / 465 GiB - CHS 60801 255 63, sector size=512 - ST500DM002-1BD142, S/N:S2ADNMHZ, FW:KC65
+Disk /dev/loop0 - 1650 MB / 1574 MiB - 3224328 sectors (RO), sector size=512
+Disk /dev/loop1 - 4096 B - 8 sectors (RO), sector size=512
+Disk /dev/loop10 - 172 MB / 164 MiB - 337560 sectors (RO), sector size=512
+Disk /dev/loop11 - 66 MB / 63 MiB - 130616 sectors (RO), sector size=512
+Disk /dev/loop12 - 58 MB / 55 MiB - 113648 sectors (RO), sector size=512
+Disk /dev/loop14 - 366 MB / 349 MiB - 716176 sectors (RO), sector size=512
+Disk /dev/loop15 - 363 MB / 346 MiB - 709280 sectors (RO), sector size=512
+Disk /dev/loop16 - 557 MB / 531 MiB - 1088496 sectors (RO), sector size=512
+Disk /dev/loop17 - 557 MB / 531 MiB - 1088256 sectors (RO), sector size=512
+Disk /dev/loop18 - 96 MB / 91 MiB - 187776 sectors (RO), sector size=512
+Disk /dev/loop19 - 2166 MB / 2066 MiB - 4231712 sectors (RO), sector size=512
+Disk /dev/loop2 - 1632 MB / 1556 MiB - 3187536 sectors (RO), sector size=512
+Disk /dev/loop20 - 1561 MB / 1489 MiB - 3050432 sectors (RO), sector size=512
+Disk /dev/loop21 - 77 MB / 73 MiB - 151512 sectors (RO), sector size=512
+Disk /dev/loop22 - 421 MB / 401 MiB - 823256 sectors (RO), sector size=512
+Disk /dev/loop23 - 52 MB / 50 MiB - 102608 sectors (RO), sector size=512
+Disk /dev/loop24 - 13 MB / 12 MiB - 26472 sectors (RO), sector size=512
+Disk /dev/loop25 - 1751 MB / 1670 MiB - 3420288 sectors (RO), sector size=512
+Disk /dev/loop26 - 8507 KB / 8308 KiB - 16616 sectors (RO), sector size=512
+Disk /dev/loop27 - 414 MB / 394 MiB - 808920 sectors (RO), sector size=512
+Disk /dev/loop28 - 73 MB / 70 MiB - 143752 sectors (RO), sector size=512
+Disk /dev/loop29 - 52 MB / 50 MiB - 102608 sectors (RO), sector size=512
+Disk /dev/loop3 - 493 MB / 470 MiB - 963400 sectors (RO), sector size=512
+Disk /dev/loop30 - 4497 KB / 4392 KiB - 8784 sectors (RO), sector size=512
+Disk /dev/loop31 - 4497 KB / 4392 KiB - 8784 sectors (RO), sector size=512
+Disk /dev/loop32 - 74 MB / 70 MiB - 144944 sectors (RO), sector size=512
+Disk /dev/loop33 - 8445 KB / 8248 KiB - 16496 sectors (RO), sector size=512
+Disk /dev/loop34 - 12 MB / 12 MiB - 24984 sectors (RO), sector size=512
+Disk /dev/loop35 - 546 MB / 521 MiB - 1067152 sectors (RO), sector size=512
+Disk /dev/loop4 - 58 MB / 55 MiB - 113640 sectors (RO), sector size=512
+Disk /dev/loop5 - 66 MB / 63 MiB - 130624 sectors (RO), sector size=512
+Disk /dev/loop6 - 70 MB / 66 MiB - 136904 sectors (RO), sector size=512
+Disk /dev/loop7 - 70 MB / 66 MiB - 136816 sectors (RO), sector size=512
+Disk /dev/loop8 - 2182 MB / 2081 MiB - 4262384 sectors (RO), sector size=512
+Disk /dev/loop9 - 77 MB / 73 MiB - 151536 sectors (RO), sector size=512
+Disk /dev/nvme0n1 - 256 GB / 238 GiB - CHS 244198 64 32, sector size=512
+
+Partition table type (auto): EFI GPT
+Disk /dev/nvme0n1 - 256 GB / 238 GiB
+Partition table type: EFI GPT
+
+Analyse Disk /dev/nvme0n1 - 256 GB / 238 GiB - CHS 244198 64 32
+hdr_size=92
+hdr_lba_self=1
+hdr_lba_alt=500118191 (expected 500118191)
+hdr_lba_start=34
+hdr_lba_end=500118158
+hdr_lba_table=2
+hdr_entries=128
+hdr_entsz=128
+Current partition structure:
+ 1 P EFI System                  2048    1050623    1048576 [EFI System Partition]
+ 2 P Linux filesys. data      1050624  500117503  499066880
+
+search_part()
+Disk /dev/nvme0n1 - 256 GB / 238 GiB - CHS 244198 64 32
+FAT32 at 1/0/1
+FAT1 : 32-1055
+FAT2 : 1056-2079
+start_rootdir : 2080 root cluster : 2
+Data : 2080-1048575
+sectors : 1048576
+cluster_size : 8
+no_of_cluster : 130812 (2 - 130813)
+fat_length 1024 calculated 1022
+set_FAT_info: name from BS used
+
+FAT32 at 1/0/1
+FAT: cluster=2(0x2), pos=4128
+     EFI System                  2048    1050623    1048576 [EFI System Partition] [NO NAME]
+     FAT32, blocksize=4096, 536 MB / 512 MiB
+
+recover_EXT2: s_block_group_nr=0/1903, s_mnt_count=146/4294967295, s_blocks_per_group=32768, s_inodes_per_group=8192
+recover_EXT2: s_blocksize=4096
+recover_EXT2: s_blocks_count 62383360
+recover_EXT2: part_size 499066880
+Filesystem created: Thu Aug 29 11:54:29 2024
+Last mount time:    Tue Aug 18 11:53:31 2026
+     Linux filesys. data      1050624  500117503  499066880
+     ext4 blocksize=4096 Large_file Sparse_SB Recover, 255 GB / 237 GiB
+
+Results
+   P EFI System                  2048    1050623    1048576 [EFI System Partition] [NO NAME]
+     FAT32, blocksize=4096, 536 MB / 512 MiB
+   P Linux filesys. data      1050624  500117503  499066880
+     ext4 blocksize=4096 Large_file Sparse_SB Recover, 255 GB / 237 GiB
+
+Hint for advanced users: dmsetup may be used if you prefer to avoid rewriting the partition table for the moment:
+echo "0 1048576 linear /dev/nvme0n1 2048" | dmsetup create test0
+echo "0 499066880 linear /dev/nvme0n1 1050624" | dmsetup create test1
+
+interface_write()
+ 1 P EFI System                  2048    1050623    1048576 [EFI System Partition] [NO NAME]
+ 2 P Linux filesys. data      1050624  500117503  499066880
+
+interface_write()
+ 1 P EFI System                  2048    1050623    1048576 [EFI System Partition] [NO NAME]
+ 2 P Linux filesys. data      1050624  500117503  499066880
+SIGINT detected! TestDisk has been killed.
