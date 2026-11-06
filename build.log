@@ -1,0 +1,52 @@
+********************************************************************************
+Obsolete PIO Core v6.1.19 is used (previous was 6.2.0)
+Please remove multiple PIO Cores from a system:
+https://docs.platformio.org/en/latest/core/installation/troubleshooting.html
+********************************************************************************
+Processing esp32doit-devkit-v1 (platform: espressif32@6.5.0; board: esp32doit-devkit-v1; framework: arduino, espidf)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.5.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - framework-espidf @ 3.40406.240122 (4.4.6) 
+ - tool-cmake @ 3.16.4 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - tool-ninja @ 1.7.1 
+ - toolchain-esp32ulp @ 1.23500.220830 (2.35.0) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+Warning! Arduino framework as an ESP-IDF component doesn't handle the `variant` field! The default `esp32` variant will be used.
+Reading CMake configuration...
+-- Building ESP-IDF components for target esp32
+-- Project sdkconfig file /home/andre/Documentos/Neurodevices/sdkconfig.esp32doit-devkit-v1
+-- App "fes4channels" version: v1.0.0-27-gf4417b7-dirty
+-- Adding linker script /home/andre/Documentos/Neurodevices/.pio/build/esp32doit-devkit-v1/esp-idf/esp_system/ld/memory.ld
+-- Adding linker script /home/andre/.platformio/packages/framework-espidf@3.40406.240122/components/esp_system/ld/esp32/sections.ld.in
+-- Adding linker script /home/andre/.platformio/packages/framework-espidf@3.40406.240122/components/esp_rom/esp32/ld/esp32.rom.ld
+-- Adding linker script /home/andre/.platformio/packages/framework-espidf@3.40406.240122/components/esp_rom/esp32/ld/esp32.rom.api.ld
+-- Adding linker script /home/andre/.platformio/packages/framework-espidf@3.40406.240122/components/esp_rom/esp32/ld/esp32.rom.libgcc.ld
+-- Adding linker script /home/andre/.platformio/packages/framework-espidf@3.40406.240122/components/esp_rom/esp32/ld/esp32.rom.newlib-data.ld
+-- Adding linker script /home/andre/.platformio/packages/framework-espidf@3.40406.240122/components/esp_rom/esp32/ld/esp32.rom.syscalls.ld
+-- Adding linker script /home/andre/.platformio/packages/framework-espidf@3.40406.240122/components/esp_rom/esp32/ld/esp32.rom.newlib-funcs.ld
+-- Adding linker script /home/andre/.platformio/packages/framework-espidf@3.40406.240122/components/esp_rom/esp32/ld/esp32.rom.newlib-time.ld
+-- Adding linker script /home/andre/.platformio/packages/framework-espidf@3.40406.240122/components/soc/esp32/ld/esp32.peripherals.ld
+-- Configuring incomplete, errors occurred!
+See also "/home/andre/Documentos/Neurodevices/.pio/build/esp32doit-devkit-v1/CMakeFiles/CMakeOutput.log".
+
+fatal: not a git repository (or any of the parent directories): .git
+fatal: not a git repository (or any of the parent directories): .git
+fatal: not a git repository: /home/andre/.platformio/packages/framework-espidf@3.40406.240122/components/openthread/openthread/../../../.git/modules/components/openthread/openthread
+CMake Error at /home/andre/.platformio/packages/framework-arduinoespressif32-3.20014.231204/CMakeLists.txt:218 (message):
+  esp32-arduino requires CONFIG_FREERTOS_HZ=1000 (currently 100)
+
+
+
+========================== [FAILED] Took 2.72 seconds ==========================
+
+Environment          Status    Duration
+-------------------  --------  ------------
+esp32doit-devkit-v1  FAILED    00:00:02.719
+==================== 1 failed, 0 succeeded in 00:00:02.719 ====================

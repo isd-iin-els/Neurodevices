@@ -9,7 +9,7 @@
   #include "wifistaTCP.h"
 #endif
 #ifdef WiFiMQTT_h
-  #include "wifiMQTT.h"
+  #include "network/wifiMQTT.h"
 #endif
 
 // #include "mpuDMP6.h"

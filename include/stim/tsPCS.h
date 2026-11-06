@@ -2,7 +2,7 @@
 #define tsPCSLoopfes_h
 
 #include "SistemasdeControle/headers/primitiveLibs/LinAlg/matrix.h"
-#include "openLoopFes.h"
+#include "stim/openLoopFes.h"
 //#include "sendIMUData.h"
 
 namespace tsPCS{

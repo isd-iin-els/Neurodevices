@@ -8,7 +8,7 @@
 #include "WiFi.h"//Não mexe
 #include <stdio.h>//Não mexe
 #include "SistemasdeControle/headers/primitiveLibs/LinAlg/matrix.h"//Não mexe
-#include <wifiMQTT.h>//Não mexe
+#include "stim/wifiMQTT.h"//Não mexe
 #include "SistemasdeControle/embeddedTools/signalAnalysis/systemLoop.h"//Não mexe se for usar o fes
 
 #define SENDINSOLE_PARAMETERS "{\"op\":38,\"timeSimulation\":\"float\",\"freq\":\"float\",\"Trigger\":\"string\",\"Threshold\":\"string\",\"Recoverytime\":\"string\",\"Stimtopics\":\"string\",\"Stimtime\":\"float\",\"Stimfreq\":\"float\",\"Stimpulsew\":\"float\",\"Stimintensidade\":\"float\",\"Tempenvio\":\"float\",\"tempoBaseline\":\"float\"}"

@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 #include <Update.h>
-#include "asyncOTA.h"
+#include "network/asyncOTA.h"
 
 #define LED_OTA 19 // ez-sbc board
 #define LED_ON   0

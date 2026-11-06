@@ -1,6 +1,6 @@
 #ifndef BLINKLEDMQTT_h
 #define BLINKLEDMQTT_h
-#include "openLoopFes.h"
+#include "./stim/openLoopFes.h"
 #include "ArduinoJson.h"
 #define json_size 512
 

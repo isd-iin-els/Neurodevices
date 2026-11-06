@@ -3,7 +3,7 @@
 
 #include "Arduino.h"
 #include "WiFi.h"
-#include <webConfiguration.h>
+#include "network/webConfiguration.h"
 #include "Arduino.h"
 #include <servicesDef.h>
 #include <ArduinoJson.h>
@@ -32,8 +32,8 @@ class MqttClient {
 esp_mqtt_client_config_t mqtt_cfg = {};
 MqttClient mqttClient;
 
-const char* WIFI_SSID = "andre";
-const char* WIFI_PASSWD = "12345678";
+// const char* WIFI_SSID = "andre";
+// const char* WIFI_PASSWD = "12345678";
 // const char* MQTT_HOST = "10.1.0.18";
 // const uint32_t MQTT_PORT = 1883;
 const uint16_t sizejson = 512;
@@ -71,7 +71,7 @@ String subscribe(const StaticJsonDocument<sizejson> &doc)  {
 	stream_callback_topic = topic.c_str();
 	int qos = doc["qos"];
 	Serial.print("Subscribing to topic: "); Serial.println(topic.c_str());
-	int msg_id = mqttClient.subscribe(topic.c_str(), qos);
+	mqttClient.subscribe(topic.c_str(), qos);
 	return answer;
 }
 
@@ -119,15 +119,16 @@ String who_am_i(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operat
     return answer;
 }
 
-#include "blinkled.h"
+#include "stim/blinkled.h"
 
 void connectToWifi() {
 	Serial.println("Connecting to Wi-Fi...");
 	WiFi.onEvent(WiFiEvent);
-	WiFi.mode (WIFI_MODE_STA);
-	WiFi.setSleep(false);
-	esp_wifi_set_ps (WIFI_PS_NONE);
+	// WiFi.mode (WIFI_MODE_STA);
+	// WiFi.setSleep(false);
+	// esp_wifi_set_ps (WIFI_PS_NONE);
 	WiFi.begin (WIFI_SSID, WIFI_PASSWORD);
+	delay (100);
 	while (!WiFi.isConnected ()) {
 		Serial.print ('.');
 		delay (100);
@@ -146,9 +147,13 @@ void createTopics(){
 	// lastWillTopic = connectionStatus.str().c_str();
 }
 
+
+
 void connectToMqtt() {
 	mqtt_cfg.host = MQTT_HOST.c_str();
 	mqtt_cfg.port = MQTT_PORT;
+	mqtt_cfg.username = MQTT_USERNAME.c_str();   // "synapsys"
+	mqtt_cfg.password = MQTT_PASSWORD.c_str();   // "12345678"
 	mqtt_cfg.keepalive = 15;
 
 	mqtt_cfg.transport = MQTT_TRANSPORT_OVER_TCP;
@@ -161,12 +166,12 @@ void connectToMqtt() {
 
 	Serial.println("Connecting to MQTT...");
 	mqttClient.mqtt_client = esp_mqtt_client_init (&mqtt_cfg);
-	esp_err_t err = esp_mqtt_client_start (mqttClient.mqtt_client);
+	esp_mqtt_client_start (mqttClient.mqtt_client);
 }
 
-void WiFiEvent(WiFiEvent_t event) {
+void WiFiEvent(arduino_event_id_t event) {
     Serial.printf("[WiFi-event] event: %d\n", event);
-    switch(event) {
+    switch(int(event)) {
         case SYSTEM_EVENT_STA_GOT_IP:
   
             Serial.println("WiFi connected");

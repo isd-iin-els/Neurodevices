@@ -3,7 +3,7 @@
 
 #include "SistemasdeControle/headers/primitiveLibs/LinAlg/matrix.h"
 #include "SistemasdeControle/embeddedTools/signalAnalysis/systemLoop.h"
-#include "sendIMUData.h"
+#include "imuSensor/sendIMUData.h"
 // #include "microstim.h"
 
 volatile bool openLoop_flag = false, sensor_flag = false;

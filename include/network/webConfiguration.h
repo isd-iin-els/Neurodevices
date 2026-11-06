@@ -18,6 +18,7 @@ EEPROMClass wifiSSID  ("ssid");
 EEPROMClass wifiPassword  ("wifipass");
 EEPROMClass deviceFunction  ("deviceFunction");
 String login = "",pass = "",MQTT_HOST = "", WIFI_SSID = "", WIFI_PASSWORD = "", devFunction = "";
+String MQTT_USERNAME = "",MQTT_PASSWORD = "";
 uint16_t MQTT_PORT = 0;
 
 
