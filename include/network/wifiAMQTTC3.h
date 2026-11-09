@@ -121,18 +121,24 @@ String who_am_i(const StaticJsonDocument<sizejson> &doc/*, const uint8_t &operat
 
 #include "stim/blinkled.h"
 
+// int wifiCounter = 1;
 void connectToWifi() {
 	Serial.println("Connecting to Wi-Fi...");
 	WiFi.onEvent(WiFiEvent);
-	// WiFi.mode (WIFI_MODE_STA);
-	// WiFi.setSleep(false);
-	// esp_wifi_set_ps (WIFI_PS_NONE);
+
+	WiFi.persistent(false);
+    WiFi.disconnect(true, true); // (wifioff = true, eraseap = true)
+	WiFi.mode (WIFI_MODE_STA);
+	WiFi.setSleep(false);
+	esp_wifi_set_ps (WIFI_PS_NONE);
+	WiFi.disconnect();
+	// vTaskDelay(pdMS_TO_TICKS(30000)); // Aguarda 1 segundo antes de reiniciar
 	WiFi.begin (WIFI_SSID, WIFI_PASSWORD);
-	delay (100);
-	while (!WiFi.isConnected ()) {
-		Serial.print ('.');
-		delay (100);
-	}
+	// wifiCounter += 10;
+	// while (!WiFi.isConnected ()) {
+	// 	Serial.print ('.');
+	// 	vTaskDelay(pdMS_TO_TICKS(5000));
+	// }
 }
 
 void createTopics(){
@@ -172,20 +178,26 @@ void connectToMqtt() {
 void WiFiEvent(arduino_event_id_t event) {
     Serial.printf("[WiFi-event] event: %d\n", event);
     switch(int(event)) {
+
+		case ARDUINO_EVENT_WIFI_STA_START: // Evento 2
+            Serial.println("Wi-Fi STA iniciado. Conectando...");
+			
+            break;
+
         case SYSTEM_EVENT_STA_GOT_IP:
   
             Serial.println("WiFi connected");
             Serial.println("IP address: ");
             Serial.println(WiFi.localIP()); 
 			
-        	blinkTime = 5; blinkMe(StaticJsonDocument<sizejson>());
+        	blinkTime = 10; blinkMe(StaticJsonDocument<sizejson>());
             connectToMqtt();
         break;
 
 
         case SYSTEM_EVENT_STA_DISCONNECTED:
-            Serial.println("WiFi lost connection");
-            connectToWifi();
+			
+			connectToWifi();
         break;
     }
 }
@@ -214,7 +226,8 @@ static esp_err_t mqtt_event_handler (esp_mqtt_event_handle_t event) {
 }
 
 void onMqttConnect() {
-	// blinkTime = 5; blinkMe(StaticJsonDocument<sizejson>());
+	delay(10000);
+	blinkTime = 5; blinkMe(StaticJsonDocument<sizejson>());
 	std::stringstream shortMacAddress, cmd2devMac; shortMacAddress << ESP.getEfuseMac();
     String macAddress = shortMacAddress.str().c_str();
     shortMacAddress.str(""); shortMacAddress  << macAddress[macAddress.length()-4] << macAddress[macAddress.length()-3]  
