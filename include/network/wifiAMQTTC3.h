@@ -1,10 +1,9 @@
 #ifndef wifiAMQTTC3_h
 #define wifiAMQTTC3_h
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "WiFi.h"
 #include "network/webConfiguration.h"
-#include "Arduino.h"
 #include <servicesDef.h>
 #include <ArduinoJson.h>
 #include <StreamUtils.h>
@@ -184,7 +183,7 @@ void WiFiEvent(arduino_event_id_t event) {
 			
             break;
 
-        case SYSTEM_EVENT_STA_GOT_IP:
+        case ARDUINO_EVENT_WIFI_STA_GOT_IP:
   
             Serial.println("WiFi connected");
             Serial.println("IP address: ");
@@ -195,7 +194,7 @@ void WiFiEvent(arduino_event_id_t event) {
         break;
 
 
-        case SYSTEM_EVENT_STA_DISCONNECTED:
+        case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
 			
 			connectToWifi();
         break;

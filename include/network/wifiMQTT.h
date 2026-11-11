@@ -8,6 +8,8 @@
       #include "network/wifiAMQTTC3.h"
   #elif ESP32S2DEV
       #include "network/wifiAMQTTC3.h"
+  #elif DESP32DEVC6
+      #include "network/wifiAMQTTC3.h"
   #endif
 
 #endif

@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 
 BROKER = "10.254.191.6"
 PORT = 1883
-TOPIC = "cmd2dev4240"
+TOPIC = "cmd2dev9164"
 BROKER = "127.0.0.1"
 
 payload = {

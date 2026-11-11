@@ -1,6 +1,6 @@
 #ifndef tsPCSLoopfes_h
 #define tsPCSLoopfes_h
-
+#include <Arduino.h>
 #include "SistemasdeControle/headers/primitiveLibs/LinAlg/matrix.h"
 #include "stim/openLoopFes.h"
 //#include "sendIMUData.h"
