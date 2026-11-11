@@ -1,0 +1,12 @@
+dependencies:
+  jsmn:
+    rules:
+    - if: idf_version >=5.0
+    version: ~1.2
+description: This is a simple, light weight JSON parser built on top of jsmn
+repository: git://github.com/espressif/idf-extra-components.git
+repository_info:
+  commit_sha: d7f20c44fbc89f893e11ce9f439413fcdca0f5e9
+  path: json_parser
+url: https://github.com/espressif/json_parser
+version: 2.0.0

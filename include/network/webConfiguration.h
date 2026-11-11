@@ -249,7 +249,7 @@ void initWebServer(){
 #ifdef ESP32DEV
   #define INTERRUPT_PIN 0
 #elif ESP32C3DEV
-  #define INTERRUPT_PIN D9
+  #define INTERRUPT_PIN 9
 #elif ESP32S2DEV
   #define INTERRUPT_PIN 0
 #endif

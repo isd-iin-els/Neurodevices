@@ -1,0 +1,9 @@
+dependencies:
+  idf: '>=4.3'
+description: 'JSMN: minimalistic JSON parser in C'
+repository: git://github.com/espressif/idf-extra-components.git
+repository_info:
+  commit_sha: d7f20c44fbc89f893e11ce9f439413fcdca0f5e9
+  path: jsmn
+url: https://github.com/espressif/idf-extra-components/tree/master/jsmn
+version: 1.2.0
