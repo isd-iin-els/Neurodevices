@@ -41,7 +41,7 @@ String lastWillTopic, stream_callback_topic = "\0";
 
 void WiFiEvent(WiFiEvent_t event);
 
-static esp_err_t mqtt_event_handler (esp_mqtt_event_handle_t event);
+static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data);
 void onMqttMessage(char* topic, char* payload);
 void onMqttConnect();
 
@@ -155,23 +155,30 @@ void createTopics(){
 
 
 void connectToMqtt() {
-	mqtt_cfg.host = MQTT_HOST.c_str();
-	mqtt_cfg.port = MQTT_PORT;
-	mqtt_cfg.username = MQTT_USERNAME.c_str();   // "synapsys"
-	mqtt_cfg.password = MQTT_PASSWORD.c_str();   // "12345678"
-	mqtt_cfg.keepalive = 15;
+	esp_mqtt_client_config_t mqtt_cfg = {}; // Inicializa a struct zerada
 
-	mqtt_cfg.transport = MQTT_TRANSPORT_OVER_TCP;
+	// Configurações de Endereço e Conexão (Broker)
+	mqtt_cfg.broker.address.hostname = MQTT_HOST.c_str();
+	mqtt_cfg.broker.address.port = MQTT_PORT;
+	mqtt_cfg.broker.address.transport = MQTT_TRANSPORT_OVER_TCP;
 
-	mqtt_cfg.event_handle = mqtt_event_handler;
-	// mqtt_cfg.lwt_topic = lastWillTopic.c_str();
-	mqtt_cfg.lwt_msg = "Offline";
-	mqtt_cfg.lwt_msg_len = 7;
+	// Credenciais (Usuário e Senha)
+	mqtt_cfg.credentials.username = MQTT_USERNAME.c_str();
+	mqtt_cfg.credentials.authentication.password = MQTT_PASSWORD.c_str();
 
+	// Configurações de Sessão e LWT (Last Will and Testament)
+	mqtt_cfg.session.keepalive = 15;
+	// mqtt_cfg.session.last_will.topic = lastWillTopic.c_str();
+	mqtt_cfg.session.last_will.msg = "Offline";
+	mqtt_cfg.session.last_will.msg_len = 7;
 
 	Serial.println("Connecting to MQTT...");
-	mqttClient.mqtt_client = esp_mqtt_client_init (&mqtt_cfg);
-	esp_mqtt_client_start (mqttClient.mqtt_client);
+	mqttClient.mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
+
+	// O event_handle agora é registrado separadamente após o init:
+	esp_mqtt_client_register_event(mqttClient.mqtt_client, (esp_mqtt_event_id_t)-1, mqtt_event_handler, NULL);
+
+	esp_mqtt_client_start(mqttClient.mqtt_client);
 }
 
 void WiFiEvent(arduino_event_id_t event) {
@@ -201,7 +208,10 @@ void WiFiEvent(arduino_event_id_t event) {
     }
 }
 
-static esp_err_t mqtt_event_handler (esp_mqtt_event_handle_t event) {
+static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
+{
+	// O objeto real do evento vem dentro do event_data agora:
+    esp_mqtt_event_handle_t event = (esp_mqtt_event_handle_t)event_data;
 
 	if (event->event_id == MQTT_EVENT_CONNECTED) {
     	Serial.println("Evento Conectado");
@@ -221,7 +231,7 @@ static esp_err_t mqtt_event_handler (esp_mqtt_event_handle_t event) {
 	} else  if (event->event_id == MQTT_EVENT_BEFORE_CONNECT) {
     	Serial.println("Antes de conectar");
 	}
-	return ESP_OK;
+	//return ESP_OK;'
 }
 
 void onMqttConnect() {

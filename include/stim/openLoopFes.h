@@ -30,6 +30,17 @@ uint8_t modPin[2]    = {3,4},//ca andré
         levelPin[1]  = {2};
 Devices::fes4channels dispositivo(levelPin, modPin, 1, 18000,200,20000,true);
 
+#elif ESP32DEVC5
+uint8_t modPin[2]    = {3,4},//ca andré
+        levelPin[1]  = {2};
+Devices::fes4channels dispositivo(levelPin, modPin, 1, 18000,200,20000,true);
+
+#elif ESP32DEVC6
+uint8_t modPin[2]    = {3,4},//ca andré
+        levelPin[1]  = {2};
+Devices::fes4channels dispositivo(levelPin, modPin, 1, 18000,200,20000,true);
+
+
 #endif
 
 void openLoopFesInit(uint32_t ton, uint32_t period){

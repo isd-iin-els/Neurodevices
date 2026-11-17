@@ -1,5 +1,5 @@
 #include <WiFi.h>
-#include <AsyncTCP.h>
+// #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <EEPROM.h>
 #include <DNSServer.h>
@@ -251,6 +251,10 @@ void initWebServer(){
 #elif ESP32C3DEV
   #define INTERRUPT_PIN 9
 #elif ESP32S2DEV
+  #define INTERRUPT_PIN 0
+#elif ESP32DEVC5
+  #define INTERRUPT_PIN 0
+#elif ESP32DEVC6
   #define INTERRUPT_PIN 0
 #endif
 //portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED; 
