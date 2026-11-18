@@ -21,8 +21,8 @@ Devices::fes4channels dispositivo(levelPin, modPin, 4, 18000,200,20000,true);
 
 // -----------------------ESP32C3-------------------------------------------
 #elif ESP32C3DEV
-uint8_t modPin[2]    = {3,4},//ca andré
-        levelPin[1]  = {2};
+uint8_t modPin[8]    = {4,3},//ca andré
+        levelPin[4]  = {8};
 Devices::fes4channels dispositivo(levelPin, modPin, 1, 18000,200,20000,true);
 
 #elif ESP32S2DEV

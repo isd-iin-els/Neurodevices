@@ -78,7 +78,7 @@ extern "C" void app_main(void) {
   captivPortal = wifiSTAMQTTInit();
   // // startSerialService(); // Não é compactível com C3
 
-//   addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate,2);
+  addFunctions("openLoopFesUpdate",OPENLOOPFESUPDATE_PARAMETERS,openLoopFesUpdate,2);
   // // addFunctions("restart",RESTART_PARAMETERS,restart,7);
   // addFunctions("subscribe",subscribe_PARAMETERS,subscribe,0);
   // addFunctions("who_am_i",WHOAMI_PARAMETERS,who_am_i,9);
@@ -92,8 +92,8 @@ extern "C" void app_main(void) {
   // // addFunctions("adc1115SendInit", ADC1115SENDINIT_PARAMETERS, adc1115MQTT::sendAdc1115Init,36);
   // // addFunctions("setStim", setStim_PARAMETERS, ControlStim::setStim,41); 
 
-  addFunctions("TSPCS_PARAMETERS",TSPCS_PARAMETERS,tsPCS::openLoopTspcsUpdate,2);
-  addFunctions("INIT_TSPCS_PARAMETERS",INIT_TSPCS_PARAMETERS,tsPCS::sendtsPCSInit,3);
+  // addFunctions("TSPCS_PARAMETERS",TSPCS_PARAMETERS,tsPCS::openLoopTspcsUpdate,2);
+  // addFunctions("INIT_TSPCS_PARAMETERS",INIT_TSPCS_PARAMETERS,tsPCS::sendtsPCSInit,3);
 
   addFunctions("who_am_i",WHOAMI_PARAMETERS,who_am_i,0);
   addFunctions("subscribe",subscribe_PARAMETERS,subscribe,1);
@@ -105,13 +105,13 @@ extern "C" void app_main(void) {
 
     // 3. Cria a thread/task para rodar sua rotina constantemente
     xTaskCreatePinnedToCore(
-        loop,        // Ponteiro para a função do loop
-        "LoopTask",           // Nome da task
-        1024,                 // Tamanho da pilha (Stack)
-        NULL,                 // Parâmetro
-        1,                    // Prioridade
-        NULL,                 // Handle
-        1                     // Núcleo (Core 1)
+        loop,
+        "LoopTask",
+        4096,                 // pilha maior (veja abaixo)
+        NULL,
+        1,                    // prioridade
+        NULL,
+        tskNO_AFFINITY        // qualquer núcleo; no C3/S2 vira o único
     );
 
     // O app_main pode retornar ou ficar vazio aqui, 

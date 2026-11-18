@@ -130,7 +130,7 @@ dependencies:
       type: service
     version: 2.1.0
   espressif/esp_rainmaker:
-    component_hash: bafea717156a98296644944781e17d402bd6de0acdbb77cdf3e0f766a1746714
+    component_hash: b4c281dd68f23f5253433725a2b33670200b42c85072bf926770c18b79eac5a2
     dependencies:
     - name: espressif/cbor
       registry_url: https://components.espressif.com
@@ -173,7 +173,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 2.1.0
+    version: 2.1.1
   espressif/esp_schedule:
     component_hash: 52d305300abcee86034c309eb200feb2dfbc95fcbfc5b7b9dcd137763a995dbf
     dependencies:
@@ -228,6 +228,34 @@ dependencies:
       registry_url: https://components.espressif.com
       type: service
     version: 2.0.0
+  espressif/lan867x:
+    component_hash: 88bcd9834f0ddd780c1dbed3b9135d03edd00e76dadfd70b91410a524cc5e85a
+    dependencies:
+    - name: espressif/lan86xx_common
+      registry_url: https://components.espressif.com
+      require: private
+      version: '*'
+    - name: idf
+      require: private
+      version: '>=5.3'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    targets:
+    - esp32
+    - esp32p4
+    - esp32s31
+    version: 2.1.0
+  espressif/lan86xx_common:
+    component_hash: 1045dc16e9eaa23c8f94ebd012e4ccc9087e85323c39f870b116391f27196914
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.2'
+    source:
+      registry_url: https://components.espressif.com
+      type: service
+    version: 1.0.1
   espressif/libsodium:
     component_hash: d4066b373fc6d4c5196db42aeea7faef4ac7f3080af96c2b74e2476c08b78dc1
     dependencies:
@@ -407,6 +435,7 @@ direct_dependencies:
 - espressif/esp_insights
 - espressif/esp_modem
 - espressif/esp_rainmaker
+- espressif/lan867x
 - espressif/libsodium
 - espressif/mdns
 - espressif/network_provisioning
@@ -415,5 +444,5 @@ direct_dependencies:
 - idf
 - joltwallet/littlefs
 manifest_hash: 9c22151592ed27fa5905c9d6ef50dd68734998a1dbadcefc81e577cb4878df4e
-target: esp32c6
+target: esp32
 version: 2.0.0
